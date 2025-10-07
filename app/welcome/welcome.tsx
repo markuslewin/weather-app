@@ -8,6 +8,7 @@ export function Welcome({ name }: { name: string }) {
           <ul>
             <li>Vitest</li>
             <li>MSW</li>
+            <li>ESLint</li>
           </ul>
         </div>
       </div>
