@@ -8,6 +8,13 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
-  return <Welcome />;
+export async function loader({}: Route.LoaderArgs) {
+  const user = await fetch("https://api.example.com/user").then((res) =>
+    res.json()
+  );
+  return { user } as { user: { name: string } };
+}
+
+export default function Home({ loaderData }: Route.ComponentProps) {
+  return <Welcome name={loaderData.user.name} />;
 }
