@@ -21,6 +21,7 @@
   "devDependencies": {
     "@eslint/js": "^9.37.0",
     "@netlify/vite-plugin-react-router": "^1.0.1",
+    "@playwright/test": "^1.56.0",
     "@react-router/dev": "^7.9.2",
     "@types/node": "^22",
     "@types/react": "^19.1.13",
