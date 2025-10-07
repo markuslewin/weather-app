@@ -9,9 +9,14 @@ export function meta() {
 }
 
 export async function loader() {
-  const user = await fetch("https://api.example.com/user").then((res) =>
-    res.json()
-  );
+  let user;
+  if (import.meta.env.DEV) {
+    user = await fetch("https://api.example.com/user").then((res) =>
+      res.json()
+    );
+  } else {
+    user = { name: "Production" };
+  }
   return { user } as { user: { name: string } };
 }
 
