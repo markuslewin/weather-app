@@ -1,0 +1,56 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  # lint:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - uses: bahmutov/npm-install@v1
+  #     - run: npm run lint
+  typecheck:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: bahmutov/npm-install@v1
+      - run: npm run typecheck
+  # vitest:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - uses: bahmutov/npm-install@v1
+  #     - run: npm run test
+  # playwright:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - uses: bahmutov/npm-install@v1
+  #     - run: npm run test:e2e
+  deploy:
+    runs-on: ubuntu-22.04
+    needs: [typecheck]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: bahmutov/npm-install@v1
+      - run: npm run build
+      - run: npx netlify deploy --prod --no-build --dir build/client
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
