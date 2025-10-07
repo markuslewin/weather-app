@@ -40,6 +40,10 @@ export function Welcome() {
               ))}
             </ul>
           </nav>
+          <p>Tools:</p>
+          <ul>
+            <li>Vitest</li>
+          </ul>
         </div>
       </div>
     </main>
