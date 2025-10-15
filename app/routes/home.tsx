@@ -9,15 +9,15 @@ export function meta() {
 }
 
 export async function loader() {
-  let user;
-  if (import.meta.env.DEV) {
+  let user: { name: string };
+  if (process.env.MOCKS === "true") {
     user = await fetch("https://api.example.com/user").then((res) =>
       res.json()
     );
   } else {
     user = { name: "Production" };
   }
-  return { user } as { user: { name: string } };
+  return { user };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {

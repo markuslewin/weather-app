@@ -3,12 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "patch-package",
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
+    "start": "netlify serve",
     "lint": "eslint .",
     "typecheck": "react-router typegen && tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install --with-deps chromium"
   },
   "dependencies": {
     "@react-router/node": "^7.9.2",
@@ -31,6 +34,7 @@
     "globals": "^16.4.0",
     "msw": "^2.11.3",
     "netlify-cli": "^23.9.1",
+    "patch-package": "^8.0.1",
     "sass-embedded": "^1.93.2",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.46.0",

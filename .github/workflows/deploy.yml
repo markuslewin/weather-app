@@ -31,15 +31,18 @@ jobs:
           node-version: 22
       - uses: bahmutov/npm-install@v1
       - run: npm run test
-  # playwright:
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 22
-  #     - uses: bahmutov/npm-install@v1
-  #     - run: npm run test:e2e
+  playwright:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: bahmutov/npm-install@v1
+      - run: npm run test:e2e:install
+      - run: npm run test:e2e
+        env:
+          MOCKS: true
   deploy:
     runs-on: ubuntu-22.04
     needs: [lint, typecheck, vitest]

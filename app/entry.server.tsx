@@ -10,7 +10,7 @@ import { server } from "~/mocks/node";
 
 export const streamTimeout = 5_000;
 
-if (import.meta.env.DEV && process.env.MOCKS === "true") {
+if (process.env.MOCKS === "true") {
   server.listen();
 }
 
