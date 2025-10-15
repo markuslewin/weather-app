@@ -45,7 +45,7 @@ jobs:
           MOCKS: true
   deploy:
     runs-on: ubuntu-22.04
-    needs: [lint, typecheck, vitest]
+    needs: [lint, typecheck, vitest, playwright]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
