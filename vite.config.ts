@@ -5,4 +5,7 @@ import netlifyPlugin from "@netlify/vite-plugin-react-router";
 
 export default defineConfig({
   plugins: [reactRouter(), tsconfigPaths(), netlifyPlugin()],
+  test: {
+    include: ["./app/**/*.test.{ts,tsx}"],
+  },
 });
