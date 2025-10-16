@@ -1,5 +1,4 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 
 export function meta() {
   return [
@@ -20,6 +19,20 @@ export async function loader() {
   return { user };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Home({ loaderData }: Route.ComponentProps) {
-  return <Welcome name={loaderData.user.name} />;
+  return (
+    <>
+      <h1 className="text-preset-1">
+        The quick brown fox jumps over the lazy dog.
+      </h1>
+      <p className="text-preset-2">
+        The quick brown fox jumps over the lazy dog.
+      </p>
+      <p className="text-preset-3">
+        The quick brown fox jumps over the lazy dog.
+      </p>
+      <div className="orange-square" />
+    </>
+  );
 }
