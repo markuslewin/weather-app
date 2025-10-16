@@ -53,7 +53,7 @@ jobs:
           node-version: 22
       - uses: bahmutov/npm-install@v1
       - run: npm run build
-      - run: npx netlify deploy --prod --no-build --dir build/client
+      - run: npx netlify deploy --prod --no-build
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
