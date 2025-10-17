@@ -67,6 +67,24 @@ export const getWeather = async () => {
     "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&daily=weather_code,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weather_code&current=temperature_2m,weather_code,apparent_temperature,wind_speed_10m,precipitation,relative_humidity_2m"
   );
   const json = await response.json();
-  const weather = Weather.parse(json);
+  const { hourly, daily, ...data } = Weather.parse(json);
+  const weather = {
+    ...data,
+    hourly: Array.from({ length: 24 * 7 }, (_, i) => {
+      return {
+        time: hourly.time[i],
+        temperature_2m: hourly.temperature_2m[i],
+        weather_code: hourly.weather_code[i],
+      };
+    }),
+    daily: Array.from({ length: 7 }, (_, i) => {
+      return {
+        time: daily.time[i],
+        weather_code: daily.weather_code[i],
+        temperature_2m_max: daily.temperature_2m_max[i],
+        temperature_2m_min: daily.temperature_2m_min[i],
+      };
+    }),
+  };
   return weather;
 };
