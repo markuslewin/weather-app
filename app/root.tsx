@@ -14,7 +14,7 @@ import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/dm-sans/wght-italic.css";
 // Supports weights 200-800
 import "@fontsource-variable/bricolage-grotesque";
-import "./app.scss";
+import "#app/styles/app.scss";
 
 export const links: Route.LinksFunction = () => [
   {

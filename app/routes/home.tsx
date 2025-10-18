@@ -20,6 +20,7 @@ export default function Home({
   loaderData: { location, weather },
 }: Route.ComponentProps) {
   const searchHeadingId = useId();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [settings, setSettings] = useState<{
     temperatureUnit: "celsius" | "fahrenheit";
     windSpeedUnit: "kmh" | "mph";
@@ -38,16 +39,18 @@ export default function Home({
 
   return (
     <>
-      <header>
-        <p>
-          <Link to={"/"}>
-            <img alt="Weather Now" src="/images/logo.svg" />
-          </Link>
-        </p>
-        <p>
-          <button>Units</button>
-        </p>
-        <div>
+      <header className="[ header ] [ center ]">
+        <div className="cluster">
+          <p>
+            <Link to={"/"}>
+              <img alt="Weather Now" src="/images/logo.svg" />
+            </Link>
+          </p>
+          <p>
+            <button>Units</button>
+          </p>
+        </div>
+        {/* <div>
           <h2>Unit settings</h2>
           <button>Switch to Imperial</button>
           <fieldset>
@@ -131,80 +134,111 @@ export default function Home({
               />
             </label>
           </fieldset>
-        </div>
+        </div> */}
       </header>
-      <main>
-        <h1>How's the sky looking today?</h1>
-        <section aria-labelledby={searchHeadingId}>
-          <h2 id={searchHeadingId}>Search</h2>
-          <Form>
-            <input name="q" placeholder="Search for a place..." />
-            <button>Search</button>
-          </Form>
-        </section>
-        <h2>{location}</h2>
-        <h3>Current weather</h3>
-        <p>{weather.current.time}</p>
-        <p>{weather.current.weather_code}</p>
-        <p>{weather.current.temperature_2m}°</p>
-        <h4>Feels Like</h4>
-        <p>{weather.current.apparent_temperature}°</p>
-        <h4>Humidity</h4>
-        <p>{weather.current.relative_humidity_2m}%</p>
-        <h4>Wind</h4>
-        <p>
-          {weather.current.wind_speed_10m} {unit.windSpeed}
-        </p>
-        <h4>Precipitation</h4>
-        <p>
-          {weather.current.precipitation} {unit.precipitation}
-        </p>
-        <h3>Daily forecast</h3>
-        <ol>
-          {weather.daily.map((day) => {
-            return (
-              <li key={day.time}>
-                <h4>{day.time}</h4>
-                <p>{day.weather_code}</p>
-                <p>Max temperature: {day.temperature_2m_max}°</p>
-                <p>Min temperature: {day.temperature_2m_min}°</p>
-              </li>
-            );
-          })}
-        </ol>
-        <article>
-          <header>
-            <h3>Hourly forecast</h3>
-            <select
-              value={date}
-              aria-label="Select date"
-              onChange={(e) => {
-                setDate(e.target.value);
-              }}
-            >
-              {[
-                ...new Set(
-                  weather.hourly.map((hour) => hour.time.split("T")[0])
-                ),
-              ].map((date) => {
-                return <option key={date}>{date}</option>;
-              })}
-            </select>
-          </header>
-          <ol>
-            {weather.hourly
-              .filter((hour) => hour.time.split("T")[0] === date)
-              .map((hour) => {
-                return (
-                  <li key={hour.time}>
-                    <h4>{hour.time}</h4>
-                    <p>{hour.weather_code}</p>
-                    <p>{hour.temperature_2m}°</p>
-                  </li>
-                );
-              })}
-          </ol>
-        </article>
+      <main className="[ center ] [ mt-600 tablet:mt-800 ]">
+        <div>
+          <h1>How's the sky looking today?</h1>
+          <section
+            className="mt-600 tablet:mt-800"
+            aria-labelledby={searchHeadingId}
+          >
+            <h2 className="sr-only" id={searchHeadingId}>
+              Search
+            </h2>
+            <Form>
+              <input name="q" placeholder="Search for a place..." />
+              <button>Search</button>
+            </Form>
+          </section>
+          <div className="[ dashboard ] [ mt-400 desktop:600 ]">
+            <div>
+              <div className="current">
+                <h2>{location}</h2>
+                <h3 className="sr-only">Current weather</h3>
+                <p>{weather.current.time}</p>
+                <p>{weather.current.weather_code}</p>
+                <p>{weather.current.temperature_2m}°</p>
+                <div className="[ grid ] [ mt-250 desktop:mt-400 ]">
+                  <div>
+                    <h4>Feels Like</h4>
+                    <p>{weather.current.apparent_temperature}°</p>
+                  </div>
+                  <div>
+                    <h4>Humidity</h4>
+                    <p>{weather.current.relative_humidity_2m}%</p>
+                  </div>
+                  <div>
+                    <h4>Wind</h4>
+                    <p>
+                      {weather.current.wind_speed_10m} {unit.windSpeed}
+                    </p>
+                  </div>
+                  <div>
+                    <h4>Precipitation</h4>
+                    <p>
+                      {weather.current.precipitation} {unit.precipitation}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="[ daily ] [ mt-400 desktop:mt-600 ]">
+                <h3>Daily forecast</h3>
+                <ol className="[ grid ] [ mt-250 ]" role="list">
+                  {weather.daily.map((day) => {
+                    return (
+                      <li key={day.time}>
+                        <h4>{day.time}</h4>
+                        <p>{day.weather_code}</p>
+                        <p>
+                          <span className="sr-only">Max temperature: </span>
+                          {day.temperature_2m_max}°
+                        </p>
+                        <p>
+                          <span className="sr-only">Min temperature: </span>
+                          {day.temperature_2m_min}°
+                        </p>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
+            </div>
+            <article className="hourly">
+              <header className="cluster">
+                <h3>Hourly forecast</h3>
+                <select
+                  value={date}
+                  aria-label="Select date"
+                  onChange={(e) => {
+                    setDate(e.target.value);
+                  }}
+                >
+                  {[
+                    ...new Set(
+                      weather.hourly.map((hour) => hour.time.split("T")[0])
+                    ),
+                  ].map((date) => {
+                    return <option key={date}>{date}</option>;
+                  })}
+                </select>
+              </header>
+              <ol className="[ stack ] [ mt-200 ]" role="list">
+                {weather.hourly
+                  .filter((hour) => hour.time.split("T")[0] === date)
+                  .map((hour) => {
+                    return (
+                      <li key={hour.time}>
+                        <h4>{hour.time}</h4>
+                        <p>{hour.weather_code}</p>
+                        <p>{hour.temperature_2m}°</p>
+                      </li>
+                    );
+                  })}
+              </ol>
+            </article>
+          </div>
+        </div>
       </main>
     </>
   );
