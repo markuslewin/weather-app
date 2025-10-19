@@ -1,4 +1,5 @@
-import { getDefinition, getWeather } from "#app/utils/weather";
+import { WeatherIcon } from "#app/components/WeatherIcon";
+import { getInterpretation, getWeather } from "#app/utils/weather";
 import { useId, useState } from "react";
 import { Form, Link } from "react-router";
 import type { Route } from "./+types/home";
@@ -37,7 +38,9 @@ export default function Home({
     precipitation: settings.precipitationUnit === "mm" ? "mm" : "in",
   };
 
-  const currentWeatherDef = getDefinition(weather.current.weather_code);
+  const currentWeatherInterpretation = getInterpretation(
+    weather.current.weather_code
+  );
 
   return (
     <>
@@ -161,13 +164,10 @@ export default function Home({
                 <h2 className="text-preset-4">{location}</h2>
                 <h3 className="sr-only">Current weather</h3>
                 <p>{weather.current.time}</p>
-                {currentWeatherDef ? (
-                  <img
+                {currentWeatherInterpretation ? (
+                  <WeatherIcon
                     className="size-120"
-                    alt={currentWeatherDef.description}
-                    width={320}
-                    height={320}
-                    src={`/images/${currentWeatherDef.icon}.webp`}
+                    interpretation={currentWeatherInterpretation}
                   />
                 ) : (
                   <div className="size-120" />
@@ -207,18 +207,14 @@ export default function Home({
                 <h3 className="text-preset-5">Daily forecast</h3>
                 <ol className="[ grid ] [ mt-250 ]" role="list">
                   {weather.daily.map((day) => {
-                    const weatherDef = getDefinition(day.weather_code);
+                    const interpretation = getInterpretation(day.weather_code);
                     return (
                       <li key={day.time}>
                         <h4>{day.time}</h4>
-                        {weatherDef ? (
-                          <img
-                            // todo: Component
+                        {interpretation ? (
+                          <WeatherIcon
                             className="size-60"
-                            alt={weatherDef.description}
-                            width={320}
-                            height={320}
-                            src={`/images/${weatherDef.icon}.webp`}
+                            interpretation={interpretation}
                           />
                         ) : (
                           <div className="size-60" />
@@ -260,18 +256,14 @@ export default function Home({
                 {weather.hourly
                   .filter((hour) => hour.time.split("T")[0] === date)
                   .map((hour) => {
-                    const weatherDef = getDefinition(hour.weather_code);
+                    const interpretation = getInterpretation(hour.weather_code);
                     return (
                       <li key={hour.time}>
                         <h4 className="text-preset-5--medium">{hour.time}</h4>
-                        {weatherDef ? (
-                          <img
-                            // todo: Component
+                        {interpretation ? (
+                          <WeatherIcon
                             className="size-40"
-                            alt={weatherDef.description}
-                            width={320}
-                            height={320}
-                            src={`/images/${weatherDef.icon}.webp`}
+                            interpretation={interpretation}
                           />
                         ) : (
                           <div className="size-60" />
