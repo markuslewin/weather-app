@@ -178,17 +178,17 @@ export const getWeather = async () => {
     ...data,
     hourly: Array.from({ length: 24 * 7 }, (_, i) => {
       return {
-        time: hourly.time[i],
-        temperature_2m: hourly.temperature_2m[i],
-        weather_code: hourly.weather_code[i],
+        time: hourly.time[i]!,
+        temperature_2m: hourly.temperature_2m[i]!,
+        weather_code: hourly.weather_code[i]!,
       };
     }),
     daily: Array.from({ length: 7 }, (_, i) => {
       return {
-        time: daily.time[i],
-        weather_code: daily.weather_code[i],
-        temperature_2m_max: daily.temperature_2m_max[i],
-        temperature_2m_min: daily.temperature_2m_min[i],
+        time: daily.time[i]!,
+        weather_code: daily.weather_code[i]!,
+        temperature_2m_max: daily.temperature_2m_max[i]!,
+        temperature_2m_min: daily.temperature_2m_min[i]!,
       };
     }),
   };

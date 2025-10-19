@@ -31,7 +31,7 @@ export default function Home({
     windSpeedUnit: "kmh",
     precipitationUnit: "mm",
   });
-  const [date, setDate] = useState(weather.hourly[0].time.split("T")[0]);
+  const [date, setDate] = useState(weather.hourly[0]!.time.split("T")[0]);
 
   const unit = {
     windSpeed: settings.windSpeedUnit === "kmh" ? "km/h" : "mph",
