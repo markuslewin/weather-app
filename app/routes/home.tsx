@@ -1,4 +1,4 @@
-import { WeatherIcon } from "#app/components/WeatherIcon";
+import { WeatherIcon } from "#app/components/weather-icon";
 import { getInterpretation, getWeather } from "#app/utils/weather";
 import { useId, useState } from "react";
 import { Form, Link } from "react-router";
