@@ -254,7 +254,14 @@ export default function Home({
               </header>
               <ol className="[ stack ] [ mt-200 ]" role="list">
                 {weather.hourly
-                  .filter((hour) => hour.time.split("T")[0] === date)
+                  .filter((hour) => {
+                    // todo: Real today
+                    const isToday = hour.time.split("T")[0] === date;
+                    const hourPart = Number(
+                      hour.time.split("T")[1]!.slice(0, 2)
+                    );
+                    return isToday && 15 <= hourPart && hourPart <= 22;
+                  })
                   .map((hour) => {
                     const interpretation = getInterpretation(hour.weather_code);
                     return (
