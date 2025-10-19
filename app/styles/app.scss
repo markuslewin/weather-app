@@ -1,156 +1,27 @@
-@use "sass:map";
-@use "sass:math";
 @use "reset";
-
-// Neutral
-$color-neutral-900: hsl(243 96% 9%);
-$color-neutral-800: hsl(243 27% 20%);
-$color-neutral-700: hsl(243 23% 24%);
-$color-neutral-600: hsl(243 23% 30%);
-$color-neutral-300: hsl(240 6% 70%);
-$color-neutral-200: hsl(250 6% 84%);
-$color-neutral-0: hsl(0 0% 100%);
-// Orange
-$color-orange-500: hsl(28 100% 52%);
-// Blue
-$color-blue-500: hsl(233 67% 56%);
-$color-blue-700: hsl(248 70% 36%);
-
-$font-dm-sans: "DM Sans Variable", sans-serif;
-$font-bricolage-grotesque: "Bricolage Grotesque Variable", sans-serif;
-
-@function rem($px) {
-  @return math.div($px, 16) * 1rem;
-}
-
-@mixin text-preset-1() {
-  font-family: $font-dm-sans;
-  font-size: rem(96);
-  font-weight: 600;
-  font-style: italic;
-  line-height: 1;
-  letter-spacing: -1 * rem(2);
-}
-@mixin text-preset-2() {
-  font-family: $font-bricolage-grotesque;
-  font-size: rem(52);
-  font-weight: 700;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: 0px;
-}
-@mixin text-preset-3() {
-  font-family: $font-dm-sans;
-  font-size: rem(32);
-  font-weight: 300;
-  font-style: normal;
-  line-height: 1;
-  letter-spacing: 0px;
-}
-@mixin text-preset-4() {
-  font-family: $font-dm-sans;
-  font-size: rem(28);
-  font-weight: 700;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: 0px;
-}
-@mixin text-preset-5() {
-  font-family: $font-dm-sans;
-  font-size: rem(20);
-  font-weight: 600;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: 0px;
-}
-@mixin text-preset-5--medium() {
-  font-family: $font-dm-sans;
-  font-size: rem(20);
-  font-weight: 500;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: 0px;
-}
-@mixin text-preset-6() {
-  font-family: $font-dm-sans;
-  font-size: rem(18);
-  font-weight: 500;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: 0px;
-}
-@mixin text-preset-7() {
-  font-family: $font-dm-sans;
-  font-size: rem(16);
-  font-weight: 500;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: 0px;
-}
-@mixin text-preset-8() {
-  font-family: $font-dm-sans;
-  font-size: rem(14);
-  font-weight: 500;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: 0px;
-}
-
-$spacing: (
-  "0": rem(0),
-  "025": rem(2),
-  "050": rem(4),
-  "075": rem(6),
-  "100": rem(8),
-  "125": rem(10),
-  "150": rem(12),
-  "200": rem(16),
-  "250": rem(20),
-  "300": rem(24),
-  "400": rem(32),
-  "500": rem(40),
-  "600": rem(48),
-  "800": rem(64),
-  "1000": rem(80),
-  "1200": rem(96),
-  "1400": rem(112),
-  "1600": rem(128),
-  "1800": rem(140),
-);
-
-@function spacing($key) {
-  @return map.get($spacing, "#{$key}");
-}
-
-$radius-0: rem(0);
-$radius-4: rem(4);
-$radius-6: rem(6);
-$radius-8: rem(8);
-$radius-10: rem(10);
-$radius-12: rem(12);
-$radius-16: rem(16);
-$radius-20: rem(20);
-$radius-24: rem(24);
-$radius-full: rem(999);
+@use "tokens";
+@use "utils";
 
 body {
-  --center-size: #{rem(1216)};
+  --center-size: #{utils.rem(1216)};
 
-  padding: spacing(200);
-  padding-block-end: spacing(600);
-  background: $color-neutral-900;
-  color: $color-neutral-0;
+  padding: tokens.spacing(200);
+  padding-block-end: tokens.spacing(600);
+  background: tokens.$color-neutral-900;
+  color: tokens.$color-neutral-0;
   color-scheme: dark;
+
+  @include tokens.text-preset-6();
 }
 
 .center {
   display: grid;
   grid-template-columns:
-    minmax(var(--center-gutter, #{spacing(0)}), 1fr) minmax(
+    minmax(var(--center-gutter, #{tokens.spacing(0)}), 1fr) minmax(
       auto,
       var(--center-size)
     )
-    minmax(var(--center-gutter, #{spacing(0)}), 1fr);
+    minmax(var(--center-gutter, #{tokens.spacing(0)}), 1fr);
 }
 
 .center > * {
@@ -162,7 +33,7 @@ body {
   justify-content: var(--cluster-justify);
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--cluster-gap, #{spacing(200)});
+  gap: var(--cluster-gap, #{tokens.spacing(200)});
 }
 
 .grid {
@@ -185,28 +56,60 @@ body {
 
 .dashboard {
   display: grid;
-  gap: spacing(400);
+  gap: tokens.spacing(400);
 }
 
 .current {
-  --grid-size: #{rem(100)};
-  --grid-space: #{spacing(200)};
+  --grid-size: #{utils.rem(100)};
+  --grid-space: #{tokens.spacing(200)};
 }
 
 .daily {
-  --grid-size: #{rem(80)};
-  --grid-space: #{spacing(200)};
+  --grid-size: #{utils.rem(80)};
+  --grid-space: #{tokens.spacing(200)};
 }
 
 .hourly {
   --cluster-justify: space-between;
-  --stack-space: #{spacing(200)};
+  --stack-space: #{tokens.spacing(200)};
 }
 
-@each $key, $value in $spacing {
+@each $key, $value in tokens.$spacing {
   .mt-#{$key} {
     margin-top: $value;
   }
+}
+
+.text-preset-1 {
+  @include tokens.text-preset-1();
+}
+.text-preset-2 {
+  @include tokens.text-preset-2();
+}
+.text-preset-3 {
+  @include tokens.text-preset-3();
+}
+.text-preset-4 {
+  @include tokens.text-preset-4();
+}
+.text-preset-5 {
+  @include tokens.text-preset-5();
+}
+.text-preset-5--medium {
+  @include tokens.text-preset-5--medium();
+}
+.text-preset-6 {
+  @include tokens.text-preset-6();
+}
+.text-preset-7 {
+  @include tokens.text-preset-7();
+}
+.text-preset-8 {
+  @include tokens.text-preset-8();
+}
+
+.text-center {
+  text-align: center;
 }
 
 .sr-only {
@@ -221,36 +124,36 @@ body {
   border-width: 0;
 }
 
-@each $key, $value in $spacing {
-  @media (min-width: 40em) {
+@each $key, $value in tokens.$spacing {
+  @media (min-width: tokens.breakpoint("tablet")) {
     .tablet\:mt-#{$key} {
       margin-top: $value;
     }
   }
 }
 
-@each $key, $value in $spacing {
-  @media (min-width: 64em) {
+@each $key, $value in tokens.$spacing {
+  @media (min-width: tokens.breakpoint("desktop")) {
     .desktop\:mt-#{$key} {
       margin-top: $value;
     }
   }
 }
 
-@media (min-width: 40em) {
+@media (min-width: tokens.breakpoint("tablet")) {
   body {
-    padding: spacing(300);
-    padding-block-end: spacing(1000);
+    padding: tokens.spacing(300);
+    padding-block-end: tokens.spacing(1000);
   }
 
   .current {
-    --grid-space: #{spacing(250)};
+    --grid-space: #{tokens.spacing(250)};
   }
 }
 
-@media (min-width: 64em) {
+@media (min-width: tokens.breakpoint("desktop")) {
   body {
-    padding-top: spacing(600);
+    padding-top: tokens.spacing(600);
   }
 
   .dashboard {
@@ -258,6 +161,6 @@ body {
   }
 
   .current {
-    --grid-space: #{spacing(300)};
+    --grid-space: #{tokens.spacing(300)};
   }
 }

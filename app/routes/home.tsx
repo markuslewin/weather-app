@@ -138,7 +138,9 @@ export default function Home({
       </header>
       <main className="[ center ] [ mt-600 tablet:mt-800 ]">
         <div>
-          <h1>How's the sky looking today?</h1>
+          <h1 className="text-preset-2 text-center">
+            How’s the sky looking today?
+          </h1>
           <section
             className="mt-600 tablet:mt-800"
             aria-labelledby={searchHeadingId}
@@ -154,47 +156,54 @@ export default function Home({
           <div className="[ dashboard ] [ mt-400 desktop:600 ]">
             <div>
               <div className="current">
-                <h2>{location}</h2>
+                <h2 className="text-preset-4">{location}</h2>
                 <h3 className="sr-only">Current weather</h3>
                 <p>{weather.current.time}</p>
                 <p>{weather.current.weather_code}</p>
-                <p>{weather.current.temperature_2m}°</p>
+                <p className="text-preset-1">
+                  {weather.current.temperature_2m}°
+                </p>
                 <div className="[ grid ] [ mt-250 desktop:mt-400 ]">
-                  <div>
-                    <h4>Feels Like</h4>
-                    <p>{weather.current.apparent_temperature}°</p>
-                  </div>
-                  <div>
-                    <h4>Humidity</h4>
-                    <p>{weather.current.relative_humidity_2m}%</p>
-                  </div>
-                  <div>
-                    <h4>Wind</h4>
-                    <p>
-                      {weather.current.wind_speed_10m} {unit.windSpeed}
-                    </p>
-                  </div>
-                  <div>
-                    <h4>Precipitation</h4>
-                    <p>
-                      {weather.current.precipitation} {unit.precipitation}
-                    </p>
-                  </div>
+                  {[
+                    {
+                      key: "Feels Like",
+                      value: `${weather.current.apparent_temperature}°`,
+                    },
+                    {
+                      key: "Humidity",
+                      value: `${weather.current.relative_humidity_2m}%`,
+                    },
+                    {
+                      key: "Wind",
+                      value: `${weather.current.wind_speed_10m} ${unit.windSpeed}`,
+                    },
+                    {
+                      key: "Precipitation",
+                      value: `${weather.current.precipitation} ${unit.precipitation}`,
+                    },
+                  ].map(({ key, value }) => {
+                    return (
+                      <div>
+                        <h4>{key}</h4>
+                        <p className="text-preset-3">{value}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
               <div className="[ daily ] [ mt-400 desktop:mt-600 ]">
-                <h3>Daily forecast</h3>
+                <h3 className="text-preset-5">Daily forecast</h3>
                 <ol className="[ grid ] [ mt-250 ]" role="list">
                   {weather.daily.map((day) => {
                     return (
                       <li key={day.time}>
                         <h4>{day.time}</h4>
                         <p>{day.weather_code}</p>
-                        <p>
+                        <p className="text-preset-7">
                           <span className="sr-only">Max temperature: </span>
                           {day.temperature_2m_max}°
                         </p>
-                        <p>
+                        <p className="text-preset-7">
                           <span className="sr-only">Min temperature: </span>
                           {day.temperature_2m_min}°
                         </p>
@@ -206,7 +215,7 @@ export default function Home({
             </div>
             <article className="hourly">
               <header className="cluster">
-                <h3>Hourly forecast</h3>
+                <h3 className="text-preset-5">Hourly forecast</h3>
                 <select
                   value={date}
                   aria-label="Select date"
@@ -229,9 +238,9 @@ export default function Home({
                   .map((hour) => {
                     return (
                       <li key={hour.time}>
-                        <h4>{hour.time}</h4>
+                        <h4 className="text-preset-5--medium">{hour.time}</h4>
                         <p>{hour.weather_code}</p>
-                        <p>{hour.temperature_2m}°</p>
+                        <p className="text-preset-7">{hour.temperature_2m}°</p>
                       </li>
                     );
                   })}

@@ -1,0 +1,139 @@
+@use "sass:map";
+@use "sass:math";
+@use "utils";
+
+$breakpoint: (
+  "tablet": 40em,
+  "desktop": 64em,
+);
+
+@function breakpoint($key) {
+  @return map.get($breakpoint, $key);
+}
+
+// Neutral
+$color-neutral-900: hsl(243 96% 9%);
+$color-neutral-800: hsl(243 27% 20%);
+$color-neutral-700: hsl(243 23% 24%);
+$color-neutral-600: hsl(243 23% 30%);
+$color-neutral-300: hsl(240 6% 70%);
+$color-neutral-200: hsl(250 6% 84%);
+$color-neutral-0: hsl(0 0% 100%);
+// Orange
+$color-orange-500: hsl(28 100% 52%);
+// Blue
+$color-blue-500: hsl(233 67% 56%);
+$color-blue-700: hsl(248 70% 36%);
+
+$font-dm-sans: "DM Sans Variable", sans-serif;
+$font-bricolage-grotesque: "Bricolage Grotesque Variable", sans-serif;
+
+@mixin text-preset-1() {
+  font-family: $font-dm-sans;
+  font-size: utils.rem(96);
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -1 * utils.rem(2);
+}
+@mixin text-preset-2() {
+  font-family: $font-bricolage-grotesque;
+  font-size: utils.rem(52);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0px;
+}
+@mixin text-preset-3() {
+  font-family: $font-dm-sans;
+  font-size: utils.rem(32);
+  font-weight: 300;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0px;
+}
+@mixin text-preset-4() {
+  font-family: $font-dm-sans;
+  font-size: utils.rem(28);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0px;
+}
+@mixin text-preset-5() {
+  font-family: $font-dm-sans;
+  font-size: utils.rem(20);
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0px;
+}
+@mixin text-preset-5--medium() {
+  font-family: $font-dm-sans;
+  font-size: utils.rem(20);
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0px;
+}
+@mixin text-preset-6() {
+  font-family: $font-dm-sans;
+  font-size: utils.rem(18);
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0px;
+}
+@mixin text-preset-7() {
+  font-family: $font-dm-sans;
+  font-size: utils.rem(16);
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0px;
+}
+@mixin text-preset-8() {
+  font-family: $font-dm-sans;
+  font-size: utils.rem(14);
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0px;
+}
+
+$spacing: (
+  "0": utils.rem(0),
+  "025": utils.rem(2),
+  "050": utils.rem(4),
+  "075": utils.rem(6),
+  "100": utils.rem(8),
+  "125": utils.rem(10),
+  "150": utils.rem(12),
+  "200": utils.rem(16),
+  "250": utils.rem(20),
+  "300": utils.rem(24),
+  "400": utils.rem(32),
+  "500": utils.rem(40),
+  "600": utils.rem(48),
+  "800": utils.rem(64),
+  "1000": utils.rem(80),
+  "1200": utils.rem(96),
+  "1400": utils.rem(112),
+  "1600": utils.rem(128),
+  "1800": utils.rem(140),
+);
+
+@function spacing($key) {
+  @return map.get($spacing, "#{$key}");
+}
+
+$radius-0: utils.rem(0);
+$radius-4: utils.rem(4);
+$radius-6: utils.rem(6);
+$radius-8: utils.rem(8);
+$radius-10: utils.rem(10);
+$radius-12: utils.rem(12);
+$radius-16: utils.rem(16);
+$radius-20: utils.rem(20);
+$radius-24: utils.rem(24);
+$radius-full: utils.rem(999);
