@@ -161,20 +161,26 @@ export default function Home({
           <div className="[ dashboard ] [ mt-400 desktop:600 ]">
             <div>
               <div className="current">
-                <h2 className="text-preset-4">{location}</h2>
-                <h3 className="sr-only">Current weather</h3>
-                <p>{weather.current.time}</p>
-                {currentWeatherInterpretation ? (
-                  <WeatherIcon
-                    className="size-120"
-                    interpretation={currentWeatherInterpretation}
-                  />
-                ) : (
-                  <div className="size-120" />
-                )}
-                <p className="text-preset-1">
-                  {weather.current.temperature_2m}°
-                </p>
+                <div className="[ card ] [ cluster ]">
+                  <div>
+                    <h2 className="text-preset-4">{location}</h2>
+                    <h3 className="sr-only">Current weather</h3>
+                    <p>{weather.current.time}</p>
+                  </div>
+                  <div>
+                    {currentWeatherInterpretation ? (
+                      <WeatherIcon
+                        className="size-120"
+                        interpretation={currentWeatherInterpretation}
+                      />
+                    ) : (
+                      <div className="size-120" />
+                    )}
+                    <p className="text-preset-1">
+                      {weather.current.temperature_2m}°
+                    </p>
+                  </div>
+                </div>
                 <div className="[ grid ] [ mt-250 desktop:mt-400 ]">
                   {[
                     {
@@ -195,7 +201,7 @@ export default function Home({
                     },
                   ].map(({ key, value }) => {
                     return (
-                      <div key={key}>
+                      <div className="[ box ] [ layer-1 radius-12 ]" key={key}>
                         <h4>{key}</h4>
                         <p className="text-preset-3">{value}</p>
                       </div>
@@ -209,7 +215,10 @@ export default function Home({
                   {weather.daily.map((day) => {
                     const interpretation = getInterpretation(day.weather_code);
                     return (
-                      <li key={day.time}>
+                      <li
+                        className="[ box ] [ layer-1 radius-12 ]"
+                        key={day.time}
+                      >
                         <h4>{day.time}</h4>
                         {interpretation ? (
                           <WeatherIcon
@@ -233,7 +242,7 @@ export default function Home({
                 </ol>
               </div>
             </div>
-            <article className="hourly">
+            <article className="[ hourly ] [ box ] [ layer-1 radius-20 ]">
               <header className="cluster">
                 <h3 className="text-preset-5">Hourly forecast</h3>
                 <select
@@ -252,7 +261,7 @@ export default function Home({
                   })}
                 </select>
               </header>
-              <ol className="[ stack ] [ mt-200 ]" role="list">
+              <ol className="[ hours ] [ stack ] [ mt-200 ]" role="list">
                 {weather.hourly
                   .filter((hour) => {
                     // todo: Real today
@@ -265,7 +274,10 @@ export default function Home({
                   .map((hour) => {
                     const interpretation = getInterpretation(hour.weather_code);
                     return (
-                      <li key={hour.time}>
+                      <li
+                        className="[ box ] [ layer-2 radius-8 ]"
+                        key={hour.time}
+                      >
                         <h4 className="text-preset-5--medium">{hour.time}</h4>
                         {interpretation ? (
                           <WeatherIcon

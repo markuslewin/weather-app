@@ -127,13 +127,19 @@ $spacing: (
   @return map.get($spacing, "#{$key}");
 }
 
-$radius-0: utils.rem(0);
-$radius-4: utils.rem(4);
-$radius-6: utils.rem(6);
-$radius-8: utils.rem(8);
-$radius-10: utils.rem(10);
-$radius-12: utils.rem(12);
-$radius-16: utils.rem(16);
-$radius-20: utils.rem(20);
-$radius-24: utils.rem(24);
-$radius-full: utils.rem(999);
+$radius: (
+  "0": utils.rem(0),
+  "4": utils.rem(4),
+  "6": utils.rem(6),
+  "8": utils.rem(8),
+  "10": utils.rem(10),
+  "12": utils.rem(12),
+  "16": utils.rem(16),
+  "20": utils.rem(20),
+  "24": utils.rem(24),
+  "full": utils.rem(999),
+);
+
+@function radius($key) {
+  @return map.get($radius, "#{$key}");
+}

@@ -14,6 +14,13 @@ body {
   @include tokens.text-preset-6();
 }
 
+.box {
+  padding: var(--box-top-space, var(--box-y-space, var(--box-space)))
+    var(--box-right-space, var(--box-x-space, var(--box-space)))
+    var(--box-bottom-space, var(--box-y-space, var(--box-space)))
+    var(--box-left-space, var(--box-x-space, var(--box-space)));
+}
+
 .center {
   display: grid;
   grid-template-columns:
@@ -60,23 +67,53 @@ body {
 }
 
 .current {
+  --box-space: #{tokens.spacing(250)};
   --grid-size: #{utils.rem(100)};
   --grid-space: #{tokens.spacing(200)};
 }
 
+.card {
+  min-height: utils.rem(286);
+  padding: tokens.spacing(300);
+  border-radius: tokens.radius(20);
+  background: url(/images/bg-today-small.svg) center/cover
+    tokens.$color-blue-700;
+}
+
 .daily {
+  --box-x-space: #{tokens.spacing(125)};
+  --box-y-space: #{tokens.spacing(200)};
   --grid-size: #{utils.rem(80)};
   --grid-space: #{tokens.spacing(200)};
 }
 
 .hourly {
+  --box-space: #{tokens.spacing(300)};
   --cluster-justify: space-between;
   --stack-space: #{tokens.spacing(200)};
+}
+
+.hours {
+  --box-y-space: #{tokens.spacing(125)};
+  --box-right-space: #{tokens.spacing(200)};
+  --box-left-space: #{tokens.spacing(150)};
 }
 
 @each $key, $value in tokens.$spacing {
   .mt-#{$key} {
     margin-top: $value;
+  }
+}
+
+@each $key, $value in tokens.$spacing {
+  .p-#{$key} {
+    padding: $value;
+  }
+}
+
+@each $key, $value in tokens.$radius {
+  .radius-#{$key} {
+    border-radius: $value;
   }
 }
 
@@ -137,6 +174,15 @@ body {
   height: utils.rem(120);
 }
 
+.layer-1 {
+  background: tokens.$color-neutral-800;
+  color: tokens.$color-neutral-0;
+}
+.layer-2 {
+  background: tokens.$color-neutral-700;
+  color: tokens.$color-neutral-0;
+}
+
 @each $key, $value in tokens.$spacing {
   @media (min-width: tokens.breakpoint("tablet")) {
     .tablet\:mt-#{$key} {
@@ -161,6 +207,10 @@ body {
 
   .current {
     --grid-space: #{tokens.spacing(250)};
+  }
+
+  .card {
+    background-image: url(/images/bg-today-large.svg);
   }
 }
 
