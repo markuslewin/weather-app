@@ -1,4 +1,4 @@
-import { getWeather } from "#app/utils/weather";
+import { getDefinition, getWeather } from "#app/utils/weather";
 import { useId, useState } from "react";
 import { Form, Link } from "react-router";
 import type { Route } from "./+types/home";
@@ -36,6 +36,8 @@ export default function Home({
     windSpeed: settings.windSpeedUnit === "kmh" ? "km/h" : "mph",
     precipitation: settings.precipitationUnit === "mm" ? "mm" : "in",
   };
+
+  const currentWeatherDef = getDefinition(weather.current.weather_code);
 
   return (
     <>
@@ -159,7 +161,17 @@ export default function Home({
                 <h2 className="text-preset-4">{location}</h2>
                 <h3 className="sr-only">Current weather</h3>
                 <p>{weather.current.time}</p>
-                <p>{weather.current.weather_code}</p>
+                {currentWeatherDef ? (
+                  <img
+                    className="size-120"
+                    alt={currentWeatherDef.description}
+                    width={320}
+                    height={320}
+                    src={`/images/${currentWeatherDef.icon}.webp`}
+                  />
+                ) : (
+                  <div className="size-120" />
+                )}
                 <p className="text-preset-1">
                   {weather.current.temperature_2m}°
                 </p>
@@ -183,7 +195,7 @@ export default function Home({
                     },
                   ].map(({ key, value }) => {
                     return (
-                      <div>
+                      <div key={key}>
                         <h4>{key}</h4>
                         <p className="text-preset-3">{value}</p>
                       </div>
@@ -195,10 +207,22 @@ export default function Home({
                 <h3 className="text-preset-5">Daily forecast</h3>
                 <ol className="[ grid ] [ mt-250 ]" role="list">
                   {weather.daily.map((day) => {
+                    const weatherDef = getDefinition(day.weather_code);
                     return (
                       <li key={day.time}>
                         <h4>{day.time}</h4>
-                        <p>{day.weather_code}</p>
+                        {weatherDef ? (
+                          <img
+                            // todo: Component
+                            className="size-60"
+                            alt={weatherDef.description}
+                            width={320}
+                            height={320}
+                            src={`/images/${weatherDef.icon}.webp`}
+                          />
+                        ) : (
+                          <div className="size-60" />
+                        )}
                         <p className="text-preset-7">
                           <span className="sr-only">Max temperature: </span>
                           {day.temperature_2m_max}°
@@ -236,10 +260,22 @@ export default function Home({
                 {weather.hourly
                   .filter((hour) => hour.time.split("T")[0] === date)
                   .map((hour) => {
+                    const weatherDef = getDefinition(hour.weather_code);
                     return (
                       <li key={hour.time}>
                         <h4 className="text-preset-5--medium">{hour.time}</h4>
-                        <p>{hour.weather_code}</p>
+                        {weatherDef ? (
+                          <img
+                            // todo: Component
+                            className="size-40"
+                            alt={weatherDef.description}
+                            width={320}
+                            height={320}
+                            src={`/images/${weatherDef.icon}.webp`}
+                          />
+                        ) : (
+                          <div className="size-60" />
+                        )}
                         <p className="text-preset-7">{hour.temperature_2m}°</p>
                       </li>
                     );

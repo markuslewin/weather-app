@@ -1,39 +1,78 @@
 import * as z from "zod";
 
 // [WMO Weather interpretation codes (WW)](https://open-meteo.com/en/docs#weather_variable_documentation)
+// todo: Split for treeshaking
 const definitions = [
-  { codes: [0], description: "Clear sky" },
+  { codes: [0], description: "Clear sky", icon: "icon-sunny" },
   {
+    // todo: icon-sunny.webp
+    // todo: icon-partly-cloudy.webp
+    // todo: icon-overcast.webp
     codes: [1, 2, 3],
     description: "Mainly clear, partly cloudy, and overcast",
+    // todo: alt
+    icon: "icon-partly-cloudy",
   },
-  { codes: [45, 48], description: "Fog and depositing rime fog" },
+  {
+    codes: [45, 48],
+    description: "Fog and depositing rime fog",
+    icon: "icon-fog",
+  },
   {
     codes: [51, 53, 55],
     description: "Drizzle: Light, moderate, and dense intensity",
+    icon: "icon-drizzle",
   },
   {
     codes: [56, 57],
     description: "Freezing Drizzle: Light and dense intensity",
+    icon: "icon-drizzle",
   },
   {
     codes: [61, 63, 65],
     description: "Rain: Slight, moderate and heavy intensity",
+    icon: "icon-rain",
   },
-  { codes: [66, 67], description: "Freezing Rain: Light and heavy intensity" },
+  {
+    codes: [66, 67],
+    description: "Freezing Rain: Light and heavy intensity",
+    icon: "icon-rain",
+  },
   {
     codes: [71, 73, 75],
     description: "Snow fall: Slight, moderate, and heavy intensity",
+    icon: "icon-snow",
   },
-  { codes: [77], description: "Snow grains" },
+  { codes: [77], description: "Snow grains", icon: "icon-snow" },
   {
     codes: [80, 81, 82],
     description: "Rain showers: Slight, moderate, and violent",
+    icon: "icon-rain",
   },
-  { codes: [85, 86], description: "Snow showers slight and heavy" },
-  { codes: [95], description: "Thunderstorm: Slight or moderate" },
-  { codes: [96, 99], description: "Thunderstorm with slight and heavy hail" },
+  {
+    codes: [85, 86],
+    description: "Snow showers slight and heavy",
+    icon: "icon-snow",
+  },
+  {
+    codes: [95],
+    description: "Thunderstorm: Slight or moderate",
+    icon: "icon-storm",
+  },
+  {
+    codes: [96, 99],
+    description: "Thunderstorm with slight and heavy hail",
+    icon: "icon-storm",
+  },
 ];
+
+export const getDefinition = (code: number) => {
+  const def = definitions.find((d) => d.codes.includes(code));
+  if (def === null) {
+    console.warn(`Definition for code ${code} not found`);
+  }
+  return def;
+};
 
 const codes = new Set(definitions.flatMap((d) => d.codes));
 

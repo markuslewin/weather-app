@@ -124,6 +124,19 @@ body {
   border-width: 0;
 }
 
+.size-40 {
+  width: utils.rem(40);
+  height: utils.rem(40);
+}
+.size-60 {
+  width: utils.rem(60);
+  height: utils.rem(60);
+}
+.size-120 {
+  width: utils.rem(120);
+  height: utils.rem(120);
+}
+
 @each $key, $value in tokens.$spacing {
   @media (min-width: tokens.breakpoint("tablet")) {
     .tablet\:mt-#{$key} {
