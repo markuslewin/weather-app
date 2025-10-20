@@ -65,6 +65,20 @@ body {
   --cluster-justify: space-between;
 }
 
+.search {
+  --center-size: #{utils.rem(656)};
+
+  &__form {
+    display: grid;
+    gap: tokens.spacing(150);
+
+    @include tokens.breakpoint1("tablet") {
+      grid-template-columns: 1fr auto;
+      gap: tokens.spacing(200);
+    }
+  }
+}
+
 .dashboard {
   display: grid;
   gap: tokens.spacing(400);
@@ -125,27 +139,42 @@ body {
 }
 
 .search-input {
-  --outline-color: #{tokens.$color-neutral-0};
+  position: relative;
 
-  border: none;
-  border-radius: tokens.radius(12);
-  padding: tokens.spacing(200) tokens.spacing(300) tokens.spacing(200)
-    utils.rem(60);
-  @include tokens.text-preset-5--medium();
-  background: tokens.$color-neutral-800;
-  color: tokens.$color-neutral-200;
-  @include tokens.transition((background-color));
+  &__input {
+    --outline-color: #{tokens.$color-neutral-0};
 
-  &::placeholder {
-    color: inherit;
+    width: 100%;
+    border: none;
+    border-radius: tokens.radius(12);
+    padding: tokens.spacing(200) tokens.spacing(300) tokens.spacing(200)
+      utils.rem(60);
+    @include tokens.text-preset-5--medium();
+    background: tokens.$color-neutral-800;
+    color: tokens.$color-neutral-200;
+    @include tokens.transition((background-color));
+
+    &::placeholder {
+      color: inherit;
+    }
+
+    &:focus-visible {
+      @include tokens.outline;
+    }
+
+    @include utils.hover {
+      background: tokens.$color-neutral-700;
+    }
   }
 
-  &:focus-visible {
-    @include tokens.outline;
-  }
-
-  @include utils.hover {
-    background: tokens.$color-neutral-700;
+  &__icon {
+    pointer-events: none;
+    position: absolute;
+    inset-block: 0px;
+    inset-inline-start: utils.rem(24);
+    margin-block: auto;
+    width: utils.rem(21);
+    height: utils.rem(21);
   }
 }
 

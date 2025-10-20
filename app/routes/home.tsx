@@ -3,6 +3,7 @@ import { getInterpretation, getWeather } from "#app/utils/weather";
 import { useId, useState } from "react";
 import { Form, Link } from "react-router";
 import type { Route } from "./+types/home";
+import { Icon } from "#app/components/icon";
 
 export function meta() {
   return [
@@ -143,18 +144,21 @@ export default function Home({
             How’s the sky looking today?
           </h1>
           <section
-            className="mt-600 tablet:mt-800"
+            className="[ search ] [ center ] [ mt-600 tablet:mt-800 ]"
             aria-labelledby={searchHeadingId}
           >
             <h2 className="sr-only" id={searchHeadingId}>
               Search
             </h2>
-            <Form>
-              <input
-                className="search-input"
-                name="q"
-                placeholder="Search for a place..."
-              />
+            <Form className="search__form">
+              <div className="search-input">
+                <input
+                  className="search-input__input"
+                  name="q"
+                  placeholder="Search for a place..."
+                />
+                <Icon className="search-input__icon" name="IconSearch" />
+              </div>
               <button className="primary-button">Search</button>
             </Form>
           </section>

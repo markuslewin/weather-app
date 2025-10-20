@@ -11,6 +11,13 @@ $breakpoint: (
   @return map.get($breakpoint, $key);
 }
 
+// todo: Replace `breakpoint`
+@mixin breakpoint1($key) {
+  @media (min-width: map.get($breakpoint, $key)) {
+    @content;
+  }
+}
+
 // Neutral
 $color-neutral-900: hsl(243 96% 9%);
 $color-neutral-800: hsl(243 27% 20%);

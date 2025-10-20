@@ -2,6 +2,10 @@
 .env
 /node_modules/
 
+# vite-plugin-icons-spritesheet
+app/icons/sprite.svg
+app/icons/types.ts
+
 # React Router
 /.react-router/
 /build/
