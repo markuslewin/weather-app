@@ -14,6 +14,10 @@ body {
   @include tokens.text-preset-6();
 }
 
+:focus-visible {
+  @include tokens.outline-base;
+}
+
 .box {
   padding: var(--box-top-space, var(--box-y-space, var(--box-space)))
     var(--box-right-space, var(--box-x-space, var(--box-space)))
@@ -97,6 +101,52 @@ body {
   --box-y-space: #{tokens.spacing(125)};
   --box-right-space: #{tokens.spacing(200)};
   --box-left-space: #{tokens.spacing(150)};
+}
+
+.primary-button {
+  --outline-color: #{tokens.$color-blue-500};
+
+  border: none;
+  border-radius: tokens.radius(12);
+  padding: tokens.spacing(200) tokens.spacing(300);
+  @include tokens.text-preset-5--medium();
+  background: tokens.$color-blue-700;
+  color: tokens.$color-neutral-0;
+  @include tokens.transition((background-color));
+
+  &:focus-visible {
+    @include tokens.outline;
+    background: tokens.$color-blue-500;
+  }
+
+  @include utils.hover {
+    background: tokens.$color-blue-500;
+  }
+}
+
+.search-input {
+  --outline-color: #{tokens.$color-neutral-0};
+
+  border: none;
+  border-radius: tokens.radius(12);
+  padding: tokens.spacing(200) tokens.spacing(300) tokens.spacing(200)
+    utils.rem(60);
+  @include tokens.text-preset-5--medium();
+  background: tokens.$color-neutral-800;
+  color: tokens.$color-neutral-200;
+  @include tokens.transition((background-color));
+
+  &::placeholder {
+    color: inherit;
+  }
+
+  &:focus-visible {
+    @include tokens.outline;
+  }
+
+  @include utils.hover {
+    background: tokens.$color-neutral-700;
+  }
 }
 
 @each $key, $value in tokens.$spacing {

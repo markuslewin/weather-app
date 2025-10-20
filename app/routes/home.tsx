@@ -46,14 +46,10 @@ export default function Home({
     <>
       <header className="[ header ] [ center ]">
         <div className="cluster">
-          <p>
-            <Link to={"/"}>
-              <img alt="Weather Now" src="/images/logo.svg" />
-            </Link>
-          </p>
-          <p>
-            <button>Units</button>
-          </p>
+          <Link to={"/"}>
+            <img alt="Weather Now" src="/images/logo.svg" />
+          </Link>
+          <button>Units</button>
         </div>
         {/* <div>
           <h2>Unit settings</h2>
@@ -154,8 +150,12 @@ export default function Home({
               Search
             </h2>
             <Form>
-              <input name="q" placeholder="Search for a place..." />
-              <button>Search</button>
+              <input
+                className="search-input"
+                name="q"
+                placeholder="Search for a place..."
+              />
+              <button className="primary-button">Search</button>
             </Form>
           </section>
           <div className="[ dashboard ] [ mt-400 desktop:600 ]">

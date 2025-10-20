@@ -3,3 +3,17 @@
 @function rem($px) {
   @return math.div($px, 16) * 1rem;
 }
+
+@mixin forced-colors {
+  @media (forced-colors: active) {
+    @content;
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) {
+    &:hover {
+      @content;
+    }
+  }
+}

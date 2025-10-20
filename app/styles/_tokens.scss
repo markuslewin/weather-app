@@ -143,3 +143,33 @@ $radius: (
 @function radius($key) {
   @return map.get($radius, "#{$key}");
 }
+
+// Tailwind transitions
+@mixin transition($properties) {
+  transition-property: $properties;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+$outline-width: 2;
+$outline-offset: 3;
+
+@mixin outline-base {
+  outline: utils.rem($outline-width) solid;
+  outline-offset: utils.rem($outline-offset);
+}
+
+@mixin outline {
+  outline: none;
+  box-shadow:
+  // Transparent, i.e. just an `outline`?
+    utils.rem(0) utils.rem(0) utils.rem(0) utils.rem($outline-offset)
+      $color-neutral-900,
+    utils.rem(0) utils.rem(0) utils.rem(0)
+      utils.rem($outline-offset + $outline-width)
+      var(--outline-color, currentColor);
+
+  @include utils.forced-colors {
+    @include outline-base;
+  }
+}
