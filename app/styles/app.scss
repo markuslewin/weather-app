@@ -12,6 +12,15 @@ body {
   color-scheme: dark;
 
   @include tokens.text-preset-6();
+
+  @include tokens.breakpoint("tablet") {
+    padding: tokens.spacing(300);
+    padding-block-end: tokens.spacing(1000);
+  }
+
+  @include tokens.breakpoint("desktop") {
+    padding-top: tokens.spacing(600);
+  }
 }
 
 :focus-visible {
@@ -72,7 +81,7 @@ body {
     display: grid;
     gap: tokens.spacing(150);
 
-    @include tokens.breakpoint1("tablet") {
+    @include tokens.breakpoint("tablet") {
       grid-template-columns: 1fr auto;
       gap: tokens.spacing(200);
     }
@@ -82,12 +91,24 @@ body {
 .dashboard {
   display: grid;
   gap: tokens.spacing(400);
+
+  @include tokens.breakpoint("desktop") {
+    grid-template-columns: 800fr 384fr;
+  }
 }
 
 .current {
   --box-space: #{tokens.spacing(250)};
   --grid-size: #{utils.rem(100)};
   --grid-space: #{tokens.spacing(200)};
+
+  @include tokens.breakpoint("tablet") {
+    --grid-space: #{tokens.spacing(250)};
+  }
+
+  @include tokens.breakpoint("desktop") {
+    --grid-space: #{tokens.spacing(300)};
+  }
 }
 
 .card {
@@ -96,6 +117,10 @@ body {
   border-radius: tokens.radius(20);
   background: url(/images/bg-today-small.svg) center/cover
     tokens.$color-blue-700;
+
+  @include tokens.breakpoint("tablet") {
+    background-image: url(/images/bg-today-large.svg);
+  }
 }
 
 .daily {
@@ -262,47 +287,18 @@ body {
   color: tokens.$color-neutral-0;
 }
 
-@each $key, $value in tokens.$spacing {
-  @media (min-width: tokens.breakpoint("tablet")) {
+@include tokens.breakpoint("tablet") {
+  @each $key, $value in tokens.$spacing {
     .tablet\:mt-#{$key} {
       margin-top: $value;
     }
   }
 }
 
-@each $key, $value in tokens.$spacing {
-  @media (min-width: tokens.breakpoint("desktop")) {
+@include tokens.breakpoint("desktop") {
+  @each $key, $value in tokens.$spacing {
     .desktop\:mt-#{$key} {
       margin-top: $value;
     }
-  }
-}
-
-@media (min-width: tokens.breakpoint("tablet")) {
-  body {
-    padding: tokens.spacing(300);
-    padding-block-end: tokens.spacing(1000);
-  }
-
-  .current {
-    --grid-space: #{tokens.spacing(250)};
-  }
-
-  .card {
-    background-image: url(/images/bg-today-large.svg);
-  }
-}
-
-@media (min-width: tokens.breakpoint("desktop")) {
-  body {
-    padding-top: tokens.spacing(600);
-  }
-
-  .dashboard {
-    grid-template-columns: 800fr 384fr;
-  }
-
-  .current {
-    --grid-space: #{tokens.spacing(300)};
   }
 }

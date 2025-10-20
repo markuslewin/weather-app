@@ -7,12 +7,7 @@ $breakpoint: (
   "desktop": 64em,
 );
 
-@function breakpoint($key) {
-  @return map.get($breakpoint, $key);
-}
-
-// todo: Replace `breakpoint`
-@mixin breakpoint1($key) {
+@mixin breakpoint($key) {
   @media (min-width: map.get($breakpoint, $key)) {
     @content;
   }
