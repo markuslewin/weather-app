@@ -4,6 +4,16 @@ import { useId, useState } from "react";
 import { Form, Link } from "react-router";
 import type { Route } from "./+types/home";
 import { Icon } from "#app/components/icon";
+import {
+  Button,
+  Dialog,
+  DialogTrigger,
+  Label,
+  Popover,
+  Radio,
+  RadioGroup,
+  SelectionIndicator,
+} from "react-aria-components";
 
 export function meta() {
   return [
@@ -50,93 +60,103 @@ export default function Home({
           <Link to={"/"}>
             <img alt="Weather Now" src="/images/logo.svg" />
           </Link>
-          <button>Units</button>
+          <DialogTrigger>
+            <Button>Units</Button>
+            <Popover placement="bottom end" offset={10}>
+              <Dialog
+                className="[ units-dialog ] [ stack ] [ layer-1 ]"
+                aria-label="Unit settings"
+              >
+                <Button className="dropdown-button">Switch to Imperial</Button>
+                <RadioGroup className="[ units-dialog__group ] [ stack ]">
+                  <Label className="units-dialog__group-label">
+                    Temperature
+                  </Label>
+                  <div className="[ units-dialog__radios ] [ stack ]">
+                    <Radio className="dropdown-button" value="celsius">
+                      <span>
+                        Celsius<span aria-hidden="true"> (°C)</span>
+                      </span>
+                      <SelectionIndicator>
+                        <Icon
+                          className="dropdown-button__icon"
+                          name="IconCheckmark"
+                        />
+                      </SelectionIndicator>
+                    </Radio>
+                    <Radio className="dropdown-button" value="fahrenheit">
+                      <span>
+                        Fahrenheit<span aria-hidden="true"> (°F)</span>
+                      </span>
+                      <SelectionIndicator>
+                        <Icon
+                          className="dropdown-button__icon"
+                          name="IconCheckmark"
+                        />
+                      </SelectionIndicator>
+                    </Radio>
+                  </div>
+                </RadioGroup>
+                <div className="separator" />
+                <RadioGroup className="[ units-dialog__group ] [ stack ]">
+                  <Label className="units-dialog__group-label">
+                    Wind Speed
+                  </Label>
+                  <div className="[ units-dialog__radios ] [ stack ]">
+                    <Radio className="dropdown-button" value="kmh">
+                      km/h
+                      <SelectionIndicator>
+                        <Icon
+                          className="dropdown-button__icon"
+                          name="IconCheckmark"
+                        />
+                      </SelectionIndicator>
+                    </Radio>
+                    <Radio className="dropdown-button" value="mph">
+                      mph
+                      <SelectionIndicator>
+                        <Icon
+                          className="dropdown-button__icon"
+                          name="IconCheckmark"
+                        />
+                      </SelectionIndicator>
+                    </Radio>
+                  </div>
+                </RadioGroup>
+                <div className="separator" />
+                <RadioGroup className="[ units-dialog__group ] [ stack ]">
+                  <Label className="units-dialog__group-label">
+                    Precipitation
+                  </Label>
+                  <div className="[ units-dialog__radios ] [ stack ]">
+                    <Radio className="dropdown-button" value="mm">
+                      <span>
+                        Millimeters<span aria-hidden="true"> (mm)</span>
+                      </span>
+                      <SelectionIndicator>
+                        <Icon
+                          className="dropdown-button__icon"
+                          name="IconCheckmark"
+                        />
+                      </SelectionIndicator>
+                    </Radio>
+                    <Radio className="dropdown-button" value="inch">
+                      <span>
+                        Inches<span aria-hidden="true"> (in)</span>
+                      </span>
+                      <SelectionIndicator>
+                        <Icon
+                          className="dropdown-button__icon"
+                          name="IconCheckmark"
+                        />
+                      </SelectionIndicator>
+                    </Radio>
+                  </div>
+                </RadioGroup>
+              </Dialog>
+            </Popover>
+          </DialogTrigger>
         </div>
-        {/* <div>
-          <h2>Unit settings</h2>
-          <button>Switch to Imperial</button>
-          <fieldset>
-            <legend>Temperature</legend>
-            <label>
-              Celsius<span aria-hidden="true"> (°C)</span>
-              <input
-                type="radio"
-                name="temperatureUnit"
-                value="celsius"
-                checked={settings.temperatureUnit === "celsius"}
-                onChange={() => {
-                  setSettings({ ...settings, temperatureUnit: "celsius" });
-                }}
-              />
-            </label>
-            <label>
-              Fahrenheit<span aria-hidden="true"> (°F)</span>
-              <input
-                type="radio"
-                name="temperatureUnit"
-                value="fahrenheit"
-                checked={settings.temperatureUnit === "fahrenheit"}
-                onChange={() => {
-                  setSettings({ ...settings, temperatureUnit: "fahrenheit" });
-                }}
-              />
-            </label>
-          </fieldset>
-          <fieldset>
-            <legend>Wind Speed</legend>
-            <label>
-              km/h
-              <input
-                type="radio"
-                name="windSpeedUnit"
-                value="kmh"
-                checked={settings.windSpeedUnit === "kmh"}
-                onChange={() => {
-                  setSettings({ ...settings, windSpeedUnit: "kmh" });
-                }}
-              />
-            </label>
-            <label>
-              mph
-              <input
-                type="radio"
-                name="windSpeedUnit"
-                value="mph"
-                checked={settings.windSpeedUnit === "mph"}
-                onChange={() => {
-                  setSettings({ ...settings, windSpeedUnit: "mph" });
-                }}
-              />
-            </label>
-          </fieldset>
-          <fieldset>
-            <legend>Precipitation</legend>
-            <label>
-              Millimeters<span aria-hidden="true"> (mm)</span>
-              <input
-                type="radio"
-                name="precipitationUnit"
-                value="mm"
-                checked={settings.precipitationUnit === "mm"}
-                onChange={() => {
-                  setSettings({ ...settings, precipitationUnit: "mm" });
-                }}
-              />
-            </label>
-            <label>
-              Inches<span aria-hidden="true"> (in)</span>
-              <input
-                type="radio"
-                name="precipitationUnit"
-                value="inch"
-                checked={settings.precipitationUnit === "inch"}
-                onChange={() => {
-                  setSettings({ ...settings, precipitationUnit: "inch" });
-                }}
-              />
-            </label>
-          </fieldset>
-        </div> */}
       </header>
       <main className="[ center ] [ mt-600 tablet:mt-800 ]">
         <div>

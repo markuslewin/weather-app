@@ -74,6 +74,75 @@ body {
   --cluster-justify: space-between;
 }
 
+.units-dialog {
+  --stack-space: #{tokens.spacing("050")};
+
+  min-width: utils.rem(214);
+  border-radius: tokens.radius(12);
+  padding: tokens.spacing(075) tokens.spacing(100);
+
+  &__group {
+    --stack-space: #{tokens.spacing(100)};
+  }
+
+  &__group-label {
+    padding-block-start: utils.rem(6);
+    padding-inline-start: utils.rem(8);
+    @include tokens.text-preset-8;
+    color: tokens.$color-neutral-300;
+  }
+
+  &__radios {
+    --stack-space: #{tokens.spacing("050")};
+  }
+}
+
+.dropdown-button {
+  --outline-width: #{utils.rem(1)};
+  --outline-offset: #{utils.rem(2)};
+  --outline-inner-color: #{tokens.$color-neutral-800};
+  --outline-outer-color: #{tokens.$color-neutral-0};
+
+  border: none;
+  border-radius: tokens.radius(8);
+  outline: none;
+  padding: tokens.spacing(125) tokens.spacing(100);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: tokens.spacing(125);
+  text-align: start;
+  @include tokens.text-preset-7;
+  background: transparent;
+  color: tokens.$color-neutral-0;
+  @include tokens.transition((background-color, color));
+
+  &[data-selected] {
+    background: tokens.$color-neutral-700;
+    color: tokens.$color-neutral-0;
+  }
+
+  &[data-hovered] {
+    background: tokens.$color-neutral-700;
+    color: tokens.$color-neutral-0;
+  }
+
+  &[data-focus-visible] {
+    @include tokens.outline;
+    background: tokens.$color-neutral-700;
+    color: tokens.$color-neutral-0;
+  }
+
+  &__icon {
+    width: utils.rem(14);
+    height: utils.rem(11);
+  }
+}
+
+.separator {
+  border-top: utils.rem(1) solid tokens.$color-neutral-600;
+}
+
 .search {
   --center-size: #{utils.rem(656)};
 
@@ -143,7 +212,8 @@ body {
 }
 
 .primary-button {
-  --outline-color: #{tokens.$color-blue-500};
+  --outline-inner-color: #{tokens.$color-neutral-900};
+  --outline-outer-color: #{tokens.$color-blue-500};
 
   border: none;
   border-radius: tokens.radius(12);
@@ -167,7 +237,8 @@ body {
   position: relative;
 
   &__input {
-    --outline-color: #{tokens.$color-neutral-0};
+    --outline-inner-color: #{tokens.$color-neutral-900};
+    --outline-outer-color: #{tokens.$color-neutral-0};
 
     width: 100%;
     border: none;

@@ -162,14 +162,18 @@ $outline-offset: 3;
 }
 
 @mixin outline {
+  --_outline-offset: var(--outline-offset, #{utils.rem($outline-offset)});
+
   outline: none;
   box-shadow:
-  // Transparent, i.e. just an `outline`?
-    utils.rem(0) utils.rem(0) utils.rem(0) utils.rem($outline-offset)
-      $color-neutral-900,
+    utils.rem(0) utils.rem(0) utils.rem(0) var(--_outline-offset)
+      var(--outline-inner-color),
     utils.rem(0) utils.rem(0) utils.rem(0)
-      utils.rem($outline-offset + $outline-width)
-      var(--outline-color, currentColor);
+      calc(
+        var(--_outline-offset) +
+          var(--outline-width, #{utils.rem($outline-width)})
+      )
+      var(--outline-outer-color, currentColor);
 
   @include utils.forced-colors {
     @include outline-base;
