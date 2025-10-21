@@ -74,6 +74,52 @@ body {
   --cluster-justify: space-between;
 }
 
+.units-button {
+  --outline-inner-color: #{tokens.$color-neutral-900};
+  --outline-outer-color: #{tokens.$color-neutral-0};
+
+  border: none;
+  border-radius: utils.rem(12);
+  outline: none;
+  padding: tokens.spacing(150) tokens.spacing(200);
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: tokens.spacing(125);
+  @include tokens.text-preset-7;
+  background: tokens.$color-neutral-800;
+  color: tokens.$color-neutral-0;
+  @include tokens.transition((background-color, color));
+
+  &[data-focus-visible] {
+    @include tokens.outline;
+    background: tokens.$color-neutral-700;
+    color: tokens.$color-neutral-0;
+  }
+
+  &[data-hovered] {
+    background: tokens.$color-neutral-700;
+    color: tokens.$color-neutral-0;
+  }
+
+  .IconUnits {
+    width: utils.rem(16);
+    height: utils.rem(16);
+  }
+
+  .IconDropdown {
+    width: utils.rem(13);
+    height: utils.rem(8);
+    @include tokens.transition((transform));
+  }
+
+  &[aria-expanded="true"] {
+    .IconDropdown {
+      transform: rotate(180deg);
+    }
+  }
+}
+
 .units-dialog {
   --stack-space: #{tokens.spacing("050")};
 

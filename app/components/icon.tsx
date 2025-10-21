@@ -9,7 +9,7 @@ export function Icon({
   name: IconName;
 }) {
   return (
-    <svg focusable="false" aria-hidden="true" {...props}>
+    <svg className={name} focusable="false" aria-hidden="true" {...props}>
       <use href={`${spriteHref}#${name}`} />
     </svg>
   );

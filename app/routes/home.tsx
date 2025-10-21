@@ -61,7 +61,11 @@ export default function Home({
             <img alt="Weather Now" src="/images/logo.svg" />
           </Link>
           <DialogTrigger>
-            <Button>Units</Button>
+            <Button className="units-button">
+              <Icon name="IconUnits" />
+              Units
+              <Icon name="IconDropdown" />
+            </Button>
             <Popover placement="bottom end" offset={10}>
               <Dialog
                 className="[ units-dialog ] [ stack ] [ layer-1 ]"
