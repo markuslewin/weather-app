@@ -19,11 +19,11 @@
   "current": {
     "time": "2025-08-05T13:45",
     "interval": 900,
-    "temperature_2m": 20.0,
+    "temperature_2m": 20.1,
     "weather_code": 0,
-    "apparent_temperature": 18.0,
-    "wind_speed_10m": 14.0,
-    "precipitation": 0.0,
+    "apparent_temperature": 18.1,
+    "wind_speed_10m": 14.1,
+    "precipitation": 0.1,
     "relative_humidity_2m": 46
   },
   "hourly_units": {

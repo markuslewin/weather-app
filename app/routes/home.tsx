@@ -18,6 +18,7 @@ import {
   SelectionIndicator,
   SelectValue,
 } from "react-aria-components";
+import { formatDate, formatDay, formatHours } from "#app/utils/date";
 
 export function meta() {
   return [
@@ -194,23 +195,23 @@ export default function Home({
           <div className="[ dashboard ] [ mt-400 desktop:600 ]">
             <div>
               <div className="current">
-                <div className="[ card ] [ cluster ]">
+                <div className="card">
                   <div>
                     <h2 className="text-preset-4">{location}</h2>
                     <h3 className="sr-only">Current weather</h3>
-                    <p>{weather.current.time}</p>
+                    <p className="mt-150">
+                      {formatDate(new Date(weather.current.time))}
+                    </p>
                   </div>
-                  <div>
+                  <div className="card__weather">
                     {currentWeatherInterpretation ? (
                       <WeatherIcon
-                        className="size-120"
+                        className="card__weather-icon"
                         interpretation={currentWeatherInterpretation}
                       />
-                    ) : (
-                      <div className="size-120" />
-                    )}
+                    ) : null}
                     <p className="text-preset-1">
-                      {weather.current.temperature_2m}°
+                      {Math.round(weather.current.temperature_2m)}°
                     </p>
                   </div>
                 </div>
@@ -218,25 +219,25 @@ export default function Home({
                   {[
                     {
                       key: "Feels Like",
-                      value: `${weather.current.apparent_temperature}°`,
+                      value: `${Math.round(weather.current.apparent_temperature)}°`,
                     },
                     {
                       key: "Humidity",
-                      value: `${weather.current.relative_humidity_2m}%`,
+                      value: `${Math.round(weather.current.relative_humidity_2m)}%`,
                     },
                     {
                       key: "Wind",
-                      value: `${weather.current.wind_speed_10m} ${unit.windSpeed}`,
+                      value: `${Math.round(weather.current.wind_speed_10m)}\u00a0${unit.windSpeed}`,
                     },
                     {
                       key: "Precipitation",
-                      value: `${weather.current.precipitation} ${unit.precipitation}`,
+                      value: `${Math.round(weather.current.precipitation)}\u00a0${unit.precipitation}`,
                     },
                   ].map(({ key, value }) => {
                     return (
                       <div className="[ box ] [ layer-1 radius-12 ]" key={key}>
                         <h4>{key}</h4>
-                        <p className="text-preset-3">{value}</p>
+                        <p className="mt-300 text-preset-3">{value}</p>
                       </div>
                     );
                   })}
@@ -249,26 +250,30 @@ export default function Home({
                     const interpretation = getInterpretation(day.weather_code);
                     return (
                       <li
-                        className="[ box ] [ layer-1 radius-12 ]"
+                        className="[ daily__day ] [ box stack ] [ layer-1 radius-12 ]"
                         key={day.time}
                       >
-                        <h4>{day.time}</h4>
+                        <h4 className="text-center">
+                          {formatDay("short", new Date(day.time))}
+                        </h4>
                         {interpretation ? (
                           <WeatherIcon
-                            className="size-60"
+                            className="[ day__icon ] [ size-60 ]"
                             interpretation={interpretation}
                           />
                         ) : (
                           <div className="size-60" />
                         )}
-                        <p className="text-preset-7">
-                          <span className="sr-only">Max temperature: </span>
-                          {day.temperature_2m_max}°
-                        </p>
-                        <p className="text-preset-7">
-                          <span className="sr-only">Min temperature: </span>
-                          {day.temperature_2m_min}°
-                        </p>
+                        <div className="day__temperature">
+                          <p className="text-preset-7">
+                            <span className="sr-only">Max temperature: </span>
+                            {Math.round(day.temperature_2m_max)}°
+                          </p>
+                          <p className="text-preset-7">
+                            <span className="sr-only">Min temperature: </span>
+                            {Math.round(day.temperature_2m_min)}°
+                          </p>
+                        </div>
                       </li>
                     );
                   })}
@@ -296,13 +301,15 @@ export default function Home({
                       items={[
                         ...new Set(
                           weather.hourly.map((hour) => {
-                            return hour.time.split("T")[0];
+                            return hour.time.split("T")[0]!;
                           })
                         ),
                       ].map((name) => ({ name }))}
                     >
                       {(hour) => (
-                        <ListBoxItem id={hour.name}>{hour.name}</ListBoxItem>
+                        <ListBoxItem id={hour.name}>
+                          {formatDay("long", new Date(hour.name))}
+                        </ListBoxItem>
                       )}
                     </ListBox>
                   </Popover>
@@ -322,19 +329,23 @@ export default function Home({
                     const interpretation = getInterpretation(hour.weather_code);
                     return (
                       <li
-                        className="[ box ] [ layer-2 radius-8 ]"
+                        className="[ hours__item ] [ box ] [ layer-2 radius-8 ]"
                         key={hour.time}
                       >
-                        <h4 className="text-preset-5--medium">{hour.time}</h4>
+                        <h4 className="text-preset-5--medium">
+                          {formatHours(new Date(hour.time))}
+                        </h4>
                         {interpretation ? (
                           <WeatherIcon
                             className="size-40"
                             interpretation={interpretation}
                           />
                         ) : (
-                          <div className="size-60" />
+                          <div className="size-40" />
                         )}
-                        <p className="text-preset-7">{hour.temperature_2m}°</p>
+                        <p className="text-preset-7">
+                          {Math.round(hour.temperature_2m)}°
+                        </p>
                       </li>
                     );
                   })}

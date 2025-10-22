@@ -214,7 +214,7 @@ body {
 
 .current {
   --box-space: #{tokens.spacing(250)};
-  --grid-size: #{utils.rem(100)};
+  --grid-size: #{utils.rem(155)};
   --grid-space: #{tokens.spacing(200)};
 
   @include tokens.breakpoint("tablet") {
@@ -228,12 +228,34 @@ body {
 
 .card {
   min-height: utils.rem(286);
-  padding: tokens.spacing(300);
   border-radius: tokens.radius(20);
+  padding: tokens.spacing(300);
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  gap: tokens.spacing(200);
+  text-align: center;
   background: url(/images/bg-today-small.svg) center/cover
     tokens.$color-blue-700;
 
+  &__weather {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: tokens.spacing(250);
+  }
+
+  &__weather-icon {
+    width: utils.rem(120);
+    min-width: utils.rem(0);
+    height: auto;
+  }
+
   @include tokens.breakpoint("tablet") {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    align-items: center;
+    text-align: start;
     background-image: url(/images/bg-today-large.svg);
   }
 }
@@ -243,6 +265,19 @@ body {
   --box-y-space: #{tokens.spacing(200)};
   --grid-size: #{utils.rem(80)};
   --grid-space: #{tokens.spacing(200)};
+  --stack-space: #{tokens.spacing(200)};
+}
+
+.day {
+  &__icon {
+    justify-self: center;
+  }
+
+  &__temperature {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+  }
 }
 
 .hourly {
@@ -255,6 +290,17 @@ body {
   --box-y-space: #{tokens.spacing(125)};
   --box-right-space: #{tokens.spacing(200)};
   --box-left-space: #{tokens.spacing(150)};
+
+  &__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: tokens.spacing(100);
+
+    & > :nth-child(2) {
+      order: -1;
+    }
+  }
 }
 
 .primary-button {
@@ -348,6 +394,13 @@ body {
     .IconDropdown {
       width: utils.rem(13);
       height: utils.rem(8);
+      @include tokens.transition((transform));
+    }
+
+    &[aria-expanded="true"] {
+      .IconDropdown {
+        transform: rotate(180deg);
+      }
     }
   }
 
@@ -449,10 +502,6 @@ body {
 .size-60 {
   width: utils.rem(60);
   height: utils.rem(60);
-}
-.size-120 {
-  width: utils.rem(120);
-  height: utils.rem(120);
 }
 
 .layer-1 {
