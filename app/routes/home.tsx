@@ -9,10 +9,14 @@ import {
   Dialog,
   DialogTrigger,
   Label,
+  ListBox,
+  ListBoxItem,
   Popover,
   Radio,
   RadioGroup,
+  Select,
   SelectionIndicator,
+  SelectValue,
 } from "react-aria-components";
 
 export function meta() {
@@ -42,6 +46,7 @@ export default function Home({
     windSpeedUnit: "kmh",
     precipitationUnit: "mm",
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [date, setDate] = useState(weather.hourly[0]!.time.split("T")[0]);
 
   const unit = {
@@ -273,21 +278,35 @@ export default function Home({
             <article className="[ hourly ] [ box ] [ layer-1 radius-20 ]">
               <header className="cluster">
                 <h3 className="text-preset-5">Hourly forecast</h3>
-                <select
+                <Select
+                  className="date-select"
                   value={date}
                   aria-label="Select date"
-                  onChange={(e) => {
-                    setDate(e.target.value);
-                  }}
                 >
-                  {[
-                    ...new Set(
-                      weather.hourly.map((hour) => hour.time.split("T")[0])
-                    ),
-                  ].map((date) => {
-                    return <option key={date}>{date}</option>;
-                  })}
-                </select>
+                  <Button>
+                    <SelectValue />
+                    <Icon name="IconDropdown" />
+                  </Button>
+                  <Popover
+                    className="date-select__popover"
+                    offset={10}
+                    placement="bottom end"
+                  >
+                    <ListBox
+                      items={[
+                        ...new Set(
+                          weather.hourly.map((hour) => {
+                            return hour.time.split("T")[0];
+                          })
+                        ),
+                      ].map((name) => ({ name }))}
+                    >
+                      {(hour) => (
+                        <ListBoxItem id={hour.name}>{hour.name}</ListBoxItem>
+                      )}
+                    </ListBox>
+                  </Popover>
+                </Select>
               </header>
               <ol className="[ hours ] [ stack ] [ mt-200 ]" role="list">
                 {weather.hourly
