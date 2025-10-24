@@ -1,13 +1,14 @@
+import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
+import { formatDate, formatDay, formatHours } from "#app/utils/date";
 import { getInterpretation, getWeather } from "#app/utils/weather";
 import { useId, useState } from "react";
-import { Form, Link } from "react-router";
-import type { Route } from "./+types/home";
-import { Icon } from "#app/components/icon";
 import {
   Button,
+  ComboBox,
   Dialog,
   DialogTrigger,
+  Input,
   Label,
   ListBox,
   ListBoxItem,
@@ -18,7 +19,10 @@ import {
   SelectionIndicator,
   SelectValue,
 } from "react-aria-components";
-import { formatDate, formatDay, formatHours } from "#app/utils/date";
+import { Form, Link, useNavigate, useNavigation } from "react-router";
+import { useAsyncList } from "react-stately";
+import z from "zod";
+import type { Route } from "./+types/home";
 
 export function meta() {
   return [
@@ -33,9 +37,23 @@ export async function loader() {
   return { location, weather };
 }
 
+const searchResultItemSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  latitude: z.number(),
+  longitude: z.number(),
+});
+type SearchResultItem = z.infer<typeof searchResultItemSchema>;
+
+const searchResultSchema = z.object({
+  results: z.array(searchResultItemSchema).optional(),
+});
+
 export default function Home({
   loaderData: { location, weather },
 }: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const navigate = useNavigate();
   const searchHeadingId = useId();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [settings, setSettings] = useState<{
@@ -49,6 +67,22 @@ export default function Home({
   });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [date, setDate] = useState(weather.hourly[0]!.time.split("T")[0]);
+  const list = useAsyncList<SearchResultItem>({
+    load: async ({ signal, filterText = "" }) => {
+      const response = await fetch(
+        `/api/search?${new URLSearchParams({ name: filterText })}`,
+        { signal }
+      );
+      const json = await response.json();
+      if (signal.aborted) {
+        throw new Error("Aborted during JSON parse");
+      }
+      const result = searchResultSchema.parse(json);
+      return {
+        items: result.results ?? [],
+      };
+    },
+  });
 
   const unit = {
     windSpeed: settings.windSpeedUnit === "kmh" ? "km/h" : "mph",
@@ -181,15 +215,51 @@ export default function Home({
               Search
             </h2>
             <Form className="search__form">
-              <div className="search-input">
-                <input
-                  className="search-input__input"
-                  name="q"
-                  placeholder="Search for a place..."
-                />
-                <Icon className="search-input__icon" name="IconSearch" />
-              </div>
-              <button className="primary-button">Search</button>
+              <ComboBox
+                className="search-combobox"
+                aria-label="Search for a place"
+                allowsCustomValue
+                allowsEmptyCollection
+                inputValue={list.filterText}
+                onInputChange={list.setFilterText}
+                onSelectionChange={(key) => {
+                  if (key === null) return;
+
+                  const item = list.getItem(key);
+                  if (item === undefined) return;
+
+                  navigate(
+                    `/?${new URLSearchParams({
+                      lon: item.longitude.toString(),
+                      lat: item.latitude.toString(),
+                    })}`
+                  );
+                }}
+                items={list.items}
+              >
+                <div className="search-input">
+                  <Input
+                    className="search-input__input"
+                    name="q"
+                    placeholder="Search for a place..."
+                  />
+                  <Icon className="search-input__icon" name="IconSearch" />
+                </div>
+                <Popover className="search-combobox__popover" offset={10}>
+                  <ListBox
+                    renderEmptyState={() => (
+                      <p>{list.isLoading ? "Loading" : "No recommendations"}</p>
+                    )}
+                  >
+                    {(item: SearchResultItem) => (
+                      <ListBoxItem>{item.name}</ListBoxItem>
+                    )}
+                  </ListBox>
+                </Popover>
+              </ComboBox>
+              <button className="primary-button">
+                {navigation.state === "idle" ? "Search" : "Searching..."}
+              </button>
             </Form>
           </section>
           <div className="[ dashboard ] [ mt-400 desktop:600 ]">
