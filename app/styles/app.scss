@@ -327,6 +327,8 @@ body {
 
 .search-combobox {
   &__popover {
+    @include tokens.text-preset-7;
+
     .react-aria-ListBox {
       width: var(--trigger-width);
       border-radius: tokens.radius(12);
@@ -343,6 +345,19 @@ body {
         background: tokens.$color-neutral-700;
         color: tokens.$color-neutral-0;
       }
+    }
+  }
+
+  &__empty-state {
+    padding: tokens.spacing(125) tokens.spacing(100);
+    display: flex;
+    align-items: center;
+    gap: tokens.spacing(125);
+
+    .IconLoading {
+      width: utils.rem(16);
+      height: utils.rem(16);
+      animation: spin 1s linear infinite;
     }
   }
 }
@@ -548,5 +563,11 @@ body {
     .desktop\:mt-#{$key} {
       margin-top: $value;
     }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

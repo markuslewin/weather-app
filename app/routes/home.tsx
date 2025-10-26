@@ -248,7 +248,15 @@ export default function Home({
                 <Popover className="search-combobox__popover" offset={10}>
                   <ListBox
                     renderEmptyState={() => (
-                      <p>{list.isLoading ? "Loading" : "No recommendations"}</p>
+                      <div className="search-combobox__empty-state">
+                        {list.isLoading ? (
+                          <>
+                            <Icon name="IconLoading" /> Search in progress
+                          </>
+                        ) : (
+                          "No recommendations"
+                        )}
+                      </div>
                     )}
                   >
                     {(item: SearchResultItem) => (
