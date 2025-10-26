@@ -1,6 +1,7 @@
 import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
 import { formatDate, formatDay, formatHours } from "#app/utils/date";
+import { searchResultSchema, type SearchResultItem } from "#app/utils/search";
 import { getInterpretation, getWeather } from "#app/utils/weather";
 import { useId, useState } from "react";
 import {
@@ -21,7 +22,6 @@ import {
 } from "react-aria-components";
 import { Form, Link, useNavigate, useNavigation } from "react-router";
 import { useAsyncList } from "react-stately";
-import z from "zod";
 import type { Route } from "./+types/home";
 
 export async function loader() {
@@ -29,18 +29,6 @@ export async function loader() {
   const weather = await getWeather();
   return { location, weather };
 }
-
-const searchResultItemSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  latitude: z.number(),
-  longitude: z.number(),
-});
-type SearchResultItem = z.infer<typeof searchResultItemSchema>;
-
-const searchResultSchema = z.object({
-  results: z.array(searchResultItemSchema).optional(),
-});
 
 export default function Home({
   loaderData: { location, weather },
@@ -70,10 +58,7 @@ export default function Home({
       if (signal.aborted) {
         throw new Error("Aborted during JSON parse");
       }
-      const result = searchResultSchema.parse(json);
-      return {
-        items: result.results ?? [],
-      };
+      return searchResultSchema.parse(json);
     },
   });
 
