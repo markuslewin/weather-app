@@ -24,13 +24,6 @@ import { useAsyncList } from "react-stately";
 import z from "zod";
 import type { Route } from "./+types/home";
 
-export function meta() {
-  return [
-    { title: "Frontend Mentor | Weather app" },
-    { name: "description", content: "Discover the weather." },
-  ];
-}
-
 export async function loader() {
   const location = "Berlin, Germany";
   const weather = await getWeather();
