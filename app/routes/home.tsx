@@ -2,6 +2,15 @@ import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
 import { formatDate, formatDay, formatHours } from "#app/utils/date";
 import { searchResultSchema, type SearchResultItem } from "#app/utils/search";
+import {
+  precipitationUnitSchema,
+  temperatureUnitSchema,
+  windSpeedUnitSchema,
+  type PrecipitationUnit,
+  type Settings,
+  type TemperatureUnit,
+  type WindSpeedUnit,
+} from "#app/utils/settings";
 import { getInterpretation, getWeather } from "#app/utils/weather";
 import { useId, useState } from "react";
 import {
@@ -36,18 +45,20 @@ export default function Home({
   const navigation = useNavigation();
   const navigate = useNavigate();
   const searchHeadingId = useId();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [settings, setSettings] = useState<{
-    temperatureUnit: "celsius" | "fahrenheit";
-    windSpeedUnit: "kmh" | "mph";
-    precipitationUnit: "mm" | "inch";
-  }>({
+  const [settings, setSettings] = useState<Settings>({
     temperatureUnit: "celsius",
     windSpeedUnit: "kmh",
     precipitationUnit: "mm",
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [date, setDate] = useState(weather.hourly[0]!.time.split("T")[0]);
+  const defaultDate = weather.hourly[0]!.time.split("T")[0]!;
+  const dates = [
+    ...new Set(
+      weather.hourly.map((hour) => {
+        return hour.time.split("T")[0]!;
+      })
+    ),
+  ];
+  const [date, setDate] = useState(defaultDate);
   const list = useAsyncList<SearchResultItem>({
     load: async ({ signal, filterText = "" }) => {
       const response = await fetch(
@@ -90,12 +101,22 @@ export default function Home({
                 aria-label="Unit settings"
               >
                 <Button className="dropdown-button">Switch to Imperial</Button>
-                <RadioGroup className="[ units-dialog__group ] [ stack ]">
+                <RadioGroup
+                  className="[ units-dialog__group ] [ stack ]"
+                  value={settings.temperatureUnit}
+                  onChange={(value) => {
+                    const temperatureUnit = temperatureUnitSchema.parse(value);
+                    setSettings({ ...settings, temperatureUnit });
+                  }}
+                >
                   <Label className="units-dialog__group-label">
                     Temperature
                   </Label>
                   <div className="[ units-dialog__radios ] [ stack ]">
-                    <Radio className="dropdown-button" value="celsius">
+                    <Radio
+                      className="dropdown-button"
+                      value={"celsius" satisfies TemperatureUnit}
+                    >
                       <span>
                         Celsius<span aria-hidden="true"> (°C)</span>
                       </span>
@@ -106,7 +127,10 @@ export default function Home({
                         />
                       </SelectionIndicator>
                     </Radio>
-                    <Radio className="dropdown-button" value="fahrenheit">
+                    <Radio
+                      className="dropdown-button"
+                      value={"fahrenheit" satisfies TemperatureUnit}
+                    >
                       <span>
                         Fahrenheit<span aria-hidden="true"> (°F)</span>
                       </span>
@@ -120,12 +144,22 @@ export default function Home({
                   </div>
                 </RadioGroup>
                 <div className="separator" />
-                <RadioGroup className="[ units-dialog__group ] [ stack ]">
+                <RadioGroup
+                  className="[ units-dialog__group ] [ stack ]"
+                  value={settings.windSpeedUnit}
+                  onChange={(value) => {
+                    const windSpeedUnit = windSpeedUnitSchema.parse(value);
+                    setSettings({ ...settings, windSpeedUnit });
+                  }}
+                >
                   <Label className="units-dialog__group-label">
                     Wind Speed
                   </Label>
                   <div className="[ units-dialog__radios ] [ stack ]">
-                    <Radio className="dropdown-button" value="kmh">
+                    <Radio
+                      className="dropdown-button"
+                      value={"kmh" satisfies WindSpeedUnit}
+                    >
                       km/h
                       <SelectionIndicator>
                         <Icon
@@ -134,7 +168,10 @@ export default function Home({
                         />
                       </SelectionIndicator>
                     </Radio>
-                    <Radio className="dropdown-button" value="mph">
+                    <Radio
+                      className="dropdown-button"
+                      value={"mph" satisfies WindSpeedUnit}
+                    >
                       mph
                       <SelectionIndicator>
                         <Icon
@@ -146,12 +183,23 @@ export default function Home({
                   </div>
                 </RadioGroup>
                 <div className="separator" />
-                <RadioGroup className="[ units-dialog__group ] [ stack ]">
+                <RadioGroup
+                  className="[ units-dialog__group ] [ stack ]"
+                  value={settings.precipitationUnit}
+                  onChange={(value) => {
+                    const precipitationUnit =
+                      precipitationUnitSchema.parse(value);
+                    setSettings({ ...settings, precipitationUnit });
+                  }}
+                >
                   <Label className="units-dialog__group-label">
                     Precipitation
                   </Label>
                   <div className="[ units-dialog__radios ] [ stack ]">
-                    <Radio className="dropdown-button" value="mm">
+                    <Radio
+                      className="dropdown-button"
+                      value={"mm" satisfies PrecipitationUnit}
+                    >
                       <span>
                         Millimeters<span aria-hidden="true"> (mm)</span>
                       </span>
@@ -162,7 +210,10 @@ export default function Home({
                         />
                       </SelectionIndicator>
                     </Radio>
-                    <Radio className="dropdown-button" value="inch">
+                    <Radio
+                      className="dropdown-button"
+                      value={"inch" satisfies PrecipitationUnit}
+                    >
                       <span>
                         Inches<span aria-hidden="true"> (in)</span>
                       </span>
@@ -342,6 +393,13 @@ export default function Home({
                 <Select
                   className="date-select"
                   value={date}
+                  onChange={(value) => {
+                    setDate(
+                      typeof value === "string" && dates.includes(value)
+                        ? value
+                        : defaultDate
+                    );
+                  }}
                   aria-label="Select date"
                 >
                   <Button>
@@ -353,18 +411,10 @@ export default function Home({
                     offset={10}
                     placement="bottom end"
                   >
-                    <ListBox
-                      items={[
-                        ...new Set(
-                          weather.hourly.map((hour) => {
-                            return hour.time.split("T")[0]!;
-                          })
-                        ),
-                      ].map((name) => ({ name }))}
-                    >
+                    <ListBox items={dates.map((id) => ({ id }))}>
                       {(hour) => (
-                        <ListBoxItem id={hour.name}>
-                          {formatDay("long", new Date(hour.name))}
+                        <ListBoxItem>
+                          {formatDay("long", new Date(hour.id))}
                         </ListBoxItem>
                       )}
                     </ListBox>
