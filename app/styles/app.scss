@@ -123,7 +123,10 @@ body {
 .units-dialog {
   --stack-space: #{tokens.spacing("050")};
 
+  overflow: auto;
+  scrollbar-width: thin;
   min-width: utils.rem(214);
+  max-height: inherit;
   border-radius: tokens.radius(12);
   padding: tokens.spacing(075) tokens.spacing(100);
 
@@ -330,7 +333,10 @@ body {
     @include tokens.text-preset-7;
 
     .react-aria-ListBox {
+      overflow: auto;
+      scrollbar-width: thin;
       width: var(--trigger-width);
+      max-height: inherit;
       border-radius: tokens.radius(12);
       padding: tokens.spacing(100);
       background: tokens.$color-neutral-800;
@@ -443,7 +449,10 @@ body {
 
   &__popover {
     .react-aria-ListBox {
+      overflow: auto;
+      scrollbar-width: thin;
       min-width: utils.rem(214);
+      max-height: inherit;
       border-radius: tokens.radius(12);
       padding: tokens.spacing(100);
       display: grid;
