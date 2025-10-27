@@ -1,6 +1,19 @@
 import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
-import { formatDate, formatDay, formatHours } from "#app/utils/date";
+import {
+  convertPrecipitation,
+  convertTemperature,
+  convertWindSpeed,
+} from "#app/utils/conversion";
+import {
+  createPrecipitationFormatter,
+  createWindSpeedFormatter,
+  formatDate,
+  formatDay,
+  formatHours,
+  percentageFormatter,
+  temperatureFormatter,
+} from "#app/utils/format";
 import { searchResultSchema, type SearchResultItem } from "#app/utils/search";
 import {
   precipitationUnitSchema,
@@ -73,9 +86,22 @@ export default function Home({
     },
   });
 
-  const unit = {
-    windSpeed: settings.windSpeedUnit === "kmh" ? "km/h" : "mph",
-    precipitation: settings.precipitationUnit === "mm" ? "mm" : "in",
+  const temperature = (value: number) => {
+    return temperatureFormatter.format(
+      convertTemperature(settings.temperatureUnit, value)
+    );
+  };
+
+  const windSpeed = (value: number) => {
+    return createWindSpeedFormatter(settings.windSpeedUnit).format(
+      convertWindSpeed(settings.windSpeedUnit, value)
+    );
+  };
+
+  const precipitation = (value: number) => {
+    return createPrecipitationFormatter(settings.precipitationUnit).format(
+      convertPrecipitation(settings.precipitationUnit, value)
+    );
   };
 
   const currentWeatherInterpretation = getInterpretation(
@@ -318,7 +344,7 @@ export default function Home({
                       />
                     ) : null}
                     <p className="text-preset-1">
-                      {Math.round(weather.current.temperature_2m)}°
+                      {temperature(weather.current.temperature_2m)}
                     </p>
                   </div>
                 </div>
@@ -326,19 +352,21 @@ export default function Home({
                   {[
                     {
                       key: "Feels Like",
-                      value: `${Math.round(weather.current.apparent_temperature)}°`,
+                      value: temperature(weather.current.apparent_temperature),
                     },
                     {
                       key: "Humidity",
-                      value: `${Math.round(weather.current.relative_humidity_2m)}%`,
+                      value: percentageFormatter.format(
+                        weather.current.relative_humidity_2m
+                      ),
                     },
                     {
                       key: "Wind",
-                      value: `${Math.round(weather.current.wind_speed_10m)}\u00a0${unit.windSpeed}`,
+                      value: windSpeed(weather.current.wind_speed_10m),
                     },
                     {
                       key: "Precipitation",
-                      value: `${Math.round(weather.current.precipitation)}\u00a0${unit.precipitation}`,
+                      value: precipitation(weather.current.precipitation),
                     },
                   ].map(({ key, value }) => {
                     return (
@@ -374,11 +402,11 @@ export default function Home({
                         <div className="day__temperature">
                           <p className="text-preset-7">
                             <span className="sr-only">Max temperature: </span>
-                            {Math.round(day.temperature_2m_max)}°
+                            {temperature(day.temperature_2m_max)}
                           </p>
                           <p className="text-preset-7">
                             <span className="sr-only">Min temperature: </span>
-                            {Math.round(day.temperature_2m_min)}°
+                            {temperature(day.temperature_2m_min)}
                           </p>
                         </div>
                       </li>
@@ -450,7 +478,7 @@ export default function Home({
                           <div className="size-40" />
                         )}
                         <p className="text-preset-7">
-                          {Math.round(hour.temperature_2m)}°
+                          {temperature(hour.temperature_2m)}
                         </p>
                       </li>
                     );

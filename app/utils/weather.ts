@@ -170,7 +170,14 @@ const Weather = z.object({
 
 export const getWeather = async () => {
   const response = await fetch(
-    "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&daily=weather_code,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weather_code&current=temperature_2m,weather_code,apparent_temperature,wind_speed_10m,precipitation,relative_humidity_2m"
+    `https://api.open-meteo.com/v1/forecast?${new URLSearchParams({
+      latitude: "52.52",
+      longitude: "13.41",
+      daily: "weather_code,temperature_2m_max,temperature_2m_min",
+      hourly: "temperature_2m,weather_code",
+      current:
+        "temperature_2m,weather_code,apparent_temperature,wind_speed_10m,precipitation,relative_humidity_2m",
+    })}`
   );
   const json = await response.json();
   const { hourly, daily, ...data } = Weather.parse(json);
