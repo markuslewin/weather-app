@@ -1,6 +1,7 @@
 import { Icon } from "#app/components/icon";
 import { Location } from "#app/components/location";
 import { SearchLayout } from "#app/components/search-layout";
+import { search } from "#app/utils/search";
 import {
   countSystems,
   precipitationUnitSchema,
@@ -11,7 +12,7 @@ import {
   type TemperatureUnit,
   type WindSpeedUnit,
 } from "#app/utils/settings";
-import { homeSearchParamsSchema } from "#app/utils/url";
+import { createHomeUrl, homeSearchParamsSchema } from "#app/utils/url";
 import { getWeather } from "#app/utils/weather";
 import { useState } from "react";
 import {
@@ -25,7 +26,7 @@ import {
   SelectionIndicator,
   type ButtonProps,
 } from "react-aria-components";
-import { Link, type LoaderFunctionArgs } from "react-router";
+import { Link, redirect, type LoaderFunctionArgs } from "react-router";
 import type { Route } from "./+types/home";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -38,10 +39,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const searchParams = searchParamsResult.data;
   if ("q" in searchParams) {
-    // todo: Search
-    console.log("Search", searchParams.q);
-    return { type: "empty" } as const;
-    // return redirect(createHomeUrl({ lat: "0", lon: "0" }));
+    const {
+      items: [match],
+    } = await search(searchParams.q);
+    if (match === undefined) {
+      return { type: "empty" } as const;
+    }
+    return redirect(
+      createHomeUrl({
+        lat: match.latitude.toString(),
+        lon: match.longitude.toString(),
+      })
+    );
   }
 
   try {
@@ -258,7 +267,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           ) : (
             <SearchLayout>
               {loaderData.type === "empty" ? (
-                <h2>No search result found!</h2>
+                <h2 className="[ empty ] [ mt-600 ]">
+                  No search result found!
+                </h2>
               ) : loaderData.type === "location" ? (
                 <Location
                   settings={settings}
