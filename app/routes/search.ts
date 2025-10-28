@@ -26,8 +26,7 @@ export const loader = async ({
   const response = await fetch(
     `https://geocoding-api.open-meteo.com/v1/search?${new URLSearchParams({ name })}`
   );
-  const json = await response.json();
-  const parsed = searchResponseSchema.parse(json);
+  const parsed = searchResponseSchema.parse(await response.json());
   return {
     items: parsed.results ?? [],
   };

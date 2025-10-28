@@ -179,8 +179,7 @@ export const getWeather = async () => {
         "temperature_2m,weather_code,apparent_temperature,wind_speed_10m,precipitation,relative_humidity_2m",
     })}`
   );
-  const json = await response.json();
-  const { hourly, daily, ...data } = Weather.parse(json);
+  const { hourly, daily, ...data } = Weather.parse(await response.json());
   const weather = {
     ...data,
     hourly: Array.from({ length: 24 * 7 }, (_, i) => {

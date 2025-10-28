@@ -16,6 +16,7 @@ import {
 } from "#app/utils/format";
 import { searchResultSchema, type SearchResultItem } from "#app/utils/search";
 import {
+  countSystems,
   precipitationUnitSchema,
   temperatureUnitSchema,
   windSpeedUnitSchema,
@@ -41,6 +42,7 @@ import {
   Select,
   SelectionIndicator,
   SelectValue,
+  type ButtonProps,
 } from "react-aria-components";
 import { Form, Link, useNavigate, useNavigation } from "react-router";
 import { useAsyncList } from "react-stately";
@@ -78,6 +80,7 @@ export default function Home({
         `/api/search?${new URLSearchParams({ name: filterText })}`,
         { signal }
       );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const json = await response.json();
       if (signal.aborted) {
         throw new Error("Aborted during JSON parse");
@@ -104,6 +107,30 @@ export default function Home({
     );
   };
 
+  const settingsCount = countSystems(settings);
+  const switchButtonProps: ButtonProps =
+    settingsCount.metric < settingsCount.imperial
+      ? {
+          children: "Switch to Metric",
+          onPress: () => {
+            setSettings({
+              precipitationUnit: "mm",
+              temperatureUnit: "celsius",
+              windSpeedUnit: "kmh",
+            });
+          },
+        }
+      : {
+          children: "Switch to Imperial",
+          onPress: () => {
+            setSettings({
+              precipitationUnit: "inch",
+              temperatureUnit: "fahrenheit",
+              windSpeedUnit: "mph",
+            });
+          },
+        };
+
   const currentWeatherInterpretation = getInterpretation(
     weather.current.weather_code
   );
@@ -126,7 +153,7 @@ export default function Home({
                 className="[ units-dialog ] [ stack ] [ layer-1 ]"
                 aria-label="Unit settings"
               >
-                <Button className="dropdown-button">Switch to Imperial</Button>
+                <Button className="dropdown-button" {...switchButtonProps} />
                 <RadioGroup
                   className="[ units-dialog__group ] [ stack ]"
                   value={settings.temperatureUnit}
@@ -276,14 +303,16 @@ export default function Home({
                 allowsCustomValue
                 allowsEmptyCollection
                 inputValue={list.filterText}
-                onInputChange={list.setFilterText}
+                onInputChange={(value) => {
+                  list.setFilterText(value);
+                }}
                 onSelectionChange={(key) => {
                   if (key === null) return;
 
                   const item = list.getItem(key);
                   if (item === undefined) return;
 
-                  navigate(
+                  void navigate(
                     `/?${new URLSearchParams({
                       lon: item.longitude.toString(),
                       lat: item.latitude.toString(),

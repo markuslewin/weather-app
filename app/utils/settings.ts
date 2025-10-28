@@ -13,3 +13,21 @@ export type Settings = {
   windSpeedUnit: WindSpeedUnit;
   precipitationUnit: PrecipitationUnit;
 };
+
+export const countSystems = (settings: Settings) => {
+  return Object.values(settings).reduce(
+    (count, value) => {
+      switch (value) {
+        case "celsius":
+        case "kmh":
+        case "mm":
+          return { ...count, metric: count.metric + 1 };
+        case "fahrenheit":
+        case "inch":
+        case "mph":
+          return { ...count, imperial: count.imperial + 1 };
+      }
+    },
+    { metric: 0, imperial: 0 }
+  );
+};

@@ -10,7 +10,8 @@
     "typecheck": "react-router typegen && tsc",
     "test": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:install": "playwright install --with-deps chromium"
+    "test:e2e:install": "playwright install --with-deps chromium",
+    "test:e2e:dev": "playwright test --ui"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.2.10",

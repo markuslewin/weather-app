@@ -14,8 +14,6 @@ export const convertPrecipitation = (unit: PrecipitationUnit, mm: number) => {
       return toInches(mm);
     case "mm":
       return mm;
-    default:
-      throw new Error(`Unit "${unit}" not implemented`);
   }
 };
 
@@ -29,8 +27,6 @@ export const convertTemperature = (unit: TemperatureUnit, celsius: number) => {
       return celsius;
     case "fahrenheit":
       return toFahrenheit(celsius);
-    default:
-      throw new Error(`Unit "${unit}" not implemented`);
   }
 };
 
@@ -44,7 +40,5 @@ export const convertWindSpeed = (unit: WindSpeedUnit, kmh: number) => {
       return kmh;
     case "mph":
       return toMilesPerHour(kmh);
-    default:
-      throw new Error(`Unit "${unit}" not implemented`);
   }
 };

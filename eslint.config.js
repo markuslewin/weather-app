@@ -11,12 +11,18 @@ export default defineConfig([
     ignores: [".react-router/**/*", "app/entry.server.tsx"],
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommended,
+      tseslint.configs.recommendedTypeChecked,
       reactHooks.configs["recommended-latest"],
     ],
+    rules: {
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        projectService: true,
+      },
     },
   },
 ]);

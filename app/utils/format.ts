@@ -31,8 +31,6 @@ const getWindSpeedFormatUnit = (unit: WindSpeedUnit) => {
       return "kilometer-per-hour";
     case "mph":
       return "mile-per-hour";
-    default:
-      throw new Error(`Unit "${unit}" not implemented`);
   }
 };
 
@@ -58,8 +56,6 @@ const getPrecipitationFormatUnit = (unit: PrecipitationUnit) => {
       return "inch";
     case "mm":
       return "millimeter";
-    default:
-      throw new Error(`Unit "${unit}" not implemented`);
   }
 };
 
