@@ -1,20 +1,6 @@
 import { Icon } from "#app/components/icon";
-import { WeatherIcon } from "#app/components/weather-icon";
-import {
-  convertPrecipitation,
-  convertTemperature,
-  convertWindSpeed,
-} from "#app/utils/conversion";
-import {
-  createPrecipitationFormatter,
-  createWindSpeedFormatter,
-  formatDate,
-  formatDay,
-  formatHours,
-  percentageFormatter,
-  temperatureFormatter,
-} from "#app/utils/format";
-import { searchResultSchema, type SearchResultItem } from "#app/utils/search";
+import { Location } from "#app/components/location";
+import { SearchLayout } from "#app/components/search-layout";
 import {
   countSystems,
   precipitationUnitSchema,
@@ -25,88 +11,60 @@ import {
   type TemperatureUnit,
   type WindSpeedUnit,
 } from "#app/utils/settings";
-import { getInterpretation, getWeather } from "#app/utils/weather";
-import { useId, useState } from "react";
+import { homeSearchParamsSchema } from "#app/utils/url";
+import { getWeather } from "#app/utils/weather";
+import { useState } from "react";
 import {
   Button,
-  ComboBox,
   Dialog,
   DialogTrigger,
-  Input,
   Label,
-  ListBox,
-  ListBoxItem,
   Popover,
   Radio,
   RadioGroup,
-  Select,
   SelectionIndicator,
-  SelectValue,
   type ButtonProps,
 } from "react-aria-components";
-import { Form, Link, useNavigate, useNavigation } from "react-router";
-import { useAsyncList } from "react-stately";
+import { Link, type LoaderFunctionArgs } from "react-router";
 import type { Route } from "./+types/home";
 
-export async function loader() {
-  const location = "Berlin, Germany";
-  const weather = await getWeather();
-  return { location, weather };
+export async function loader({ request }: LoaderFunctionArgs) {
+  const searchParamsResult = homeSearchParamsSchema.safeParse(
+    Object.fromEntries(new URL(request.url).searchParams)
+  );
+  if (!searchParamsResult.success) {
+    return { type: "initial" } as const;
+  }
+
+  const searchParams = searchParamsResult.data;
+  if ("q" in searchParams) {
+    // todo: Search
+    console.log("Search", searchParams.q);
+    return { type: "empty" } as const;
+    // return redirect(createHomeUrl({ lat: "0", lon: "0" }));
+  }
+
+  try {
+    const [location, weather] = await Promise.all([
+      // todo: Reverse geolocation
+      Promise.resolve("Berlin, Germany"),
+      getWeather({
+        latitude: searchParams.lat,
+        longitude: searchParams.lon,
+      }),
+    ]);
+    return { type: "location", data: { location, weather } } as const;
+  } catch {
+    return { type: "error" } as const;
+  }
 }
 
-export default function Home({
-  loaderData: { location, weather },
-}: Route.ComponentProps) {
-  const navigation = useNavigation();
-  const navigate = useNavigate();
-  const searchHeadingId = useId();
+export default function Home({ loaderData }: Route.ComponentProps) {
   const [settings, setSettings] = useState<Settings>({
     temperatureUnit: "celsius",
     windSpeedUnit: "kmh",
     precipitationUnit: "mm",
   });
-  const defaultDate = weather.hourly[0]!.time.split("T")[0]!;
-  const dates = [
-    ...new Set(
-      weather.hourly.map((hour) => {
-        return hour.time.split("T")[0]!;
-      })
-    ),
-  ];
-  const [date, setDate] = useState(defaultDate);
-  const list = useAsyncList<SearchResultItem>({
-    load: async ({ signal, filterText = "" }) => {
-      const response = await fetch(
-        `/api/search?${new URLSearchParams({ name: filterText })}`,
-        { signal }
-      );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const json = await response.json();
-      if (signal.aborted) {
-        throw new Error("Aborted during JSON parse");
-      }
-      return searchResultSchema.parse(json);
-    },
-  });
-
-  const temperature = (value: number) => {
-    return temperatureFormatter.format(
-      convertTemperature(settings.temperatureUnit, value)
-    );
-  };
-
-  const windSpeed = (value: number) => {
-    return createWindSpeedFormatter(settings.windSpeedUnit).format(
-      convertWindSpeed(settings.windSpeedUnit, value)
-    );
-  };
-
-  const precipitation = (value: number) => {
-    return createPrecipitationFormatter(settings.precipitationUnit).format(
-      convertPrecipitation(settings.precipitationUnit, value)
-    );
-  };
-
   const settingsCount = countSystems(settings);
   const switchButtonProps: ButtonProps =
     settingsCount.metric < settingsCount.imperial
@@ -130,10 +88,6 @@ export default function Home({
             });
           },
         };
-
-  const currentWeatherInterpretation = getInterpretation(
-    weather.current.weather_code
-  );
 
   return (
     <>
@@ -286,235 +240,34 @@ export default function Home({
       </header>
       <main className="[ center ] [ mt-600 tablet:mt-800 ]">
         <div>
-          <h1 className="text-preset-2 text-center">
-            How’s the sky looking today?
-          </h1>
-          <section
-            className="[ search ] [ center ] [ mt-600 tablet:mt-800 ]"
-            aria-labelledby={searchHeadingId}
-          >
-            <h2 className="sr-only" id={searchHeadingId}>
-              Search
-            </h2>
-            <Form className="search__form">
-              <ComboBox
-                className="search-combobox"
-                aria-label="Search for a place"
-                allowsCustomValue
-                allowsEmptyCollection
-                inputValue={list.filterText}
-                onInputChange={(value) => {
-                  list.setFilterText(value);
-                }}
-                onSelectionChange={(key) => {
-                  if (key === null) return;
-
-                  const item = list.getItem(key);
-                  if (item === undefined) return;
-
-                  void navigate(
-                    `/?${new URLSearchParams({
-                      lon: item.longitude.toString(),
-                      lat: item.latitude.toString(),
-                    })}`
-                  );
-                }}
-                items={list.items}
-              >
-                <div className="search-input">
-                  <Input
-                    className="search-input__input"
-                    name="q"
-                    placeholder="Search for a place..."
-                  />
-                  <Icon className="search-input__icon" name="IconSearch" />
-                </div>
-                <Popover className="search-combobox__popover" offset={10}>
-                  <ListBox
-                    renderEmptyState={() => (
-                      <div className="search-combobox__empty-state">
-                        {list.isLoading ? (
-                          <>
-                            <Icon name="IconLoading" /> Search in progress
-                          </>
-                        ) : (
-                          "No recommendations"
-                        )}
-                      </div>
-                    )}
-                  >
-                    {(item: SearchResultItem) => (
-                      <ListBoxItem>{item.name}</ListBoxItem>
-                    )}
-                  </ListBox>
-                </Popover>
-              </ComboBox>
-              <button className="primary-button">
-                {navigation.state === "idle" ? "Search" : "Searching..."}
-              </button>
-            </Form>
-          </section>
-          <div className="[ dashboard ] [ mt-400 desktop:600 ]">
-            <div>
-              <div className="current">
-                <div className="card">
-                  <div>
-                    <h2 className="text-preset-4">{location}</h2>
-                    <h3 className="sr-only">Current weather</h3>
-                    <p className="mt-150">
-                      {formatDate(new Date(weather.current.time))}
-                    </p>
-                  </div>
-                  <div className="card__weather">
-                    {currentWeatherInterpretation ? (
-                      <WeatherIcon
-                        className="card__weather-icon"
-                        interpretation={currentWeatherInterpretation}
-                      />
-                    ) : null}
-                    <p className="text-preset-1">
-                      {temperature(weather.current.temperature_2m)}
-                    </p>
-                  </div>
-                </div>
-                <div className="[ grid ] [ mt-250 desktop:mt-400 ]">
-                  {[
-                    {
-                      key: "Feels Like",
-                      value: temperature(weather.current.apparent_temperature),
-                    },
-                    {
-                      key: "Humidity",
-                      value: percentageFormatter.format(
-                        weather.current.relative_humidity_2m
-                      ),
-                    },
-                    {
-                      key: "Wind",
-                      value: windSpeed(weather.current.wind_speed_10m),
-                    },
-                    {
-                      key: "Precipitation",
-                      value: precipitation(weather.current.precipitation),
-                    },
-                  ].map(({ key, value }) => {
-                    return (
-                      <div className="[ box ] [ layer-1 radius-12 ]" key={key}>
-                        <h4>{key}</h4>
-                        <p className="mt-300 text-preset-3">{value}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="[ daily ] [ mt-400 desktop:mt-600 ]">
-                <h3 className="text-preset-5">Daily forecast</h3>
-                <ol className="[ grid ] [ mt-250 ]" role="list">
-                  {weather.daily.map((day) => {
-                    const interpretation = getInterpretation(day.weather_code);
-                    return (
-                      <li
-                        className="[ daily__day ] [ box stack ] [ layer-1 radius-12 ]"
-                        key={day.time}
-                      >
-                        <h4 className="text-center">
-                          {formatDay("short", new Date(day.time))}
-                        </h4>
-                        {interpretation ? (
-                          <WeatherIcon
-                            className="[ day__icon ] [ size-60 ]"
-                            interpretation={interpretation}
-                          />
-                        ) : (
-                          <div className="size-60" />
-                        )}
-                        <div className="day__temperature">
-                          <p className="text-preset-7">
-                            <span className="sr-only">Max temperature: </span>
-                            {temperature(day.temperature_2m_max)}
-                          </p>
-                          <p className="text-preset-7">
-                            <span className="sr-only">Min temperature: </span>
-                            {temperature(day.temperature_2m_min)}
-                          </p>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-            </div>
-            <article className="[ hourly ] [ box ] [ layer-1 radius-20 ]">
-              <header className="cluster">
-                <h3 className="text-preset-5">Hourly forecast</h3>
-                <Select
-                  className="date-select"
-                  value={date}
-                  onChange={(value) => {
-                    setDate(
-                      typeof value === "string" && dates.includes(value)
-                        ? value
-                        : defaultDate
-                    );
-                  }}
-                  aria-label="Select date"
-                >
-                  <Button>
-                    <SelectValue />
-                    <Icon name="IconDropdown" />
-                  </Button>
-                  <Popover
-                    className="date-select__popover"
-                    offset={10}
-                    placement="bottom end"
-                  >
-                    <ListBox items={dates.map((id) => ({ id }))}>
-                      {(hour) => (
-                        <ListBoxItem>
-                          {formatDay("long", new Date(hour.id))}
-                        </ListBoxItem>
-                      )}
-                    </ListBox>
-                  </Popover>
-                </Select>
-              </header>
-              <ol className="[ hours ] [ stack ] [ mt-200 ]" role="list">
-                {weather.hourly
-                  .filter((hour) => {
-                    // todo: Real today
-                    const isToday = hour.time.split("T")[0] === date;
-                    const hourPart = Number(
-                      hour.time.split("T")[1]!.slice(0, 2)
-                    );
-                    return isToday && 15 <= hourPart && hourPart <= 22;
-                  })
-                  .map((hour) => {
-                    const interpretation = getInterpretation(hour.weather_code);
-                    return (
-                      <li
-                        className="[ hours__item ] [ box ] [ layer-2 radius-8 ]"
-                        key={hour.time}
-                      >
-                        <h4 className="text-preset-5--medium">
-                          {formatHours(new Date(hour.time))}
-                        </h4>
-                        {interpretation ? (
-                          <WeatherIcon
-                            className="size-40"
-                            interpretation={interpretation}
-                          />
-                        ) : (
-                          <div className="size-40" />
-                        )}
-                        <p className="text-preset-7">
-                          {temperature(hour.temperature_2m)}
-                        </p>
-                      </li>
-                    );
-                  })}
-              </ol>
-            </article>
-          </div>
+          {loaderData.type === "error" ? (
+            <>
+              <Icon name="IconError" />
+              <h1>Something went wrong</h1>
+              <p>
+                We couldn’t connect to the server (API error). Please try again
+                in a few moments.
+              </p>
+              <p>
+                <button>
+                  <Icon name="IconRetry" />
+                  Retry
+                </button>
+              </p>
+            </>
+          ) : (
+            <SearchLayout>
+              {loaderData.type === "empty" ? (
+                <h2>No search result found!</h2>
+              ) : loaderData.type === "location" ? (
+                <Location
+                  settings={settings}
+                  name={loaderData.data.location}
+                  weather={loaderData.data.weather}
+                />
+              ) : null}
+            </SearchLayout>
+          )}
         </div>
       </main>
     </>

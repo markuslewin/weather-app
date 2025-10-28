@@ -168,11 +168,17 @@ const Weather = z.object({
   }),
 });
 
-export const getWeather = async () => {
+export const getWeather = async ({
+  latitude,
+  longitude,
+}: {
+  latitude: string;
+  longitude: string;
+}) => {
   const response = await fetch(
     `https://api.open-meteo.com/v1/forecast?${new URLSearchParams({
-      latitude: "52.52",
-      longitude: "13.41",
+      latitude,
+      longitude,
       daily: "weather_code,temperature_2m_max,temperature_2m_min",
       hourly: "temperature_2m,weather_code",
       current:
