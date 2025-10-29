@@ -46,9 +46,28 @@ jobs:
       - run: npm run test:e2e
         env:
           MOCKS: true
-  deploy:
+  provision:
     runs-on: ubuntu-22.04
     needs: [lint, typecheck, vitest, playwright]
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - uses: azure/bicep-deploy@v2
+        # id: provision
+        with:
+          type: deployment
+          operation: create
+          scope: resourceGroup
+          name: Provision
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          template-file: ./infra/main.bicep
+  deploy:
+    runs-on: ubuntu-22.04
+    needs: [provision]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
