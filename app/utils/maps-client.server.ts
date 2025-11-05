@@ -1,6 +1,6 @@
 import type { MapsSearchClient } from "@azure-rest/maps-search";
 import MapsSearch from "@azure-rest/maps-search";
-import { DefaultAzureCredential } from "@azure/identity";
+import { AzureCliCredential } from "@azure/identity";
 
 const globalForMaps = globalThis as unknown as { maps: MapsSearchClient };
 
@@ -12,7 +12,10 @@ if (globalForMaps.maps) {
   if (!clientId) {
     throw new Error("MAPS_ACCOUNT_CLIENT_ID not set");
   }
-  maps = MapsSearch(new DefaultAzureCredential(), clientId);
+  // todo: Fix prod credentials
+  maps = MapsSearch(new AzureCliCredential(), clientId);
+  // `ManagedIdentityCredential` throws due to MSW emitting duplicate error events
+  // maps = MapsSearch(new DefaultAzureCredential(), clientId);
 }
 
 export { maps };

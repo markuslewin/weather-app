@@ -1,0 +1,69 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.0689933,
+          59.329842
+        ]
+      },
+      "properties": {
+        "geocodePoints": [
+          {
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                18.0689933,
+                59.329842
+              ]
+            },
+            "calculationMethod": "Rooftop",
+            "usageTypes": [
+              "Display"
+            ]
+          }
+        ],
+        "address": {
+          "addressLine": "Gustav Adolfs Torg 20",
+          "adminDistricts": [
+            {
+              "name": "Stockholm County"
+            },
+            {
+              "name": "Stockholm"
+            }
+          ],
+          "countryRegion": {
+            "name": "Sweden",
+            "iso": "SE"
+          },
+          "intersection": {
+            "baseStreet": "Gustav Adolfs Torg",
+            "displayName": "Gustav Adolfs Torg, between Strömgatan and Regeringsgatan",
+            "intersectionType": "Between",
+            "secondaryStreet1": "Strömgatan",
+            "secondaryStreet2": "Regeringsgatan"
+          },
+          "locality": "Stockholm",
+          "neighborhood": "Norrmalm",
+          "postalCode": "111 52",
+          "formattedAddress": "Gustav Adolfs Torg 20, 111 52 Stockholm, Sweden"
+        },
+        "confidence": "High",
+        "matchCodes": [
+          "Good"
+        ],
+        "type": "Address"
+      },
+      "bbox": [
+        18.058897720359337,
+        59.32597928242932,
+        18.07908887964066,
+        59.333704717570676
+      ]
+    }
+  ]
+}

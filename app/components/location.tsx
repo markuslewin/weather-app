@@ -13,7 +13,9 @@ import {
   percentageFormatter,
   formatDay,
   formatHours,
+  formatList,
 } from "#app/utils/format";
+import type { getLocation } from "#app/utils/maps";
 import type { Settings } from "#app/utils/settings";
 import { getInterpretation, getWeather } from "#app/utils/weather";
 import { useState } from "react";
@@ -28,11 +30,11 @@ import {
 
 export const Location = ({
   settings,
-  name,
+  location,
   weather,
 }: {
   settings: Settings;
-  name: string;
+  location: Awaited<ReturnType<typeof getLocation>>;
   weather: Awaited<ReturnType<typeof getWeather>>;
 }) => {
   const defaultDate = weather.hourly[0]!.time.split("T")[0]!;
@@ -74,7 +76,11 @@ export const Location = ({
           <div className="current">
             <div className="card">
               <div>
-                <h2 className="text-preset-4">{name}</h2>
+                <h2 className="text-preset-4">
+                  {location === null
+                    ? "Unknown"
+                    : formatList([location.locality, location.country])}
+                </h2>
                 <h3 className="sr-only">Current weather</h3>
                 <p className="mt-150">
                   {formatDate(new Date(weather.current.time))}

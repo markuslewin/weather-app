@@ -1,6 +1,7 @@
 import { Icon } from "#app/components/icon";
 import { Location } from "#app/components/location";
 import { SearchLayout } from "#app/components/search-layout";
+import { getLocation } from "#app/utils/maps";
 import { search } from "#app/utils/search";
 import {
   countSystems,
@@ -55,15 +56,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   try {
     const [location, weather] = await Promise.all([
-      // todo: Reverse geolocation
-      Promise.resolve("Berlin, Germany"),
+      getLocation({
+        latitude: searchParams.lat,
+        longitude: searchParams.lon,
+      }),
       getWeather({
         latitude: searchParams.lat,
         longitude: searchParams.lon,
       }),
     ]);
+
     return { type: "location", data: { location, weather } } as const;
   } catch {
+    // todo: Wrap whole loader?
     return { type: "error" } as const;
   }
 }
@@ -273,7 +278,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               ) : loaderData.type === "location" ? (
                 <Location
                   settings={settings}
-                  name={loaderData.data.location}
+                  location={loaderData.data.location}
                   weather={loaderData.data.weather}
                 />
               ) : null}
