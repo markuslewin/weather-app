@@ -18,6 +18,12 @@ export const formatHours = (date: Date) => {
   }).format(date);
 };
 
+const listFormatter = new Intl.ListFormat(locales, { type: "unit" });
+
+export const formatList = (values: unknown[]) => {
+  return listFormatter.format(values.filter((val) => typeof val === "string"));
+};
+
 export const temperatureFormatter = new Intl.NumberFormat(locales, {
   style: "unit",
   unit: "degree",

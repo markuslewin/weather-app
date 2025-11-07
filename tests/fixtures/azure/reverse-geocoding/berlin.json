@@ -1,0 +1,57 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.410684, 52.524185]
+      },
+      "properties": {
+        "geocodePoints": [
+          {
+            "geometry": {
+              "type": "Point",
+              "coordinates": [13.410684, 52.524185]
+            },
+            "calculationMethod": "Rooftop",
+            "usageTypes": ["Display"]
+          }
+        ],
+        "address": {
+          "addressLine": "Memhardstraße 8",
+          "adminDistricts": [
+            {
+              "name": "Berlin"
+            },
+            {
+              "name": "Stadt Berlin"
+            }
+          ],
+          "countryRegion": {
+            "name": "Germany",
+            "iso": "DE"
+          },
+          "intersection": {
+            "baseStreet": "Memhardstraße",
+            "displayName": "Memhardstraße, between Rosa-Luxemburg Straße and Alexanderstraße",
+            "intersectionType": "Between",
+            "secondaryStreet1": "Rosa-Luxemburg Straße",
+            "secondaryStreet2": "Alexanderstraße"
+          },
+          "locality": "Berlin",
+          "neighborhood": "Mitte",
+          "postalCode": "10178",
+          "formattedAddress": "Memhardstraße 8, 10178 Berlin, Germany"
+        },
+        "confidence": "High",
+        "matchCodes": ["Good"],
+        "type": "Address"
+      },
+      "bbox": [
+        13.402219810304393, 52.520322282429326, 13.419148189695607,
+        52.52804771757068
+      ]
+    }
+  ]
+}

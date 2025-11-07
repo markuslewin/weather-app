@@ -206,6 +206,11 @@ body {
   }
 }
 
+.empty {
+  @include tokens.text-preset-4;
+  text-align: center;
+}
+
 .dashboard {
   display: grid;
   gap: tokens.spacing(400);
