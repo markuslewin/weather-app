@@ -46,6 +46,7 @@ jobs:
       - run: npm run test:e2e
         env:
           MOCKS: true
+          AZURE_MAPS_CLIENT_ID: 00000000-0000-0000-0000-000000000000
   provision:
     runs-on: ubuntu-22.04
     needs: [lint, typecheck, vitest, playwright]
@@ -80,9 +81,11 @@ jobs:
               | jq '.secretText'
           )
           echo "::add-mask::$SECRET_TEXT"
-          npx netlify env:set import <(echo "WEB_SECRET=$SECRET_TEXT")
-          npx netlify env:set WEB_SECRET --force --secret
-          npx netlify env:set MAPS_ACCOUNT_CLIENT_ID "${{ steps.provision.outputs.mapsAccountId }}" --force
+          npx netlify env:set import <(echo "AZURE_WEB_CLIENT_SECRET=$SECRET_TEXT")
+          npx netlify env:set AZURE_WEB_CLIENT_SECRET --force --secret
+          npx netlify env:set AZURE_TENANT_ID "${{ steps.provision.outputs.tenantId }}" --force
+          npx netlify env:set AZURE_WEB_CLIENT_ID "${{ steps.provision.outputs.webClientId }}" --force
+          npx netlify env:set AZURE_MAPS_CLIENT_ID "${{ steps.provision.outputs.mapsAccountId }}" --force
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
