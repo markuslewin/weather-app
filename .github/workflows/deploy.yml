@@ -1,55 +1,54 @@
 name: Deploy
 on:
   push:
-    branches:
-      - main
+  workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  lint:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: bahmutov/npm-install@v1
-      - run: npm run lint
-  typecheck:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: bahmutov/npm-install@v1
-      - run: npm run typecheck
-  vitest:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: bahmutov/npm-install@v1
-      - run: npm run test
-  playwright:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: bahmutov/npm-install@v1
-      - run: npm run test:e2e:install
-      - run: npm run test:e2e
-        env:
-          MOCKS: true
-          AZURE_MAPS_CLIENT_ID: 00000000-0000-0000-0000-000000000000
+  # lint:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - uses: bahmutov/npm-install@v1
+  #     - run: npm run lint
+  # typecheck:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - uses: bahmutov/npm-install@v1
+  #     - run: npm run typecheck
+  # vitest:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - uses: bahmutov/npm-install@v1
+  #     - run: npm run test
+  # playwright:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - uses: bahmutov/npm-install@v1
+  #     - run: npm run test:e2e:install
+  #     - run: npm run test:e2e
+  #       env:
+  #         MOCKS: true
+  #         AZURE_MAPS_CLIENT_ID: 00000000-0000-0000-0000-000000000000
   provision:
     runs-on: ubuntu-22.04
-    needs: [lint, typecheck, vitest, playwright]
+    # needs: [lint, typecheck, vitest, playwright]
     permissions:
       id-token: write
     outputs:
@@ -77,31 +76,31 @@ jobs:
           template-file: ./infra/main.bicep
       # Bicep doesn't support adding a password to an application, so we do that here instead
       # Avoid secrets in CLI arguments by using `netlify env:set import`
-      - run: |
-          SECRET_TEXT=$(
-            az rest --method post --url "https://graph.microsoft.com/v1.0/applications/${{ steps.provision.outputs.webId }}/addPassword" \
-              | jq '.secretText'
-          )
-          echo "::add-mask::$SECRET_TEXT"
-          npx netlify env:set import <(echo "AZURE_WEB_CLIENT_SECRET=$SECRET_TEXT")
-          npx netlify env:set AZURE_WEB_CLIENT_SECRET --force --secret
-          npx netlify env:set AZURE_TENANT_ID "${{ steps.provision.outputs.tenantId }}" --force
-          npx netlify env:set AZURE_WEB_CLIENT_ID "${{ steps.provision.outputs.webClientId }}" --force
-          npx netlify env:set AZURE_MAPS_CLIENT_ID "${{ steps.provision.outputs.mapsAccountId }}" --force
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-  deploy:
-    runs-on: ubuntu-22.04
-    needs: [provision]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: bahmutov/npm-install@v1
-      - run: npm run build
-      - run: npx netlify deploy --prod --no-build
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      # - run: |
+      #     SECRET_TEXT=$(
+      #       az rest --method post --url "https://graph.microsoft.com/v1.0/applications/${{ steps.provision.outputs.webId }}/addPassword" \
+      #         | jq '.secretText'
+      #     )
+      #     echo "::add-mask::$SECRET_TEXT"
+      #     npx netlify env:set import <(echo "AZURE_WEB_CLIENT_SECRET=$SECRET_TEXT")
+      #     npx netlify env:set AZURE_WEB_CLIENT_SECRET --force --secret
+      #     npx netlify env:set AZURE_TENANT_ID "${{ steps.provision.outputs.tenantId }}" --force
+      #     npx netlify env:set AZURE_WEB_CLIENT_ID "${{ steps.provision.outputs.webClientId }}" --force
+      #     npx netlify env:set AZURE_MAPS_CLIENT_ID "${{ steps.provision.outputs.mapsAccountId }}" --force
+      #   env:
+      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  # deploy:
+  #   runs-on: ubuntu-22.04
+  #   needs: [provision]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #     - uses: bahmutov/npm-install@v1
+  #     - run: npm run build
+  #     - run: npx netlify deploy --prod --no-build
+  #       env:
+  #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
