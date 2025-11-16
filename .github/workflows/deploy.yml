@@ -75,8 +75,9 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           template-file: ./infra/main.bicep
-      - run: tsx scripts/link-to-netlify.ts
+      - run: npx tsx scripts/link-to-netlify.ts
         env:
+          AZURE_WEB_ID: ${{ steps.provision.outputs.webId }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
   deploy:
