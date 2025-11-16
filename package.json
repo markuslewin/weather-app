@@ -45,6 +45,7 @@
     "msw": "^2.11.3",
     "netlify-cli": "^23.9.5",
     "sass-embedded": "^1.93.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.46.0",
     "vite": "^7.1.7",

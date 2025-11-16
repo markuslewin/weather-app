@@ -75,19 +75,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           template-file: ./infra/main.bicep
-      # Bicep doesn't support adding a password to an application, so we do that here instead
-      # Avoid secrets in CLI arguments by using `netlify env:set import`
-      - run: |
-          SECRET_TEXT=$(
-            az rest --method post --url "https://graph.microsoft.com/v1.0/applications/${{ steps.provision.outputs.webId }}/addPassword" \
-              | jq '.secretText'
-          )
-          echo "::add-mask::$SECRET_TEXT"
-          npx netlify env:set import <(echo "AZURE_WEB_CLIENT_SECRET=$SECRET_TEXT")
-          npx netlify env:set AZURE_WEB_CLIENT_SECRET --force --secret
-          npx netlify env:set AZURE_TENANT_ID "${{ steps.provision.outputs.tenantId }}" --force
-          npx netlify env:set AZURE_WEB_CLIENT_ID "${{ steps.provision.outputs.webClientId }}" --force
-          npx netlify env:set AZURE_MAPS_CLIENT_ID "${{ steps.provision.outputs.mapsAccountId }}" --force
+      - run: tsx scripts/link-to-netlify.ts
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
