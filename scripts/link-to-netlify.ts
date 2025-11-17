@@ -83,7 +83,7 @@ await Promise.all(
         },
       ],
     };
-    if (vars.find((v) => v.key === key)) {
+    if (vars.some((v) => v.key === key)) {
       return netlifyClient.updateEnvVar({
         accountId,
         siteId,

@@ -75,6 +75,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           template-file: ./infra/main.bicep
+          masked-outputs: "webClientId,mapsClientId"
       - run: npx tsx scripts/link-to-netlify.ts
         env:
           AZURE_TENANT_ID: ${{ steps.provision.outputs.tenantId }}
