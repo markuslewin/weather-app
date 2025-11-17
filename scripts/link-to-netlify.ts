@@ -6,19 +6,17 @@ import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-grap
 import { AzureCliCredential } from "@azure/identity";
 import z from "zod";
 
-const getEnv = (key: string) => {
-  const value = process.env[key];
-  if (value === undefined) throw new Error(`Missing env ${key}`);
-  return value;
-};
-
-const AZURE_TENANT_ID = getEnv("AZURE_TENANT_ID");
-const AZURE_WEB_ID = getEnv("AZURE_WEB_ID");
-const AZURE_WEB_CLIENT_ID = getEnv("AZURE_WEB_CLIENT_ID");
-const AZURE_MAPS_CLIENT_ID = getEnv("AZURE_MAPS_CLIENT_ID");
-const NETLIFY_AUTH_TOKEN = getEnv("NETLIFY_AUTH_TOKEN");
-const NETLIFY_SITE_ID = getEnv("NETLIFY_SITE_ID");
-const NETLIFY_ACCOUNT_ID = getEnv("NETLIFY_ACCOUNT_ID");
+const env = z
+  .object({
+    AZURE_TENANT_ID: z.string(),
+    AZURE_WEB_ID: z.string(),
+    AZURE_WEB_CLIENT_ID: z.string(),
+    AZURE_MAPS_CLIENT_ID: z.string(),
+    NETLIFY_AUTH_TOKEN: z.string(),
+    NETLIFY_SITE_ID: z.string(),
+    NETLIFY_ACCOUNT_ID: z.string(),
+  })
+  .parse(process.env);
 
 const graphClient = Client.initWithMiddleware({
   authProvider: new TokenCredentialAuthenticationProvider(
@@ -29,7 +27,7 @@ const graphClient = Client.initWithMiddleware({
     }
   ),
 });
-const netlifyClient = new NetlifyAPI(NETLIFY_AUTH_TOKEN);
+const netlifyClient = new NetlifyAPI(env.NETLIFY_AUTH_TOKEN);
 
 const secretDisplayName = "web-secret";
 const app = z
@@ -38,7 +36,7 @@ const app = z
   })
   .parse(
     await graphClient
-      .api(`/applications/${encodeURIComponent(AZURE_WEB_ID)}`)
+      .api(`/applications/${encodeURIComponent(env.AZURE_WEB_ID)}`)
       .get()
   );
 if (
@@ -47,7 +45,7 @@ if (
 ) {
   const credential = z.object({ secretText: z.string() }).parse(
     await graphClient
-      .api(`/applications/${encodeURIComponent(AZURE_WEB_ID)}/addPassword`)
+      .api(`/applications/${encodeURIComponent(env.AZURE_WEB_ID)}/addPassword`)
       .post({
         passwordCredential: {
           displayName: secretDisplayName,
@@ -57,8 +55,8 @@ if (
   core.setSecret(credential.secretText);
 }
 
-const accountId = NETLIFY_ACCOUNT_ID;
-const siteId = NETLIFY_SITE_ID;
+const accountId = env.NETLIFY_ACCOUNT_ID;
+const siteId = env.NETLIFY_SITE_ID;
 
 const vars = await netlifyClient.getEnvVars({
   accountId,
@@ -67,10 +65,10 @@ const vars = await netlifyClient.getEnvVars({
 
 await Promise.all(
   [
-    { key: "AZURE_TENANT_ID", value: AZURE_TENANT_ID },
-    { key: "AZURE_WEB_CLIENT_ID", value: AZURE_WEB_CLIENT_ID },
+    { key: "AZURE_TENANT_ID", value: env.AZURE_TENANT_ID },
+    { key: "AZURE_WEB_CLIENT_ID", value: env.AZURE_WEB_CLIENT_ID },
     // todo: { key: "AZURE_WEB_CLIENT_SECRET", value: credential.secretText },
-    { key: "AZURE_MAPS_CLIENT_ID", value: AZURE_MAPS_CLIENT_ID },
+    { key: "AZURE_MAPS_CLIENT_ID", value: env.AZURE_MAPS_CLIENT_ID },
   ].map(({ key, value }) => {
     const envVar: EnvVar = {
       key,
