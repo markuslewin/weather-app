@@ -24,4 +24,4 @@ module mapsAccount 'br/public:avm/res/maps/account:0.1.0' = {
 output tenantId string = tenant().tenantId
 output webId string = web.id
 output webClientId string = web.appId
-output mapsAccountId string = mapsAccount.outputs.resourceId
+output mapsClientId string = mapsAccount.outputs.resourceId

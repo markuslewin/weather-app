@@ -77,9 +77,13 @@ jobs:
           template-file: ./infra/main.bicep
       - run: npx tsx scripts/link-to-netlify.ts
         env:
+          AZURE_TENANT_ID: ${{ steps.provision.outputs.tenantId }}
           AZURE_WEB_ID: ${{ steps.provision.outputs.webId }}
+          AZURE_WEB_CLIENT_ID: ${{ steps.provision.outputs.webClientId }}
+          AZURE_MAPS_CLIENT_ID: ${{ steps.provision.outputs.mapsClientId }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_ACCOUNT_ID: ${{ secrets.NETLIFY_ACCOUNT_ID }}
   deploy:
     runs-on: ubuntu-22.04
     needs: [provision]
