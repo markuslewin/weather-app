@@ -20,7 +20,7 @@ const env = z
 
 const graphClient = Client.initWithMiddleware({
   authProvider: new TokenCredentialAuthenticationProvider(
-    // From `azure/login` action
+    // Reuse auth token from `azure/login` action
     new AzureCliCredential(),
     {
       scopes: ["https://graph.microsoft.com/.default"],
@@ -29,75 +29,103 @@ const graphClient = Client.initWithMiddleware({
 });
 const netlifyClient = new NetlifyAPI(env.NETLIFY_AUTH_TOKEN);
 
-const secretDisplayName = "web-secret";
-const app = z
-  .object({
-    passwordCredentials: z.object({ displayName: z.string() }).array(),
-  })
-  .parse(
-    await graphClient
-      .api(`/applications/${encodeURIComponent(env.AZURE_WEB_ID)}`)
-      .get()
+const putSecret = async (id: string) => {
+  // Track which password is ours
+  const secretDisplayName = "d14127a0-482b-4c80-9e4e-dbdd548dd98b";
+  const app = await getApp(id);
+  await deleteSecret(
+    app.id,
+    app.passwordCredentials
+      .filter((c) => c.displayName === secretDisplayName)
+      .map((c) => c.keyId)
   );
-if (
-  app.passwordCredentials.find((c) => c.displayName === secretDisplayName) ===
-  undefined
-) {
-  const credential = z.object({ secretText: z.string() }).parse(
+  return createSecret(app.id, secretDisplayName);
+};
+
+const getApp = async (id: string) => {
+  return z
+    .object({
+      id: z.string(),
+      passwordCredentials: z
+        .object({ keyId: z.string(), displayName: z.string() })
+        .array(),
+    })
+    .parse(
+      await graphClient.api(`/applications/${encodeURIComponent(id)}`).get()
+    );
+};
+
+const deleteSecret = async (id: string, keyIds: string[]) => {
+  await Promise.all(
+    keyIds.map((keyId) => {
+      return graphClient
+        .api(`/applications/${encodeURIComponent(id)}/removePassword`)
+        .post({
+          keyId,
+        });
+    })
+  );
+};
+
+const createSecret = async (id: string, displayName: string) => {
+  const { secretText } = z.object({ secretText: z.string() }).parse(
     await graphClient
-      .api(`/applications/${encodeURIComponent(env.AZURE_WEB_ID)}/addPassword`)
+      .api(`/applications/${encodeURIComponent(id)}/addPassword`)
       .post({
         passwordCredential: {
-          displayName: secretDisplayName,
+          displayName,
         },
       })
   );
-  core.setSecret(credential.secretText);
-}
+  core.setSecret(secretText);
+  return { secretText };
+};
 
-const accountId = env.NETLIFY_ACCOUNT_ID;
-const siteId = env.NETLIFY_SITE_ID;
-
-const vars = await netlifyClient.getEnvVars({
+const deleteVars = async ({
   accountId,
   siteId,
-});
+  keys,
+}: {
+  accountId: string;
+  siteId: string;
+  keys: Key[];
+}) => {
+  await Promise.all(
+    keys.map((key) => {
+      return netlifyClient.deleteEnvVar({ accountId, siteId, key });
+    })
+  );
+};
 
-await Promise.all(
-  [
-    { key: "AZURE_TENANT_ID", value: env.AZURE_TENANT_ID },
-    { key: "AZURE_WEB_CLIENT_ID", value: env.AZURE_WEB_CLIENT_ID },
-    // todo: { key: "AZURE_WEB_CLIENT_SECRET", value: credential.secretText },
-    { key: "AZURE_MAPS_CLIENT_ID", value: env.AZURE_MAPS_CLIENT_ID },
-  ].map(({ key, value }) => {
-    const envVar: EnvVar = {
-      key,
-      // When `is_secret` is `false`, `scopes` isn't allowed on free tier
-      // When `is_secret` is `true`, we must set all scopes except `post-processing` on free tier
-      is_secret: true,
-      // We only really care about `functions`
-      scopes: ["builds", "functions", "runtime"],
-      values: [
-        {
-          value,
-        },
-      ],
-    };
-    if (vars.some((v) => v.key === key)) {
-      return netlifyClient.updateEnvVar({
-        accountId,
-        siteId,
+const postVars = async ({
+  accountId,
+  siteId,
+  vars,
+}: {
+  accountId: string;
+  siteId: string;
+  vars: Record<Key, string>;
+}) => {
+  await netlifyClient.createEnvVars({
+    accountId,
+    siteId,
+    body: Object.entries(vars).map(([key, value]) => {
+      return {
         key,
-        body: envVar,
-      });
-    }
-    return netlifyClient.createEnvVars({
-      accountId,
-      siteId,
-      body: [envVar],
-    });
-  })
-);
+        // When `is_secret` is `false`, `scopes` isn't allowed on free tier
+        // When `is_secret` is `true`, all scopes except `post-processing` must be set on free tier
+        is_secret: true,
+        // We only really care about `functions`
+        scopes: ["builds", "functions", "runtime"],
+        values: [
+          {
+            value,
+          },
+        ],
+      } satisfies EnvVar;
+    }),
+  });
+};
 
 type EnvVar = Parameters<
   typeof netlifyClient.updateEnvVar
@@ -106,3 +134,28 @@ type EnvVar = Parameters<
     ? TBody
     : never
   : never;
+
+const accountId = env.NETLIFY_ACCOUNT_ID;
+const siteId = env.NETLIFY_SITE_ID;
+const keys = [
+  "AZURE_TENANT_ID",
+  "AZURE_WEB_CLIENT_ID",
+  "AZURE_WEB_CLIENT_SECRET",
+  "AZURE_MAPS_CLIENT_ID",
+] as const;
+type Key = (typeof keys)[number];
+
+const [{ secretText }] = await Promise.all([
+  putSecret(env.AZURE_WEB_ID),
+  deleteVars({ accountId, siteId, keys: [...keys] }),
+]);
+await postVars({
+  accountId,
+  siteId,
+  vars: {
+    AZURE_TENANT_ID: env.AZURE_TENANT_ID,
+    AZURE_WEB_CLIENT_ID: env.AZURE_WEB_CLIENT_ID,
+    AZURE_WEB_CLIENT_SECRET: secretText,
+    AZURE_MAPS_CLIENT_ID: env.AZURE_MAPS_CLIENT_ID,
+  },
+});

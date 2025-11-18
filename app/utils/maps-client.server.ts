@@ -13,7 +13,7 @@ if (globalForMaps.maps) {
     throw new Error("AZURE_MAPS_CLIENT_ID not set");
   }
   let credentials;
-  // todo: Figure this out
+  // todo: Figure this out (Zod + common key names)
   if (process.env.NODE_ENV === "production" && process.env.MOCKS !== "true") {
     const tenantId = process.env.AZURE_TENANT_ID;
     if (typeof tenantId !== "string") {
