@@ -67,7 +67,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     ]);
 
     return { type: "location", data: { location, weather } } as const;
-  } catch {
+  } catch (err) {
+    console.error(err);
     return { type: "error" } as const;
   }
 }

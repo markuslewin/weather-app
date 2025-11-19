@@ -1,5 +1,33 @@
-import { test, expect } from "@playwright/test";
+import { test as baseTest, expect } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
+import {
+  deleteFixtureSettings,
+  meteoForecastDir,
+  readFixtureSettings,
+  writeFixtureSettings,
+  type Settings,
+} from "#tests/mocks/utils";
+import { createHomeUrl } from "#app/utils/url";
+
+const test = baseTest.extend<{
+  setMeteoForecastSettings: (settings: Settings) => Promise<void>;
+}>({
+  // eslint-disable-next-line no-empty-pattern
+  setMeteoForecastSettings: async ({}, use) => {
+    const originalSettings = await readFixtureSettings(meteoForecastDir);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    await use(async (settings) => {
+      await writeFixtureSettings(meteoForecastDir, settings);
+    });
+
+    if (originalSettings === null) {
+      await deleteFixtureSettings(meteoForecastDir);
+    } else {
+      await writeFixtureSettings(meteoForecastDir, originalSettings);
+    }
+  },
+});
 
 test("passes a11y check", async ({ page }) => {
   await page.goto("/");
@@ -124,4 +152,36 @@ test("switches toggle button text", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: "switch to imperial" })
   ).toBeVisible();
+});
+
+test("shows initial view", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+    /the sky looking today/i
+  );
+});
+
+test("shows error view when forecast fails", async ({
+  page,
+  setMeteoForecastSettings,
+}) => {
+  await setMeteoForecastSettings({ type: "error" });
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+    /something went wrong/i
+  );
+});
+
+test.skip("can retry from error view", async ({
+  page,
+  setMeteoForecastSettings,
+}) => {
+  await setMeteoForecastSettings({ type: "error" });
+  await page.goto("/");
+  await setMeteoForecastSettings({ type: "json", fixture: "figma" });
+  await page.getByRole("button", { name: "retry" }).click();
+
+  // await expect()
 });
