@@ -1,10 +1,10 @@
 import { readFile, rm, writeFile } from "fs/promises";
-import path, { dirname } from "path";
+import path from "path";
 import { fileURLToPath } from "url";
 import z from "zod";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const fixturesDir = path.join(__dirname, "..", "fixtures");
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const fixturesDir = path.join(dirname, "..", "fixtures");
 export const meteoForecastDir = path.join(fixturesDir, "meteo", "forecast");
 
 const resolveSettingsPath = (dir: string) => {
