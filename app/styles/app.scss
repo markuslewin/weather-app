@@ -79,7 +79,7 @@ body {
   --outline-outer-color: #{tokens.$color-neutral-0};
 
   border: none;
-  border-radius: utils.rem(12);
+  border-radius: tokens.radius(12);
   outline: none;
   padding: tokens.spacing(150) tokens.spacing(200);
   display: grid;
@@ -203,6 +203,53 @@ body {
       grid-template-columns: 1fr auto;
       gap: tokens.spacing(200);
     }
+  }
+}
+
+.error {
+  padding-block-start: tokens.spacing(500);
+  text-align: center;
+
+  @include tokens.text-preset-5;
+
+  &__message {
+    margin-inline: auto;
+    max-width: utils.rem(554);
+  }
+
+  &__button {
+    margin-inline: auto;
+    border: none;
+    border-radius: tokens.radius(12);
+    padding: tokens.spacing(150) tokens.spacing(200);
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: tokens.spacing(125);
+    @include tokens.text-preset-7;
+    background: tokens.$color-neutral-800;
+    color: tokens.$color-neutral-0;
+    @include tokens.transition((background-color, color));
+
+    &:focus-visible {
+      background: tokens.$color-neutral-700;
+      color: tokens.$color-neutral-0;
+    }
+
+    @include utils.hover {
+      background: tokens.$color-neutral-700;
+      color: tokens.$color-neutral-0;
+    }
+
+    .IconRetry {
+      width: utils.rem(16);
+      height: utils.rem(16);
+    }
+  }
+
+  .IconError {
+    width: utils.rem(42);
+    height: auto;
   }
 }
 

@@ -68,7 +68,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     return { type: "location", data: { location, weather } } as const;
   } catch {
-    // todo: Wrap whole loader?
     return { type: "error" } as const;
   }
 }
@@ -255,20 +254,18 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <main className="[ center ] [ mt-600 tablet:mt-800 ]">
         <div>
           {loaderData.type === "error" ? (
-            <>
-              <Icon name="IconError" />
-              <h1>Something went wrong</h1>
-              <p>
+            <div className="error">
+              <Icon name="IconError" width={18} height={18} />
+              <h1 className="mt-300 text-preset-2">Something went wrong</h1>
+              <p className="[ error__message ] [ mt-300 ]">
                 We couldn’t connect to the server (API error). Please try again
                 in a few moments.
               </p>
-              <p>
-                <button>
-                  <Icon name="IconRetry" />
-                  Retry
-                </button>
-              </p>
-            </>
+              <button className="[ error__button ] [ mt-300 ]">
+                <Icon name="IconRetry" />
+                Retry
+              </button>
+            </div>
           ) : (
             <SearchLayout>
               {loaderData.type === "empty" ? (
