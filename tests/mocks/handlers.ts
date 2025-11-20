@@ -1,20 +1,26 @@
-import { http, HttpResponse } from "msw";
 import forecastData from "#tests/fixtures/meteo/forecast/figma.json";
 import searchData from "#tests/fixtures/meteo/search/real.json";
+import { http, HttpResponse, type JsonBodyType } from "msw";
 // import searchData from "#tests/fixtures/meteo/search/empty.json";
 import reverseGeocodeData from "#tests/fixtures/azure/reverse-geocoding/berlin.json";
 import {
+  azureReverseGeocodingDir,
   meteoForecastDir,
+  meteoSearchDir,
   readFixture,
   readFixtureSettings,
 } from "#tests/mocks/utils";
 // import reverseGeocodeData from "#tests/fixtures/azure/reverse-geocoding/stockholm.json";
 
-export const handlers = [
-  http.get("https://api.open-meteo.com/v1/forecast", async () => {
-    const settings = await readFixtureSettings(meteoForecastDir);
+const createMockFixtureHandler = (
+  predicate: string,
+  dir: string,
+  defaultData: JsonBodyType
+) => {
+  return http.get(predicate, async () => {
+    const settings = await readFixtureSettings(dir);
     if (settings === null) {
-      return HttpResponse.json(forecastData);
+      return HttpResponse.json(defaultData);
     }
     switch (settings.type) {
       case "error":
@@ -22,14 +28,26 @@ export const handlers = [
       case "json":
         return HttpResponse.json(
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          await readFixture(meteoForecastDir, settings.fixture)
+          await readFixture(dir, settings.fixture)
         );
     }
-  }),
-  http.get("https://geocoding-api.open-meteo.com/v1/search", () => {
-    return HttpResponse.json(searchData);
-  }),
-  http.get("https://atlas.microsoft.com/reverseGeocode", () => {
-    return HttpResponse.json(reverseGeocodeData);
-  }),
+  });
+};
+
+export const handlers = [
+  createMockFixtureHandler(
+    "https://api.open-meteo.com/v1/forecast",
+    meteoForecastDir,
+    forecastData
+  ),
+  createMockFixtureHandler(
+    "https://geocoding-api.open-meteo.com/v1/search",
+    meteoSearchDir,
+    searchData
+  ),
+  createMockFixtureHandler(
+    "https://atlas.microsoft.com/reverseGeocode",
+    azureReverseGeocodingDir,
+    reverseGeocodeData
+  ),
 ];
