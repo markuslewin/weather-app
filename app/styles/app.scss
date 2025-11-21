@@ -293,6 +293,13 @@ body {
   background: url(/images/bg-today-small.svg) center/cover
     tokens.$color-blue-700;
 
+  &__location-fallback {
+    border-radius: tokens.radius(12);
+    background: tokens.$color-neutral-300;
+    color: hsl(0 0% 0% / 0%);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
   &__weather {
     display: flex;
     justify-content: center;
@@ -630,5 +637,11 @@ body {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
   }
 }

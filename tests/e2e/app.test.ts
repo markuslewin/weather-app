@@ -148,16 +148,14 @@ test("shows error view when forecast fails", async ({
   );
 });
 
-test("shows error view when reverse geocoding fails", async ({
+test("location is unknown when reverse geolocation fails", async ({
   page,
   setAzureReverseGeolocationSettings,
 }) => {
   await setAzureReverseGeolocationSettings({ type: "error" });
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-    /something went wrong/i
-  );
+  await expect(page.getByTestId("location")).toHaveText(/unknown/i);
 });
 
 test.skip("can retry from error view", async ({

@@ -18,7 +18,7 @@ import {
 import type { getLocation } from "#app/utils/maps";
 import type { Settings } from "#app/utils/settings";
 import { getInterpretation, getWeather } from "#app/utils/weather";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import {
   Select,
   Button,
@@ -27,6 +27,7 @@ import {
   ListBox,
   ListBoxItem,
 } from "react-aria-components";
+import { Await } from "react-router";
 
 export const Location = ({
   settings,
@@ -34,7 +35,7 @@ export const Location = ({
   weather,
 }: {
   settings: Settings;
-  location: Awaited<ReturnType<typeof getLocation>>;
+  location: ReturnType<typeof getLocation>;
   weather: Awaited<ReturnType<typeof getWeather>>;
 }) => {
   const defaultDate = weather.hourly[0]!.time.split("T")[0]!;
@@ -77,9 +78,31 @@ export const Location = ({
             <div className="card">
               <div>
                 <h2 className="text-preset-4">
-                  {location === null
-                    ? "Unknown"
-                    : formatList([location.locality, location.country])}
+                  <span className="sr-only">Location: </span>
+                  <span data-testid="location">
+                    <Suspense
+                      fallback={
+                        <>
+                          <span className="sr-only">Loading</span>
+                          <span
+                            className="card__location-fallback"
+                            aria-hidden="true"
+                          >
+                            {/* A naive guess */}
+                            Berlin, Germany
+                          </span>
+                        </>
+                      }
+                    >
+                      <Await resolve={location} errorElement={"Unknown"}>
+                        {(location) => {
+                          return location === null
+                            ? "Unknown"
+                            : formatList([location.locality, location.country]);
+                        }}
+                      </Await>
+                    </Suspense>
+                  </span>
                 </h2>
                 <h3 className="sr-only">Current weather</h3>
                 <p className="mt-150">

@@ -55,16 +55,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   try {
-    const [location, weather] = await Promise.all([
-      getLocation({
-        latitude: searchParams.lat,
-        longitude: searchParams.lon,
-      }),
-      getWeather({
-        latitude: searchParams.lat,
-        longitude: searchParams.lon,
-      }),
-    ]);
+    const location = getLocation({
+      latitude: searchParams.lat,
+      longitude: searchParams.lon,
+    });
+    const weather = await getWeather({
+      latitude: searchParams.lat,
+      longitude: searchParams.lon,
+    });
 
     return { type: "location", data: { location, weather } } as const;
   } catch (err) {

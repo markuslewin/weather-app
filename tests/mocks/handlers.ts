@@ -10,44 +10,38 @@ import {
   readFixture,
   readFixtureSettings,
 } from "#tests/mocks/utils";
+// import type { ErrorResponseOutput } from "@azure-rest/maps-search";
 // import reverseGeocodeData from "#tests/fixtures/azure/reverse-geocoding/stockholm.json";
 
-const createMockFixtureHandler = (
-  predicate: string,
-  dir: string,
-  defaultData: JsonBodyType
-) => {
-  return http.get(predicate, async () => {
-    const settings = await readFixtureSettings(dir);
-    if (settings === null) {
-      return HttpResponse.json(defaultData);
-    }
-    switch (settings.type) {
-      case "error":
-        return HttpResponse.error();
-      case "json":
-        return HttpResponse.json(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          await readFixture(dir, settings.fixture)
-        );
-    }
-  });
+const getFixture = async (dir: string, defaultData: JsonBodyType) => {
+  const settings = await readFixtureSettings(dir);
+  if (settings === null) {
+    return HttpResponse.json(defaultData);
+  }
+  switch (settings.type) {
+    case "error":
+      return HttpResponse.json({}, { status: 500 });
+    case "json":
+      return HttpResponse.json(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        await readFixture(dir, settings.fixture)
+      );
+  }
 };
 
 export const handlers = [
-  createMockFixtureHandler(
-    "https://api.open-meteo.com/v1/forecast",
-    meteoForecastDir,
-    forecastData
-  ),
-  createMockFixtureHandler(
-    "https://geocoding-api.open-meteo.com/v1/search",
-    meteoSearchDir,
-    searchData
-  ),
-  createMockFixtureHandler(
-    "https://atlas.microsoft.com/reverseGeocode",
-    azureReverseGeocodingDir,
-    reverseGeocodeData
-  ),
+  http.get("https://api.open-meteo.com/v1/forecast", async () => {
+    return getFixture(meteoForecastDir, forecastData);
+  }),
+  http.get("https://geocoding-api.open-meteo.com/v1/search", async () => {
+    return getFixture(meteoSearchDir, searchData);
+  }),
+  http.get("https://atlas.microsoft.com/reverseGeocode", async () => {
+    // await new Promise((res) => setTimeout(res, 5000));
+    // Important to satisfy response outputs since the clients don't parse run-time response data
+    // return HttpResponse.json({} satisfies ErrorResponseOutput, {
+    //   status: 500,
+    // });
+    return getFixture(azureReverseGeocodingDir, reverseGeocodeData);
+  }),
 ];
