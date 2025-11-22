@@ -6,7 +6,7 @@ export type Interpretation = {
 };
 
 // [WMO Weather interpretation codes (WW)](https://open-meteo.com/en/docs#weather_variable_documentation)
-const interpretationByCode: Record<number, Interpretation> = {
+export const interpretationByCode: Record<number, Interpretation> = {
   // Clear sky
   0: {
     alt: "Clear sky",
@@ -167,6 +167,7 @@ const Weather = z.object({
     temperature_2m_min: z.array(z.number()).length(7),
   }),
 });
+export type Weather = z.infer<typeof Weather>;
 
 export const getWeather = async ({
   latitude,

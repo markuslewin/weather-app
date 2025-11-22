@@ -1,6 +1,8 @@
 import { createHomeUrl } from "#app/utils/url";
+import { interpretationByCode, type Weather } from "#app/utils/weather";
 import { test } from "#tests/playwright";
 import { AxeBuilder } from "@axe-core/playwright";
+import { faker } from "@faker-js/faker";
 import { expect } from "@playwright/test";
 
 test("passes a11y check", async ({ page }) => {
@@ -140,7 +142,7 @@ test("shows error view when forecast fails", async ({
   page,
   setMeteoForecastSettings,
 }) => {
-  await setMeteoForecastSettings({ type: "error" });
+  await setMeteoForecastSettings(null, { status: 500 });
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
@@ -152,23 +154,94 @@ test("location is unknown when reverse geolocation fails", async ({
   page,
   setAzureReverseGeolocationSettings,
 }) => {
-  await setAzureReverseGeolocationSettings({ type: "error" });
+  await setAzureReverseGeolocationSettings({}, { status: 500 });
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
   await expect(page.getByTestId("location")).toHaveText(/unknown/i);
+});
+
+test.only("shows random data", async ({ page, setMeteoForecastSettings }) => {
+  await setMeteoForecastSettings(createWeather(), { status: 200 });
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+
+  await expect(page).toHaveURL("/");
 });
 
 test.skip("can retry from error view", async ({
   page,
   setMeteoForecastSettings,
 }) => {
-  await setMeteoForecastSettings({ type: "error" });
+  await setMeteoForecastSettings(null, { status: 500 });
   await page.goto("/");
-  await setMeteoForecastSettings({
-    type: "json",
-    fixture: "figma",
-  });
+  await setMeteoForecastSettings(createWeather(), { status: 200 });
   await page.getByRole("button", { name: "retry" }).click();
 
   // await expect()
 });
+
+const createTemperature = () => {
+  return faker.number.float({ max: 50 });
+};
+
+const createWeatherCode = () => {
+  // todo: Actually a string
+  return parseInt(
+    faker.helpers.objectKey(interpretationByCode) as unknown as string,
+    10
+  );
+};
+
+// todo: Revisit after fixing app logic
+const getDate = (iso: string) => {
+  return iso.substring(0, iso.indexOf("T"));
+};
+const removeZ = (iso: string) => {
+  return iso.slice(0, iso.length - 1);
+};
+
+const createWeather = (overwrites?: Partial<Weather>): Weather => {
+  const time = faker.date.anytime();
+  const start = new Date(
+    Date.UTC(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate())
+  );
+  return {
+    current: {
+      apparent_temperature: createTemperature(),
+      precipitation: faker.number.float({ max: 1000 }),
+      relative_humidity_2m: faker.number.int({ max: 100 }),
+      temperature_2m: createTemperature(),
+      time: time.toISOString(),
+      weather_code: createWeatherCode(),
+      wind_speed_10m: faker.number.float({ max: 100 }),
+    },
+    daily: {
+      temperature_2m_max: faker.helpers.multiple(createTemperature, {
+        count: 7,
+      }),
+      temperature_2m_min: faker.helpers.multiple(createTemperature, {
+        count: 7,
+      }),
+      time: faker.helpers.multiple(
+        (_, i) =>
+          getDate(
+            new Date(start.getTime() + i * 1000 * 60 * 60 * 24).toISOString()
+          ),
+        { count: 7 }
+      ),
+      weather_code: faker.helpers.multiple(createWeatherCode, { count: 7 }),
+    },
+    hourly: {
+      temperature_2m: faker.helpers.multiple(createTemperature, {
+        count: 24 * 7,
+      }),
+      time: faker.helpers.multiple(
+        (_, i) =>
+          removeZ(new Date(start.getTime() + i * 1000 * 60 * 60).toISOString()),
+        { count: 24 * 7 }
+      ),
+      weather_code: faker.helpers.multiple(createWeatherCode, {
+        count: 24 * 7,
+      }),
+    },
+  };
+};

@@ -8,25 +8,16 @@ import {
   meteoForecastDir,
   meteoSearchDir,
   readFixture,
-  readFixtureSettings,
 } from "#tests/mocks/utils";
 // import type { ErrorResponseOutput } from "@azure-rest/maps-search";
 // import reverseGeocodeData from "#tests/fixtures/azure/reverse-geocoding/stockholm.json";
 
 const getFixture = async (dir: string, defaultData: JsonBodyType) => {
-  const settings = await readFixtureSettings(dir);
-  if (settings === null) {
+  const fixture = await readFixture(dir);
+  if (fixture === null) {
     return HttpResponse.json(defaultData);
   }
-  switch (settings.type) {
-    case "error":
-      return HttpResponse.json({}, { status: 500 });
-    case "json":
-      return HttpResponse.json(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await readFixture(dir, settings.fixture)
-      );
-  }
+  return HttpResponse.json(fixture.body, fixture.init);
 };
 
 export const handlers = [

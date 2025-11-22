@@ -14,19 +14,32 @@ export const azureReverseGeocodingDir = path.join(
 export const meteoForecastDir = path.join(fixturesDir, "meteo", "forecast");
 export const meteoSearchDir = path.join(fixturesDir, "meteo", "search");
 
-const settingsSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("json"),
-    fixture: z.string(),
+const fixtureSchema = z.object({
+  init: z.object({
+    status: z.number(),
   }),
-  z.object({
-    type: z.literal("error"),
-  }),
-]);
-export type Settings = z.infer<typeof settingsSchema>;
+  body: z.json(),
+});
 
-const getSettingsPath = (dir: string) => {
-  return path.join(dir, ".settings.json");
+const getFixturePath = (dir: string) => {
+  return path.join(dir, ".test.json");
+};
+
+export const readFixture = async (dir: string) => {
+  const file = await readOptionalFile(getFixturePath(dir));
+  if (file === null) {
+    return null;
+  }
+
+  return fixtureSchema.parse(JSON.parse(file));
+};
+
+export const writeFixture = async (dir: string, data: unknown) => {
+  await writeFile(getFixturePath(dir), JSON.stringify(data));
+};
+
+export const deleteFixture = async (dir: string) => {
+  await rm(getFixturePath(dir), { force: true });
 };
 
 const readOptionalFile = async (path: string) => {
@@ -46,27 +59,4 @@ const readOptionalFile = async (path: string) => {
     }
     throw err;
   }
-};
-
-export const readFixtureSettings = async (dir: string) => {
-  const file = await readOptionalFile(getSettingsPath(dir));
-  if (file === null) {
-    return null;
-  }
-
-  return settingsSchema.parse(JSON.parse(file));
-};
-
-export const writeFixtureSettings = async (dir: string, settings: Settings) => {
-  await writeFile(getSettingsPath(dir), JSON.stringify(settings));
-};
-
-export const deleteFixtureSettings = async (dir: string) => {
-  await rm(getSettingsPath(dir));
-};
-
-export const readFixture = async (dir: string, name: string) => {
-  const file = await readFile(path.join(dir, `${name}.json`), "utf8");
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return JSON.parse(file);
 };
