@@ -2,13 +2,21 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = process.env.PORT ?? "5173";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+try {
+  process.loadEnvFile();
+} catch (err) {
+  // Don't throw if file doesn't exist
+  if (
+    !(
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      err.code === "ENOENT"
+    )
+  ) {
+    throw err;
+  }
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.

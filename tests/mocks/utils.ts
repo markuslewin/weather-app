@@ -1,18 +1,24 @@
 import { readFile, rm, writeFile } from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
 import z from "zod";
 
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-const fixturesDir = path.join(dirname, "..", "fixtures");
+const env = z
+  .object({
+    FIXTURES_DIR: z.string(),
+  })
+  .parse(process.env);
 
 export const azureReverseGeocodingDir = path.join(
-  fixturesDir,
+  env.FIXTURES_DIR,
   "azure",
   "reverse-geocoding"
 );
-export const meteoForecastDir = path.join(fixturesDir, "meteo", "forecast");
-export const meteoSearchDir = path.join(fixturesDir, "meteo", "search");
+export const meteoForecastDir = path.join(
+  env.FIXTURES_DIR,
+  "meteo",
+  "forecast"
+);
+export const meteoSearchDir = path.join(env.FIXTURES_DIR, "meteo", "search");
 
 const fixtureSchema = z.object({
   init: z.object({
