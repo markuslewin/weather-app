@@ -6,144 +6,143 @@ export type Interpretation = {
 };
 
 // [WMO Weather interpretation codes (WW)](https://open-meteo.com/en/docs#weather_variable_documentation)
-export const interpretationByCode: Record<number, Interpretation> = {
-  // Clear sky
-  0: {
-    alt: "Clear sky",
-    icon: "icon-sunny",
-  },
-  // Mainly clear, partly cloudy, and overcast
-  1: {
-    alt: "Mainly clear",
-    // icon-partly-cloudy?
-    icon: "icon-sunny",
-  },
-  2: {
-    alt: "Partly cloudy",
-    icon: "icon-partly-cloudy",
-  },
-  3: {
-    alt: "Overcast",
-    icon: "icon-overcast",
-  },
-  // Fog and depositing rime fog
-  45: {
-    alt: "Fog",
-    icon: "icon-fog",
-  },
-  48: {
-    alt: "Depositing rime fog",
-    icon: "icon-fog",
-  },
-  // Drizzle: Light, moderate, and dense intensity
-  51: {
-    alt: "Drizzle: Light",
-    icon: "icon-drizzle",
-  },
-  53: {
-    alt: "Drizzle: Moderate",
-    icon: "icon-drizzle",
-  },
-  55: {
-    alt: "Drizzle: Dense",
-    icon: "icon-drizzle",
-  },
-  // Freezing Drizzle: Light and dense intensity
-  56: {
-    alt: "Freezing drizzle: Light",
-    icon: "icon-drizzle",
-  },
-  57: {
-    alt: "Freezing drizzle: Dense",
-    icon: "icon-drizzle",
-  },
-  // Rain: Slight, moderate and heavy intensity
-  61: {
-    alt: "Rain: Slight",
-    icon: "icon-rain",
-  },
-  63: {
-    alt: "Rain: Moderate",
-    icon: "icon-rain",
-  },
-  65: {
-    alt: "Rain: Heavy intensity",
-    icon: "icon-rain",
-  },
-  // Freezing Rain: Light and heavy intensity
-  66: {
-    alt: "Freezing Rain: Light",
-    icon: "icon-rain",
-  },
-  67: {
-    alt: "Freezing Rain: Heavy intensity",
-    icon: "icon-rain",
-  },
-  // Snow fall: Slight, moderate, and heavy intensity
-  71: {
-    alt: "Snow fall: Slight",
-    icon: "icon-snow",
-  },
-  73: {
-    alt: "Snow fall: Moderate",
-    icon: "icon-snow",
-  },
-  75: {
-    alt: "Snow fall: Heavy intensity",
-    icon: "icon-snow",
-  },
-  // Snow grains
-  77: {
-    alt: "Snow grains",
-    icon: "icon-snow",
-  },
-  // Rain showers: Slight, moderate, and violent
-  80: {
-    alt: "Rain showers: Slight",
-    icon: "icon-rain",
-  },
-  81: {
-    alt: "Rain showers: Moderate",
-    icon: "icon-rain",
-  },
-  82: {
-    alt: "Rain showers: Violent",
-    icon: "icon-rain",
-  },
-  // Snow showers slight and heavy
-  85: {
-    alt: "Snow showers: Slight",
-    icon: "icon-snow",
-  },
-  86: {
-    alt: "Snow showers: Heavy",
-    icon: "icon-snow",
-  },
-  // Thunderstorm: Slight or moderate
-  95: {
-    alt: "Thunderstorm: Slight or moderate",
-    icon: "icon-storm",
-  },
-  // Thunderstorm with slight and heavy hail
-  96: {
-    alt: "Thunderstorm with slight hail",
-    icon: "icon-storm",
-  },
-  99: {
-    alt: "Thunderstorm with heavy hail",
-    icon: "icon-storm",
-  },
-};
+export const interpretationByCode = new Map<number, Interpretation>();
+// Clear sky
+interpretationByCode.set(0, {
+  alt: "Clear sky",
+  icon: "icon-sunny",
+});
+// Mainly clear, partly cloudy, and overcast
+interpretationByCode.set(1, {
+  alt: "Mainly clear",
+  // icon-partly-cloudy?
+  icon: "icon-sunny",
+});
+interpretationByCode.set(2, {
+  alt: "Partly cloudy",
+  icon: "icon-partly-cloudy",
+});
+interpretationByCode.set(3, {
+  alt: "Overcast",
+  icon: "icon-overcast",
+});
+// Fog and depositing rime fog
+interpretationByCode.set(45, {
+  alt: "Fog",
+  icon: "icon-fog",
+});
+interpretationByCode.set(48, {
+  alt: "Depositing rime fog",
+  icon: "icon-fog",
+});
+// Drizzle: Light, moderate, and dense intensity
+interpretationByCode.set(51, {
+  alt: "Drizzle: Light",
+  icon: "icon-drizzle",
+});
+interpretationByCode.set(53, {
+  alt: "Drizzle: Moderate",
+  icon: "icon-drizzle",
+});
+interpretationByCode.set(55, {
+  alt: "Drizzle: Dense",
+  icon: "icon-drizzle",
+});
+// Freezing Drizzle: Light and dense intensity
+interpretationByCode.set(56, {
+  alt: "Freezing drizzle: Light",
+  icon: "icon-drizzle",
+});
+interpretationByCode.set(57, {
+  alt: "Freezing drizzle: Dense",
+  icon: "icon-drizzle",
+});
+// Rain: Slight, moderate and heavy intensity
+interpretationByCode.set(61, {
+  alt: "Rain: Slight",
+  icon: "icon-rain",
+});
+interpretationByCode.set(63, {
+  alt: "Rain: Moderate",
+  icon: "icon-rain",
+});
+interpretationByCode.set(65, {
+  alt: "Rain: Heavy intensity",
+  icon: "icon-rain",
+});
+// Freezing Rain: Light and heavy intensity
+interpretationByCode.set(66, {
+  alt: "Freezing Rain: Light",
+  icon: "icon-rain",
+});
+interpretationByCode.set(67, {
+  alt: "Freezing Rain: Heavy intensity",
+  icon: "icon-rain",
+});
+// Snow fall: Slight, moderate, and heavy intensity
+interpretationByCode.set(71, {
+  alt: "Snow fall: Slight",
+  icon: "icon-snow",
+});
+interpretationByCode.set(73, {
+  alt: "Snow fall: Moderate",
+  icon: "icon-snow",
+});
+interpretationByCode.set(75, {
+  alt: "Snow fall: Heavy intensity",
+  icon: "icon-snow",
+});
+// Snow grains
+interpretationByCode.set(77, {
+  alt: "Snow grains",
+  icon: "icon-snow",
+});
+// Rain showers: Slight, moderate, and violent
+interpretationByCode.set(80, {
+  alt: "Rain showers: Slight",
+  icon: "icon-rain",
+});
+interpretationByCode.set(81, {
+  alt: "Rain showers: Moderate",
+  icon: "icon-rain",
+});
+interpretationByCode.set(82, {
+  alt: "Rain showers: Violent",
+  icon: "icon-rain",
+});
+// Snow showers slight and heavy
+interpretationByCode.set(85, {
+  alt: "Snow showers: Slight",
+  icon: "icon-snow",
+});
+interpretationByCode.set(86, {
+  alt: "Snow showers: Heavy",
+  icon: "icon-snow",
+});
+// Thunderstorm: Slight or moderate
+interpretationByCode.set(95, {
+  alt: "Thunderstorm: Slight or moderate",
+  icon: "icon-storm",
+});
+// Thunderstorm with slight and heavy hail
+interpretationByCode.set(96, {
+  alt: "Thunderstorm with slight hail",
+  icon: "icon-storm",
+});
+interpretationByCode.set(99, {
+  alt: "Thunderstorm with heavy hail",
+  icon: "icon-storm",
+});
 
 export const getInterpretation = (code: number) => {
-  const interpretation = interpretationByCode[code];
+  const interpretation = interpretationByCode.get(code);
   if (interpretation === undefined) {
     console.warn(`Interpretation for code ${code} not found`);
   }
   return interpretation;
 };
 
-const WeatherCode = z.number().refine((val) => !!interpretationByCode[val]);
+const WeatherCode = z.number().refine((val) => interpretationByCode.has(val));
 
 const Weather = z.object({
   current: z.object({

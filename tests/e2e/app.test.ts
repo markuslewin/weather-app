@@ -184,11 +184,7 @@ const createTemperature = () => {
 };
 
 const createWeatherCode = () => {
-  // todo: Actually a string
-  return parseInt(
-    faker.helpers.objectKey(interpretationByCode) as unknown as string,
-    10
-  );
+  return faker.helpers.arrayElement([...interpretationByCode.keys()]);
 };
 
 // todo: Revisit after fixing app logic
