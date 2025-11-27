@@ -1,16 +1,58 @@
 import { createHomeUrl } from "#app/utils/url";
-import { interpretationByCode, type Weather } from "#app/utils/weather";
+import {
+  dailyLength,
+  hourlyLength,
+  interpretationByCode,
+  type Weather,
+} from "#app/utils/weather";
 import { test } from "#tests/playwright";
 import { AxeBuilder } from "@axe-core/playwright";
+import type {
+  FeaturesItemOutput,
+  GeocodingResponseOutput,
+} from "@azure-rest/maps-search";
 import { faker } from "@faker-js/faker";
 import { expect } from "@playwright/test";
 
-test("passes a11y check", async ({ page }) => {
-  await page.goto("/");
+test("initial view passes a11y check", async ({ page }) => {
+  await page.goto(createHomeUrl());
 
   const results = await new AxeBuilder({ page }).analyze();
 
   expect(results.violations).toEqual([]);
+});
+
+test("weather view passes a11y check", async ({ page }) => {
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+
+  const results = await new AxeBuilder({ page }).analyze();
+
+  expect(results.violations).toEqual([]);
+});
+
+test("error view passes a11y check", async ({
+  page,
+  setMeteoForecastSettings,
+}) => {
+  await setMeteoForecastSettings(null, { status: 500 });
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+
+  const results = await new AxeBuilder({ page }).analyze();
+
+  expect(results.violations).toEqual([]);
+});
+
+test("logo takes user to initial view", async ({
+  page,
+  setMeteoForecastSettings,
+}) => {
+  await setMeteoForecastSettings(null, { status: 500 });
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+  await page.getByRole("link", { name: "weather now" }).click();
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+    /the sky looking today/i
+  );
 });
 
 test("defaults to metric", async ({ page }) => {
@@ -150,11 +192,34 @@ test("shows error view when forecast fails", async ({
   );
 });
 
-test("location is unknown when reverse geolocation fails", async ({
+test("shows location", async ({ page, setAzureReverseGeocodingSettings }) => {
+  await setAzureReverseGeocodingSettings(
+    createReverseGeocoding({
+      features: [
+        createFeaturesItem({
+          properties: {
+            address: {
+              locality: "Stockholm",
+              countryRegion: { name: "Sweden" },
+            },
+          },
+        }),
+      ],
+    }),
+    {
+      status: 200,
+    }
+  );
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+
+  await expect(page.getByTestId("location")).toHaveText(/stockholm, sweden/i);
+});
+
+test("location is unknown when reverse geocoding fails", async ({
   page,
-  setAzureReverseGeolocationSettings,
+  setAzureReverseGeocodingSettings,
 }) => {
-  await setAzureReverseGeolocationSettings({}, { status: 500 });
+  await setAzureReverseGeocodingSettings({}, { status: 500 });
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
   await expect(page.getByTestId("location")).toHaveText(/unknown/i);
@@ -199,6 +264,35 @@ test("displays current weather data", async ({
   await expect(page.getByTestId("wind")).toHaveText("56 km/h");
 });
 
+test.skip("displays daily forecast", async ({ page }) => {
+  // todo: Implement `now`
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+});
+
+test.skip("displays suggestions when searching", async ({ page }) => {
+  await page.goto(createHomeUrl());
+});
+
+test.skip("displays message when no suggestions where found", async ({
+  page,
+}) => {
+  await page.goto(createHomeUrl());
+});
+
+test.skip("selecting a suggestion performs search", async ({ page }) => {
+  await page.goto(createHomeUrl());
+});
+
+test.skip("can search without choosing a suggestion", async ({ page }) => {
+  await page.goto(createHomeUrl());
+  // await page.getByRole('textbox').press('Enter')
+});
+
+test.skip("can search by button", async ({ page }) => {
+  await page.goto(createHomeUrl());
+  // await page.getByRole('button').click()
+});
+
 test("can retry from error view", async ({
   page,
   setMeteoForecastSettings,
@@ -211,6 +305,93 @@ test("can retry from error view", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
     /the sky looking today/i
   );
+});
+
+test("converts temperature", async ({ page, setMeteoForecastSettings }) => {
+  const celsius = 10;
+  const fahrenheit = 50;
+
+  await setMeteoForecastSettings(
+    createWeather({
+      current: {
+        apparent_temperature: celsius,
+        temperature_2m: celsius,
+      },
+      daily: {
+        temperature_2m_max: Array.from({ length: dailyLength }, () => celsius),
+        temperature_2m_min: Array.from({ length: dailyLength }, () => celsius),
+      },
+      hourly: {
+        temperature_2m: Array.from({ length: hourlyLength }, () => celsius),
+      },
+    }),
+    { status: 200 }
+  );
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+  await page.getByRole("button", { name: "units" }).click();
+  await page
+    .getByRole("radiogroup", { name: "temperature" })
+    .getByRole("radio", { name: "fahrenheit" })
+    .check({ force: true });
+  await page.getByRole("dialog", { name: "unit settings" }).press("Escape");
+
+  await expect(page.getByTestId("temperature")).toHaveText(`${fahrenheit}°`);
+  await expect(page.getByTestId("feels-like")).toHaveText(`${fahrenheit}°`);
+  await expect(page.getByTestId("day-temperature-max")).toHaveText(
+    Array.from({ length: dailyLength }, () => `${fahrenheit}°`)
+  );
+  await expect(page.getByTestId("day-temperature-min")).toHaveText(
+    Array.from({ length: dailyLength }, () => `${fahrenheit}°`)
+  );
+  // todo: Fix after "now" has been implemented
+  // await expect(page.getByTestId("day-temperature-min")).toHaveText(
+  //   Array.from({ length: hourlyLength }, () => `${fahrenheit}°`)
+  // );
+});
+
+test("converts wind speed", async ({ page, setMeteoForecastSettings }) => {
+  await setMeteoForecastSettings(
+    createWeather({
+      current: {
+        wind_speed_10m: 10,
+      },
+    }),
+    { status: 200 }
+  );
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+  await page.getByRole("button", { name: "units" }).click();
+  await page
+    .getByRole("radiogroup", { name: "wind speed" })
+    .getByRole("radio", { name: "mph" })
+    .check({ force: true });
+  await page.getByRole("dialog", { name: "unit settings" }).press("Escape");
+
+  await expect(page.getByTestId("wind")).toHaveText("6 mph");
+});
+
+test("converts precipitation", async ({ page, setMeteoForecastSettings }) => {
+  await setMeteoForecastSettings(
+    createWeather({
+      current: {
+        precipitation: 100,
+      },
+    }),
+    { status: 200 }
+  );
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+  await page.getByRole("button", { name: "units" }).click();
+  await page
+    .getByRole("radiogroup", { name: "precipitation" })
+    .getByRole("radio", { name: "inches" })
+    .check({ force: true });
+  await page.getByRole("dialog", { name: "unit settings" }).press("Escape");
+
+  await expect(page.getByTestId("precipitation")).toHaveText("4 in");
+});
+
+test.skip("filters hourly temperature", async ({ page }) => {
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+  await page.getByRole("button", { name: "select date" }).click();
 });
 
 const createTemperature = () => {
@@ -258,34 +439,69 @@ const createWeather = (overwrites?: RecursivePartial<Weather>): Weather => {
     },
     daily: {
       temperature_2m_max: faker.helpers.multiple(createTemperature, {
-        count: 7,
+        count: dailyLength,
       }),
       temperature_2m_min: faker.helpers.multiple(createTemperature, {
-        count: 7,
+        count: dailyLength,
       }),
       time: faker.helpers.multiple(
         (_, i) =>
           getDate(
             new Date(start.getTime() + i * 1000 * 60 * 60 * 24).toISOString()
           ),
-        { count: 7 }
+        { count: dailyLength }
       ),
-      weather_code: faker.helpers.multiple(createWeatherCode, { count: 7 }),
+      weather_code: faker.helpers.multiple(createWeatherCode, {
+        count: dailyLength,
+      }),
       ...overwrites?.daily,
     },
     hourly: {
       temperature_2m: faker.helpers.multiple(createTemperature, {
-        count: 24 * 7,
+        count: hourlyLength,
       }),
       time: faker.helpers.multiple(
         (_, i) =>
           removeZ(new Date(start.getTime() + i * 1000 * 60 * 60).toISOString()),
-        { count: 24 * 7 }
+        { count: hourlyLength }
       ),
       weather_code: faker.helpers.multiple(createWeatherCode, {
-        count: 24 * 7,
+        count: hourlyLength,
       }),
       ...overwrites?.hourly,
     },
+  };
+};
+
+const createFeaturesItem = (
+  overwrites?: Partial<FeaturesItemOutput>
+): FeaturesItemOutput => {
+  return {
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: [faker.location.longitude(), faker.location.latitude()],
+      ...overwrites?.geometry,
+    },
+    properties: {
+      address: {
+        locality: faker.location.city(),
+        ...overwrites?.properties?.address,
+        countryRegion: {
+          name: faker.location.country(),
+          ...overwrites?.properties?.address?.countryRegion,
+        },
+      },
+    },
+  };
+};
+
+const createReverseGeocoding = (
+  overwrites?: Partial<GeocodingResponseOutput>
+): GeocodingResponseOutput => {
+  return {
+    type: "FeatureCollection",
+    features: faker.helpers.multiple(() => createFeaturesItem(), { count: 3 }),
+    ...overwrites,
   };
 };

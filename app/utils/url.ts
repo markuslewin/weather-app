@@ -11,6 +11,6 @@ export const homeSearchParamsSchema = z.union([
 ]);
 type HomeSearchParams = z.infer<typeof homeSearchParamsSchema>;
 
-export const createHomeUrl = (search: HomeSearchParams) => {
+export const createHomeUrl = (search?: HomeSearchParams) => {
   return `/?${new URLSearchParams(search)}`;
 };

@@ -168,7 +168,7 @@ export const Location = ({
                     className="[ daily__day ] [ box stack ] [ layer-1 radius-12 ]"
                     key={day.time}
                   >
-                    <h4 className="text-center">
+                    <h4 className="text-center" data-testid="day-name">
                       {formatDay("short", new Date(day.time))}
                     </h4>
                     {interpretation ? (
@@ -182,11 +182,15 @@ export const Location = ({
                     <div className="day__temperature">
                       <p className="text-preset-7">
                         <span className="sr-only">Max temperature: </span>
-                        {temperature(day.temperature_2m_max)}
+                        <span data-testid="day-temperature-max">
+                          {temperature(day.temperature_2m_max)}
+                        </span>
                       </p>
                       <p className="text-preset-7">
                         <span className="sr-only">Min temperature: </span>
-                        {temperature(day.temperature_2m_min)}
+                        <span data-testid="day-temperature-min">
+                          {temperature(day.temperature_2m_min)}
+                        </span>
                       </p>
                     </div>
                   </li>
@@ -255,7 +259,7 @@ export const Location = ({
                     ) : (
                       <div className="size-40" />
                     )}
-                    <p className="text-preset-7">
+                    <p className="text-preset-7" data-testid="hour-temperature">
                       {temperature(hour.temperature_2m)}
                     </p>
                   </li>

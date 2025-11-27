@@ -144,6 +144,9 @@ export const getInterpretation = (code: number) => {
 
 const WeatherCode = z.number().refine((val) => interpretationByCode.has(val));
 
+export const hourlyLength = 24 * 7;
+export const dailyLength = 7;
+
 const Weather = z.object({
   current: z.object({
     time: z.iso.datetime({ local: true }),
@@ -155,15 +158,15 @@ const Weather = z.object({
     relative_humidity_2m: z.number(),
   }),
   hourly: z.object({
-    time: z.array(z.iso.datetime({ local: true })).length(24 * 7),
-    temperature_2m: z.array(z.number()).length(24 * 7),
-    weather_code: z.array(WeatherCode).length(24 * 7),
+    time: z.array(z.iso.datetime({ local: true })).length(hourlyLength),
+    temperature_2m: z.array(z.number()).length(hourlyLength),
+    weather_code: z.array(WeatherCode).length(hourlyLength),
   }),
   daily: z.object({
-    time: z.array(z.iso.date()).length(7),
-    weather_code: z.array(WeatherCode).length(7),
-    temperature_2m_max: z.array(z.number()).length(7),
-    temperature_2m_min: z.array(z.number()).length(7),
+    time: z.array(z.iso.date()).length(dailyLength),
+    weather_code: z.array(WeatherCode).length(dailyLength),
+    temperature_2m_max: z.array(z.number()).length(dailyLength),
+    temperature_2m_min: z.array(z.number()).length(dailyLength),
   }),
 });
 export type Weather = z.infer<typeof Weather>;
@@ -188,14 +191,14 @@ export const getWeather = async ({
   const { hourly, daily, ...data } = Weather.parse(await response.json());
   const weather = {
     ...data,
-    hourly: Array.from({ length: 24 * 7 }, (_, i) => {
+    hourly: Array.from({ length: hourlyLength }, (_, i) => {
       return {
         time: hourly.time[i]!,
         temperature_2m: hourly.temperature_2m[i]!,
         weather_code: hourly.weather_code[i]!,
       };
     }),
-    daily: Array.from({ length: 7 }, (_, i) => {
+    daily: Array.from({ length: dailyLength }, (_, i) => {
       return {
         time: daily.time[i]!,
         weather_code: daily.weather_code[i]!,

@@ -29,15 +29,13 @@ const createMockFixture = <Body>(
 };
 
 export const test = baseTest.extend<{
-  setAzureReverseGeolocationSettings: SetMock<
+  setAzureReverseGeocodingSettings: SetMock<
     GeocodingResponseOutput | ErrorResponseOutput
   >;
   setMeteoForecastSettings: SetMock<Weather | null>;
   setMeteoSearchSettings: SetMock<unknown>;
 }>({
-  setAzureReverseGeolocationSettings: createMockFixture(
-    azureReverseGeocodingDir
-  ),
+  setAzureReverseGeocodingSettings: createMockFixture(azureReverseGeocodingDir),
   setMeteoForecastSettings: createMockFixture(meteoForecastDir),
   setMeteoSearchSettings: createMockFixture(meteoSearchDir),
 });
