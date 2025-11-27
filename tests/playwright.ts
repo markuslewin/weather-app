@@ -1,40 +1,39 @@
+import type { Weather } from "#app/utils/weather";
 import {
   azureReverseGeocodingDir,
-  deleteFixtureSettings,
+  deleteFixture,
   meteoForecastDir,
   meteoSearchDir,
-  readFixtureSettings,
-  writeFixtureSettings,
-  type Settings,
+  writeFixture,
 } from "#tests/mocks/utils";
+import type {
+  ErrorResponseOutput,
+  GeocodingResponseOutput,
+} from "@azure-rest/maps-search";
 import type { TestFixture } from "@playwright/test";
 import { test as baseTest } from "@playwright/test";
 
-type SetMockSettings = (settings: Settings) => Promise<void>;
+type SetMock<Body> = (body: Body, init: { status: number }) => Promise<void>;
 
-const createMockFixture = (
+const createMockFixture = <Body>(
   dir: string
-): TestFixture<SetMockSettings, object> => {
+): TestFixture<SetMock<Body>, object> => {
   // eslint-disable-next-line no-empty-pattern
   return async ({}, use) => {
-    const original = await readFixtureSettings(dir);
-
-    await use(async (settings) => {
-      await writeFixtureSettings(dir, settings);
+    await use(async (body, init) => {
+      await writeFixture(dir, { init, body });
     });
 
-    if (original === null) {
-      await deleteFixtureSettings(dir);
-    } else {
-      await writeFixtureSettings(dir, original);
-    }
+    await deleteFixture(dir);
   };
 };
 
 export const test = baseTest.extend<{
-  setAzureReverseGeolocationSettings: SetMockSettings;
-  setMeteoForecastSettings: SetMockSettings;
-  setMeteoSearchSettings: SetMockSettings;
+  setAzureReverseGeolocationSettings: SetMock<
+    GeocodingResponseOutput | ErrorResponseOutput
+  >;
+  setMeteoForecastSettings: SetMock<Weather | null>;
+  setMeteoSearchSettings: SetMock<unknown>;
 }>({
   setAzureReverseGeolocationSettings: createMockFixture(
     azureReverseGeocodingDir

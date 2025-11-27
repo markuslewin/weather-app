@@ -105,7 +105,7 @@ export const Location = ({
                   </span>
                 </h2>
                 <h3 className="sr-only">Current weather</h3>
-                <p className="mt-150">
+                <p className="mt-150" data-testid="time">
                   {formatDate(new Date(weather.current.time))}
                 </p>
               </div>
@@ -114,9 +114,10 @@ export const Location = ({
                   <WeatherIcon
                     className="card__weather-icon"
                     interpretation={currentWeatherInterpretation}
+                    data-testid="weather-code"
                   />
                 ) : null}
-                <p className="text-preset-1">
+                <p className="text-preset-1" data-testid="temperature">
                   {temperature(weather.current.temperature_2m)}
                 </p>
               </div>
@@ -126,26 +127,32 @@ export const Location = ({
                 {
                   key: "Feels Like",
                   value: temperature(weather.current.apparent_temperature),
+                  testid: "feels-like",
                 },
                 {
                   key: "Humidity",
                   value: percentageFormatter.format(
                     weather.current.relative_humidity_2m
                   ),
+                  testid: "humidity",
                 },
                 {
                   key: "Wind",
                   value: windSpeed(weather.current.wind_speed_10m),
+                  testid: "wind",
                 },
                 {
                   key: "Precipitation",
                   value: precipitation(weather.current.precipitation),
+                  testid: "precipitation",
                 },
-              ].map(({ key, value }) => {
+              ].map(({ key, value, testid }) => {
                 return (
                   <div className="[ box ] [ layer-1 radius-12 ]" key={key}>
                     <h4>{key}</h4>
-                    <p className="mt-300 text-preset-3">{value}</p>
+                    <p className="mt-300 text-preset-3" data-testid={testid}>
+                      {value}
+                    </p>
                   </div>
                 );
               })}
