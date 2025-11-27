@@ -199,16 +199,18 @@ test("displays current weather data", async ({
   await expect(page.getByTestId("wind")).toHaveText("56 km/h");
 });
 
-test.skip("can retry from error view", async ({
+test("can retry from error view", async ({
   page,
   setMeteoForecastSettings,
 }) => {
   await setMeteoForecastSettings(null, { status: 500 });
-  await page.goto("/");
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
   await setMeteoForecastSettings(createWeather(), { status: 200 });
   await page.getByRole("button", { name: "retry" }).click();
 
-  // await expect()
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+    /the sky looking today/i
+  );
 });
 
 const createTemperature = () => {

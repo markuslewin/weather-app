@@ -9,7 +9,6 @@ import {
   meteoSearchDir,
   readFixture,
 } from "#tests/mocks/utils";
-// import type { ErrorResponseOutput } from "@azure-rest/maps-search";
 // import reverseGeocodeData from "#tests/fixtures/azure/reverse-geocoding/stockholm.json";
 
 const getFixture = async (dir: string, defaultData: JsonBodyType) => {

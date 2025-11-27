@@ -1,5 +1,6 @@
 import { Icon } from "#app/components/icon";
 import { Location } from "#app/components/location";
+import { RetryButton } from "#app/components/retry-button";
 import { SearchLayout } from "#app/components/search-layout";
 import { getLocation } from "#app/utils/maps";
 import { search } from "#app/utils/search";
@@ -260,10 +261,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 We couldn’t connect to the server (API error). Please try again
                 in a few moments.
               </p>
-              <button className="[ error__button ] [ mt-300 ]">
-                <Icon name="IconRetry" />
-                Retry
-              </button>
+              <RetryButton />
             </div>
           ) : (
             <SearchLayout>
