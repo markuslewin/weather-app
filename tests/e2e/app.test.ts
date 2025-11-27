@@ -160,11 +160,43 @@ test("location is unknown when reverse geolocation fails", async ({
   await expect(page.getByTestId("location")).toHaveText(/unknown/i);
 });
 
-test.only("shows random data", async ({ page, setMeteoForecastSettings }) => {
-  await setMeteoForecastSettings(createWeather(), { status: 200 });
+test("displays current weather data", async ({
+  page,
+  setMeteoForecastSettings,
+}) => {
+  const apparent_temperature = 10.7;
+  const precipitation = 123.4;
+  const relative_humidity_2m = 28;
+  const temperature_2m = 22.3;
+  const time = "2025-11-27T00:55";
+  const weather_code = 71;
+  const wind_speed_10m = 55.5;
+
+  await setMeteoForecastSettings(
+    createWeather({
+      current: {
+        apparent_temperature,
+        precipitation,
+        relative_humidity_2m,
+        temperature_2m,
+        time,
+        weather_code,
+        wind_speed_10m,
+      },
+    }),
+    { status: 200 }
+  );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
-  await expect(page).toHaveURL("/");
+  await expect(page.getByTestId("feels-like")).toHaveText("11°");
+  await expect(page.getByTestId("precipitation")).toHaveText("123 mm");
+  await expect(page.getByTestId("humidity")).toHaveText("28%");
+  await expect(page.getByTestId("temperature")).toHaveText("22°");
+  await expect(page.getByTestId("time")).toHaveText(
+    "Thursday, November 27, 2025"
+  );
+  await expect(page.getByTestId("weather-code")).toHaveAccessibleName(/snow/i);
+  await expect(page.getByTestId("wind")).toHaveText("56 km/h");
 });
 
 test.skip("can retry from error view", async ({
@@ -195,7 +227,18 @@ const removeZ = (iso: string) => {
   return iso.slice(0, iso.length - 1);
 };
 
-const createWeather = (overwrites?: Partial<Weather>): Weather => {
+// Source - https://stackoverflow.com/a/51365037
+// Posted by Jeffrey Patterson, modified by community. See post 'Timeline' for change history
+// Retrieved 2025-11-27, License - CC BY-SA 4.0
+type RecursivePartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? RecursivePartial<U>[]
+    : T[P] extends object | undefined
+      ? RecursivePartial<T[P]>
+      : T[P];
+};
+
+const createWeather = (overwrites?: RecursivePartial<Weather>): Weather => {
   const time = faker.date.anytime();
   const start = new Date(
     Date.UTC(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate())
@@ -209,6 +252,7 @@ const createWeather = (overwrites?: Partial<Weather>): Weather => {
       time: time.toISOString(),
       weather_code: createWeatherCode(),
       wind_speed_10m: faker.number.float({ max: 100 }),
+      ...overwrites?.current,
     },
     daily: {
       temperature_2m_max: faker.helpers.multiple(createTemperature, {
@@ -225,6 +269,7 @@ const createWeather = (overwrites?: Partial<Weather>): Weather => {
         { count: 7 }
       ),
       weather_code: faker.helpers.multiple(createWeatherCode, { count: 7 }),
+      ...overwrites?.daily,
     },
     hourly: {
       temperature_2m: faker.helpers.multiple(createTemperature, {
@@ -238,6 +283,7 @@ const createWeather = (overwrites?: Partial<Weather>): Weather => {
       weather_code: faker.helpers.multiple(createWeatherCode, {
         count: 24 * 7,
       }),
+      ...overwrites?.hourly,
     },
   };
 };
