@@ -48,6 +48,7 @@ jobs:
           MOCKS: true
           FIXTURES_DIR: ./tests/fixtures
           AZURE_MAPS_CLIENT_ID: 00000000-0000-0000-0000-000000000000
+          AZURE_LOG_LEVEL: info
   provision:
     runs-on: ubuntu-22.04
     needs: [lint, typecheck, vitest, playwright]
