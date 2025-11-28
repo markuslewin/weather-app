@@ -1,3 +1,4 @@
+import { env } from "#app/utils/env";
 import type { MapsSearchClient } from "@azure-rest/maps-search";
 import MapsSearch from "@azure-rest/maps-search";
 import { AzureCliCredential, ClientSecretCredential } from "@azure/identity";
@@ -8,30 +9,17 @@ let maps: MapsSearchClient;
 if (globalForMaps.maps) {
   maps = globalForMaps.maps;
 } else {
-  const mapsClientId = process.env.AZURE_MAPS_CLIENT_ID;
-  if (typeof mapsClientId !== "string") {
-    throw new Error("AZURE_MAPS_CLIENT_ID not set");
-  }
   let credentials;
-  // todo: Figure this out (Zod + common key names)
-  if (process.env.NODE_ENV === "production" && process.env.MOCKS !== "true") {
-    const tenantId = process.env.AZURE_TENANT_ID;
-    if (typeof tenantId !== "string") {
-      throw new Error("AZURE_TENANT_ID not set");
-    }
-    const clientId = process.env.AZURE_WEB_CLIENT_ID;
-    if (typeof clientId !== "string") {
-      throw new Error("AZURE_WEB_CLIENT_ID not set");
-    }
-    const clientSecret = process.env.AZURE_WEB_CLIENT_SECRET;
-    if (typeof clientSecret !== "string") {
-      throw new Error("AZURE_WEB_CLIENT_SECRET not set");
-    }
-    credentials = new ClientSecretCredential(tenantId, clientId, clientSecret);
+  if (env.NODE_ENV === "production") {
+    credentials = new ClientSecretCredential(
+      env.AZURE_TENANT_ID,
+      env.AZURE_WEB_CLIENT_ID,
+      env.AZURE_WEB_CLIENT_SECRET
+    );
   } else {
     credentials = new AzureCliCredential();
   }
-  maps = MapsSearch(credentials, mapsClientId);
+  maps = MapsSearch(credentials, env.AZURE_MAPS_CLIENT_ID);
 }
 
 export { maps };

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "netlify serve",
+    "start": "cross-env NODE_ENV=production netlify serve",
     "typegen": "react-router typegen",
     "lint": "npm run typegen && eslint .",
     "typecheck": "npm run typegen && tsc",
@@ -43,6 +43,7 @@
     "@types/node": "^22",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
+    "cross-env": "^10.1.0",
     "eslint": "^9.37.0",
     "eslint-plugin-react-hooks": "^6.1.1",
     "globals": "^16.4.0",

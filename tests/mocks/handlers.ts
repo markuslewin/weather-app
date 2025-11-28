@@ -34,4 +34,18 @@ export const handlers = [
     // });
     return getFixture(azureReverseGeocodingDir, reverseGeocodeData);
   }),
+  http.post<{ tenantId: string }>(
+    "https://login.microsoftonline.com/:tenantId/oauth2/v2.0/token",
+    () => {
+      return HttpResponse.json(
+        {
+          token_type: "Bearer",
+          expires_in: 3599,
+          ext_expires_in: 3599,
+          access_token: "mock_access_token",
+        },
+        { status: 200 }
+      );
+    }
+  ),
 ];
