@@ -1,16 +1,17 @@
 import { PassThrough } from "node:stream";
 
-import type { AppLoadContext, EntryContext } from "react-router";
+import { env } from "#app/utils/env";
+import { server } from "#tests/mocks/node";
 import { createReadableStreamFromReadable } from "@react-router/node";
-import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
-import { server } from "#tests/mocks/node";
+import type { AppLoadContext, EntryContext } from "react-router";
+import { ServerRouter } from "react-router";
 
 export const streamTimeout = 5_000;
 
-if (process.env.MOCKS === "true") {
+if (env.MOCKS) {
   server.listen();
 }
 

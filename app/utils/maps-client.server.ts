@@ -24,4 +24,4 @@ if (globalForMaps.maps) {
 
 export { maps };
 
-if (process.env.NODE_ENV !== "production") globalForMaps.maps = maps;
+if (env.NODE_ENV !== "production") globalForMaps.maps = maps;
