@@ -28,7 +28,12 @@ import {
   SelectionIndicator,
   type ButtonProps,
 } from "react-aria-components";
-import { Link, redirect, type LoaderFunctionArgs } from "react-router";
+import {
+  Link,
+  redirect,
+  useNavigation,
+  type LoaderFunctionArgs,
+} from "react-router";
 import type { Route } from "./+types/home";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -73,6 +78,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
+  const navigation = useNavigation();
   const [settings, setSettings] = useState<Settings>({
     temperatureUnit: "celsius",
     windSpeedUnit: "kmh",
@@ -280,6 +286,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           )}
         </div>
       </main>
+      <div className="progress-bar" role="status">
+        {navigation.state !== "idle" ? (
+          <>
+            <div className="progress-bar__indicator" />
+            <span className="sr-only">Loading</span>
+          </>
+        ) : null}
+      </div>
     </>
   );
 }

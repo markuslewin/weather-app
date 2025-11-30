@@ -9,11 +9,10 @@ import {
   ListBoxItem,
   Popover,
 } from "react-aria-components";
-import { Form, useNavigate, useNavigation } from "react-router";
+import { Form, useNavigate } from "react-router";
 import { useAsyncList } from "react-stately";
 
 export const SearchLayout = ({ children }: { children: ReactNode }) => {
-  const navigation = useNavigation();
   const navigate = useNavigate();
   const searchHeadingId = useId();
   const list = useAsyncList<SearchResultItem>({
@@ -96,9 +95,7 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
               </ListBox>
             </Popover>
           </ComboBox>
-          <button className="primary-button">
-            {navigation.state === "idle" ? "Search" : "Searching..."}
-          </button>
+          <button className="primary-button">Search</button>
         </Form>
       </section>
       {children}

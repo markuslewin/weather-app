@@ -245,10 +245,6 @@ body {
       width: utils.rem(16);
       height: utils.rem(16);
     }
-
-    &[data-retrying="true"] .IconRetry {
-      animation: spin 1s linear infinite;
-    }
   }
 
   .IconError {
@@ -377,17 +373,16 @@ body {
   border-radius: tokens.radius(12);
   padding: tokens.spacing(200) tokens.spacing(300);
   @include tokens.text-preset-5--medium();
-  background: tokens.$color-blue-700;
+  background: tokens.$color-blue-500;
   color: tokens.$color-neutral-0;
   @include tokens.transition((background-color));
 
   &:focus-visible {
     @include tokens.outline;
-    background: tokens.$color-blue-500;
   }
 
   @include utils.hover {
-    background: tokens.$color-blue-500;
+    background: tokens.$color-blue-700;
   }
 }
 
@@ -542,6 +537,37 @@ body {
   }
 }
 
+.progress-bar {
+  position: fixed;
+  top: 0px;
+  inset-inline: 0px;
+  height: utils.rem(2);
+  display: grid;
+  overflow: hidden;
+  pointer-events: none;
+
+  @include utils.forced-colors {
+    background: Canvas;
+  }
+
+  &__indicator {
+    display: grid;
+    animation:
+      2s linear infinite progress,
+      100ms 150ms both fade-in;
+
+    &::before {
+      content: "";
+      width: 75%;
+      background: tokens.$color-neutral-200;
+
+      @include utils.forced-colors {
+        background: CanvasText;
+      }
+    }
+  }
+}
+
 @each $key, $value in tokens.$spacing {
   .mt-#{$key} {
     margin-top: $value;
@@ -647,5 +673,23 @@ body {
 @keyframes pulse {
   50% {
     opacity: 0.5;
+  }
+}
+
+@keyframes progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }

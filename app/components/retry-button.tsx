@@ -1,10 +1,9 @@
 import { Icon } from "#app/components/icon";
-import { useLocation, useNavigate, useNavigation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 export const RetryButton = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const navigation = useNavigation();
 
   return (
     <button
@@ -13,8 +12,6 @@ export const RetryButton = () => {
       onClick={() => {
         void navigate(location);
       }}
-      // Checks for global navigations...
-      data-retrying={navigation.state !== "idle"}
     >
       <Icon name="IconRetry" />
       Retry
