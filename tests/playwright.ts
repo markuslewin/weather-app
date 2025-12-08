@@ -1,3 +1,4 @@
+import type { SearchResponse } from "#app/utils/search";
 import type { Weather } from "#app/utils/weather";
 import {
   azureReverseGeocodingDir,
@@ -16,7 +17,7 @@ import { test as baseTest } from "@playwright/test";
 type SetMock<Body> = (body: Body, init: { status: number }) => Promise<void>;
 
 const createMockFixture = <Body>(
-  dir: string
+  dir: string,
 ): TestFixture<SetMock<Body>, object> => {
   // eslint-disable-next-line no-empty-pattern
   return async ({}, use) => {
@@ -33,7 +34,7 @@ export const test = baseTest.extend<{
     GeocodingResponseOutput | ErrorResponseOutput
   >;
   setMeteoForecastSettings: SetMock<Weather | null>;
-  setMeteoSearchSettings: SetMock<unknown>;
+  setMeteoSearchSettings: SetMock<SearchResponse>;
 }>({
   setAzureReverseGeocodingSettings: createMockFixture(azureReverseGeocodingDir),
   setMeteoForecastSettings: createMockFixture(meteoForecastDir),
