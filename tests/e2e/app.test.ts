@@ -294,24 +294,106 @@ test("displays suggestions when searching", async ({
   ).toHaveText(results.map((r) => r.name));
 });
 
-test.skip("displays message when no suggestions where found", async ({
+test("displays message when no suggestions where found", async ({
   page,
+  setMeteoSearchSettings,
 }) => {
+  await setMeteoSearchSettings(
+    createSearchResponse({
+      results: [],
+    }),
+    { status: 200 },
+  );
   await page.goto(createHomeUrl());
+  await page
+    .getByRole("combobox", { name: "search" })
+    // `.fill` doesn't open suggestions automatically
+    .pressSequentially(faker.location.city());
+
+  await expect(
+    page.getByRole("listbox", { name: "suggestions" }).getByRole("option"),
+  ).toHaveText(["No suggestions"]);
 });
 
-test.skip("selecting a suggestion performs search", async ({ page }) => {
+test("navigates to coordinates when selecting a suggestion", async ({
+  page,
+  setMeteoSearchSettings,
+}) => {
+  const item = createSearchResponseItem();
+
+  await setMeteoSearchSettings(
+    createSearchResponse({
+      results: [item],
+    }),
+    { status: 200 },
+  );
   await page.goto(createHomeUrl());
+  await page
+    .getByRole("combobox", { name: "search" })
+    // `.fill` doesn't open suggestions automatically
+    .pressSequentially(faker.location.city());
+  await page
+    .getByRole("listbox", { name: "suggestions" })
+    .getByRole("option", { name: item.name })
+    .click();
+
+  await expect(page).toHaveURL(
+    `/?${new URLSearchParams({
+      lat: `${item.latitude}`,
+      lon: `${item.longitude}`,
+    })}`,
+  );
 });
 
-test.skip("can search without choosing a suggestion", async ({ page }) => {
+test("can search without selecting a suggestion", async ({
+  page,
+  setMeteoSearchSettings,
+}) => {
+  const first = createSearchResponseItem();
+  const second = createSearchResponseItem();
+
+  await setMeteoSearchSettings(
+    createSearchResponse({
+      results: [first, second],
+    }),
+    { status: 200 },
+  );
   await page.goto(createHomeUrl());
-  // await page.getByRole('textbox').press('Enter')
+  await page
+    .getByRole("combobox", { name: "search" })
+    .fill(faker.location.city());
+  await page.getByRole("combobox", { name: "search" }).press("Enter");
+
+  await expect(page).toHaveURL(
+    `/?${new URLSearchParams({
+      lat: `${first.latitude}`,
+      lon: `${first.longitude}`,
+    })}`,
+  );
 });
 
-test.skip("can search by button", async ({ page }) => {
+test("can search by button", async ({ page, setMeteoSearchSettings }) => {
+  const first = createSearchResponseItem();
+  const second = createSearchResponseItem();
+
+  await setMeteoSearchSettings(
+    createSearchResponse({
+      results: [first, second],
+    }),
+    { status: 200 },
+  );
   await page.goto(createHomeUrl());
-  // await page.getByRole('button').click()
+  await page
+    .getByRole("combobox", { name: "search" })
+    .fill(faker.location.city());
+  await page.getByRole("button", { name: "search" }).click();
+
+  await expect(page).toHaveURL(
+    `/?${new URLSearchParams({
+      lat: `${first.latitude}`,
+      lon: `${first.longitude}`,
+    })}`,
+  );
 });
 
 test("can retry from error view", async ({

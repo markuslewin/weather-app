@@ -90,7 +90,7 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
                         <Icon name="IconLoading" /> Search in progress
                       </>
                     ) : (
-                      "No recommendations"
+                      "No suggestions"
                     )}
                   </div>
                 )}
