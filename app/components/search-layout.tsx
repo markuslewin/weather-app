@@ -1,4 +1,5 @@
 import { Icon } from "#app/components/icon";
+import { debounce } from "#app/utils/debounce";
 import { type SearchResultItem, searchResultSchema } from "#app/utils/search";
 import { createHomeUrl } from "#app/utils/url";
 import { type ReactNode, useId } from "react";
@@ -10,24 +11,29 @@ import {
   Popover,
 } from "react-aria-components";
 import { Form, useNavigate } from "react-router";
-import { useAsyncList } from "react-stately";
+import { useAsyncList, type AsyncListOptions } from "react-stately";
+
+const load: AsyncListOptions<SearchResultItem, string>["load"] = debounce(
+  async ({ signal, filterText = "" }) => {
+    const response = await fetch(
+      `/api/search?${new URLSearchParams({ name: filterText })}`,
+      { signal },
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const json = await response.json();
+    if (signal.aborted) {
+      throw new Error("Aborted during JSON parse");
+    }
+    return searchResultSchema.parse(json);
+  },
+  400,
+);
 
 export const SearchLayout = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const searchHeadingId = useId();
   const list = useAsyncList<SearchResultItem>({
-    load: async ({ signal, filterText = "" }) => {
-      const response = await fetch(
-        `/api/search?${new URLSearchParams({ name: filterText })}`,
-        { signal }
-      );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const json = await response.json();
-      if (signal.aborted) {
-        throw new Error("Aborted during JSON parse");
-      }
-      return searchResultSchema.parse(json);
-    },
+    load,
   });
 
   return (
@@ -62,7 +68,7 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
                 createHomeUrl({
                   lat: item.latitude.toString(),
                   lon: item.longitude.toString(),
-                })
+                }),
               );
             }}
             items={list.items}
