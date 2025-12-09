@@ -11,12 +11,12 @@ const env = z
 export const azureReverseGeocodingDir = path.join(
   env.FIXTURES_DIR,
   "azure",
-  "reverse-geocoding"
+  "reverse-geocoding",
 );
 export const meteoForecastDir = path.join(
   env.FIXTURES_DIR,
   "meteo",
-  "forecast"
+  "forecast",
 );
 export const meteoSearchDir = path.join(env.FIXTURES_DIR, "meteo", "search");
 
@@ -27,7 +27,7 @@ const fixtureSchema = z.object({
   body: z.json(),
 });
 
-const getFixturePath = (dir: string) => {
+export const getFixturePath = (dir: string) => {
   return path.join(dir, ".test.json");
 };
 
