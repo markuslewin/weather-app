@@ -38,7 +38,7 @@ import type { Route } from "./+types/home";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const searchParamsResult = homeSearchParamsSchema.safeParse(
-    Object.fromEntries(new URL(request.url).searchParams)
+    Object.fromEntries(new URL(request.url).searchParams),
   );
   if (!searchParamsResult.success) {
     return { type: "initial" } as const;
@@ -56,7 +56,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       createHomeUrl({
         lat: match.latitude.toString(),
         lon: match.longitude.toString(),
-      })
+      }),
     );
   }
 

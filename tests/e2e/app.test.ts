@@ -6,7 +6,7 @@ import {
   interpretationByCode,
   type Weather,
 } from "#app/utils/weather";
-import { test } from "#tests/playwright";
+import { test, waitForHydration } from "#tests/playwright";
 import { AxeBuilder } from "@axe-core/playwright";
 import type {
   FeaturesItemOutput,
@@ -284,10 +284,10 @@ test("displays suggestions when searching", async ({
     { status: 200 },
   );
   await page.goto(createHomeUrl());
+  await waitForHydration(page);
   await page
     .getByRole("combobox", { name: "search" })
-    // `.fill` doesn't open suggestions automatically
-    .pressSequentially(faker.location.city());
+    .fill(faker.location.city());
 
   await expect(
     page.getByRole("listbox", { name: "suggestions" }).getByRole("option"),
@@ -305,10 +305,10 @@ test("displays message when no suggestions where found", async ({
     { status: 200 },
   );
   await page.goto(createHomeUrl());
+  await waitForHydration(page);
   await page
     .getByRole("combobox", { name: "search" })
-    // `.fill` doesn't open suggestions automatically
-    .pressSequentially(faker.location.city());
+    .fill(faker.location.city());
 
   await expect(
     page.getByRole("listbox", { name: "suggestions" }).getByRole("option"),
@@ -328,10 +328,10 @@ test("navigates to coordinates when selecting a suggestion", async ({
     { status: 200 },
   );
   await page.goto(createHomeUrl());
+  await waitForHydration(page);
   await page
     .getByRole("combobox", { name: "search" })
-    // `.fill` doesn't open suggestions automatically
-    .pressSequentially(faker.location.city());
+    .fill(faker.location.city());
   await page
     .getByRole("listbox", { name: "suggestions" })
     .getByRole("option", { name: item.name })
@@ -359,9 +359,12 @@ test("can search without selecting a suggestion", async ({
     { status: 200 },
   );
   await page.goto(createHomeUrl());
+  await waitForHydration(page);
   await page
     .getByRole("combobox", { name: "search" })
     .fill(faker.location.city());
+  // `ComboBox` prevents form submissions when menu is open. Close menu before submitting the form
+  await page.getByRole("combobox", { name: "search" }).press("Escape");
   await page.getByRole("combobox", { name: "search" }).press("Enter");
 
   await expect(page).toHaveURL(
@@ -383,9 +386,12 @@ test("can search by button", async ({ page, setMeteoSearchSettings }) => {
     { status: 200 },
   );
   await page.goto(createHomeUrl());
+  await waitForHydration(page);
   await page
     .getByRole("combobox", { name: "search" })
     .fill(faker.location.city());
+  // `ComboBox` hides outside elements when it's open. Close `Popover` before attempting to click the search button
+  await page.getByRole("combobox", { name: "search" }).press("Escape");
   await page.getByRole("button", { name: "search" }).click();
 
   await expect(page).toHaveURL(

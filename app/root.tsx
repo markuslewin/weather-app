@@ -14,6 +14,8 @@ import "@fontsource-variable/dm-sans/wght-italic.css";
 // Supports weights 200-800
 import "@fontsource-variable/bricolage-grotesque";
 import "#app/styles/app.scss";
+import { useIsSSR } from "react-aria";
+import { isSSRAttrName } from "#app/utils/ssr";
 
 export const links: Route.LinksFunction = () => [
   {
@@ -25,8 +27,10 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const isSSR = useIsSSR();
+
   return (
-    <html lang="en">
+    <html lang="en" {...{ [isSSRAttrName]: isSSR }}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

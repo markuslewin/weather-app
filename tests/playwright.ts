@@ -1,4 +1,5 @@
 import type { SearchResponse } from "#app/utils/search";
+import { isSSRAttrName } from "#app/utils/ssr";
 import type { Weather } from "#app/utils/weather";
 import {
   azureReverseGeocodingDir,
@@ -12,7 +13,7 @@ import type {
   ErrorResponseOutput,
   GeocodingResponseOutput,
 } from "@azure-rest/maps-search";
-import type { TestFixture } from "@playwright/test";
+import type { Page, TestFixture } from "@playwright/test";
 import { test as baseTest } from "@playwright/test";
 
 type SetMock<Body> = (body: Body, init: { status: number }) => Promise<void>;
@@ -58,3 +59,9 @@ export const test = baseTest.extend<{
     meteoSearchDir,
   ),
 });
+
+export const waitForHydration = (page: Page) => {
+  return page.waitForSelector(`html[${isSSRAttrName}="false"]`, {
+    state: "attached",
+  });
+};
