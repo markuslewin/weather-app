@@ -21,13 +21,13 @@ const getFixture = async (dir: string, defaultData: JsonBodyType) => {
 
 export const handlers = [
   http.get("https://api.open-meteo.com/v1/forecast", async () => {
+    // await setTimeout(4000);
     return getFixture(meteoForecastDir, forecastData);
   }),
   http.get("https://geocoding-api.open-meteo.com/v1/search", async () => {
     return getFixture(meteoSearchDir, searchData);
   }),
   http.get("https://atlas.microsoft.com/reverseGeocode", async () => {
-    // await new Promise((res) => setTimeout(res, 5000));
     // Important to satisfy response outputs since the clients don't parse run-time response data
     // return HttpResponse.json({} satisfies ErrorResponseOutput, {
     //   status: 500,
@@ -44,8 +44,8 @@ export const handlers = [
           ext_expires_in: 3599,
           access_token: "mock_access_token",
         },
-        { status: 200 }
+        { status: 200 },
       );
-    }
+    },
   ),
 ];

@@ -65,7 +65,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       latitude: searchParams.lat,
       longitude: searchParams.lon,
     });
-    const weather = await getWeather({
+    const weather = getWeather({
       latitude: searchParams.lat,
       longitude: searchParams.lon,
     });
