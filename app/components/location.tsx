@@ -1,4 +1,11 @@
-import { Icon } from "#app/components/icon";
+import {
+  Hourly,
+  HourlyHeader,
+  HourlyHeading,
+  HourlyList,
+  HourlySelect,
+  ResolvedHourly,
+} from "#app/components/hourly";
 import { WeatherIcon } from "#app/components/weather-icon";
 import {
   convertPrecipitation,
@@ -10,32 +17,20 @@ import {
   createWindSpeedFormatter,
   formatDate,
   formatDay,
-  formatHours,
   formatList,
   percentageFormatter,
   temperatureFormatter,
 } from "#app/utils/format";
 import type { getLocation } from "#app/utils/maps";
-import { usePromise } from "#app/utils/promise";
 import type { Settings } from "#app/utils/settings";
 import {
   dailyLength,
   getInterpretation,
-  getWeather,
   hourlyLength,
+  type Weather,
 } from "#app/utils/weather";
-import { Suspense, useState } from "react";
-import {
-  Button,
-  ListBox,
-  ListBoxItem,
-  Popover,
-  Select,
-  SelectValue,
-} from "react-aria-components";
+import { Suspense } from "react";
 import { Await } from "react-router";
-
-type Weather = Awaited<ReturnType<typeof getWeather>>;
 
 export const Location = ({
   settings,
@@ -238,115 +233,30 @@ export const Location = ({
             </ol>
           </div>
         </div>
-        <Hourly weather={weather} temperature={temperature} />
-      </div>
-    </>
-  );
-};
-
-const Hourly = ({
-  weather,
-  temperature,
-}: {
-  weather: Promise<Weather>;
-  temperature: (value: number) => string;
-}) => {
-  const weatherPromise = usePromise(weather);
-  const [date, setDate] = useState<string | null>(null);
-  const dates =
-    weatherPromise.type === "fulfilled"
-      ? [
-          ...new Set(
-            weatherPromise.value.hourly.map((hour) => {
-              return hour.time.split("T")[0]!;
-            }),
-          ),
-        ]
-      : [];
-
-  if (date === null && weatherPromise.type === "fulfilled") {
-    setDate(weatherPromise.value.hourly[0]!.time.split("T")[0]!);
-  }
-
-  return (
-    <article className="[ hourly ] [ box ] [ layer-1 radius-20 ]">
-      <header className="cluster">
-        <h3 className="text-preset-5">Hourly forecast</h3>
-        <Select
-          className="date-select"
-          placeholder="-"
-          value={date}
-          onChange={(value) => {
-            setDate(
-              typeof value === "string" && dates.includes(value)
-                ? value
-                : (dates[0] ?? null),
-            );
-          }}
-          aria-label="Select date"
-        >
-          <Button>
-            <SelectValue />
-            <Icon name="IconDropdown" />
-          </Button>
-          <Popover
-            className="date-select__popover"
-            offset={10}
-            placement="bottom end"
-          >
-            <ListBox items={dates.map((id) => ({ id }))}>
-              {(hour) => (
-                <ListBoxItem>
-                  {formatDay("long", new Date(hour.id))}
-                </ListBoxItem>
-              )}
-            </ListBox>
-          </Popover>
-        </Select>
-      </header>
-      <ol className="[ hours ] [ stack ] [ mt-200 ]" role="list">
         <Suspense
-          fallback={Array.from({ length: hourlyLength }).map((_, i) => {
-            return <li key={i}>my hour fallback</li>;
-          })}
+          fallback={
+            <Hourly>
+              <HourlyHeader>
+                <HourlyHeading />
+                <HourlySelect placeholder="-" />
+              </HourlyHeader>
+              <HourlyList>
+                {Array.from({ length: hourlyLength }).map((_, i) => {
+                  return <li key={i}>my hour fallback</li>;
+                })}
+              </HourlyList>
+            </Hourly>
+          }
         >
           <Await resolve={weather}>
             {(weather) => {
-              return weather.hourly
-                .filter((hour) => {
-                  return hour.time.split("T")[0] === date;
-                })
-                .map((hour) => {
-                  const interpretation = getInterpretation(hour.weather_code);
-                  return (
-                    <li
-                      className="[ hours__item ] [ box ] [ layer-2 radius-8 ]"
-                      key={hour.time}
-                    >
-                      <h4 className="text-preset-5--medium">
-                        {formatHours(new Date(hour.time))}
-                      </h4>
-                      {interpretation ? (
-                        <WeatherIcon
-                          className="size-40"
-                          interpretation={interpretation}
-                        />
-                      ) : (
-                        <div className="size-40" />
-                      )}
-                      <p
-                        className="text-preset-7"
-                        data-testid="hour-temperature"
-                      >
-                        {temperature(hour.temperature_2m)}
-                      </p>
-                    </li>
-                  );
-                });
+              return (
+                <ResolvedHourly weather={weather} temperature={temperature} />
+              );
             }}
           </Await>
         </Suspense>
-      </ol>
-    </article>
+      </div>
+    </>
   );
 };

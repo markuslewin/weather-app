@@ -4,7 +4,7 @@ import {
   dailyLength,
   hourlyLength,
   interpretationByCode,
-  type Weather,
+  type WeatherResponse,
 } from "#app/utils/weather";
 import { test, waitForHydration } from "#tests/playwright";
 import { AxeBuilder } from "@axe-core/playwright";
@@ -530,7 +530,9 @@ type RecursivePartial<T> = {
       : T[P];
 };
 
-const createWeather = (overwrites?: RecursivePartial<Weather>): Weather => {
+const createWeather = (
+  overwrites?: RecursivePartial<WeatherResponse>,
+): WeatherResponse => {
   const time = faker.date.anytime();
   const start = new Date(
     Date.UTC(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate()),

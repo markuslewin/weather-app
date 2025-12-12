@@ -32,6 +32,7 @@ export const handlers = [
     // return HttpResponse.json({} satisfies ErrorResponseOutput, {
     //   status: 500,
     // });
+    // await setTimeout(4000);
     return getFixture(azureReverseGeocodingDir, reverseGeocodeData);
   }),
   http.post<{ tenantId: string }>(

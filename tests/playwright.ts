@@ -1,6 +1,6 @@
 import type { SearchResponse } from "#app/utils/search";
 import { isSSRAttrName } from "#app/utils/ssr";
-import type { Weather } from "#app/utils/weather";
+import type { WeatherResponse } from "#app/utils/weather";
 import {
   azureReverseGeocodingDir,
   deleteFixture,
@@ -43,7 +43,7 @@ export const test = baseTest.extend<{
   setAzureReverseGeocodingSettings: SetMock<
     GeocodingResponseOutput | ErrorResponseOutput
   >;
-  setMeteoForecastSettings: SetMock<Weather | null>;
+  setMeteoForecastSettings: SetMock<WeatherResponse | null>;
   setMeteoSearchSettings: SetMock<SearchResponse>;
 }>({
   setAzureReverseGeocodingSettings: createMockFixture(

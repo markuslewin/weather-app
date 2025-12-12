@@ -147,7 +147,7 @@ const WeatherCode = z.number().refine((val) => interpretationByCode.has(val));
 export const hourlyLength = 24 * 7;
 export const dailyLength = 7;
 
-const Weather = z.object({
+const weatherResponseSchema = z.object({
   current: z.object({
     time: z.iso.datetime({ local: true }),
     temperature_2m: z.number(),
@@ -169,7 +169,7 @@ const Weather = z.object({
     temperature_2m_min: z.array(z.number()).length(dailyLength),
   }),
 });
-export type Weather = z.infer<typeof Weather>;
+export type WeatherResponse = z.infer<typeof weatherResponseSchema>;
 
 export const getWeather = async ({
   latitude,
@@ -186,9 +186,11 @@ export const getWeather = async ({
       hourly: "temperature_2m,weather_code",
       current:
         "temperature_2m,weather_code,apparent_temperature,wind_speed_10m,precipitation,relative_humidity_2m",
-    })}`
+    })}`,
   );
-  const { hourly, daily, ...data } = Weather.parse(await response.json());
+  const { hourly, daily, ...data } = weatherResponseSchema.parse(
+    await response.json(),
+  );
   const weather = {
     ...data,
     hourly: Array.from({ length: hourlyLength }, (_, i) => {
@@ -209,3 +211,4 @@ export const getWeather = async ({
   };
   return weather;
 };
+export type Weather = Awaited<ReturnType<typeof getWeather>>;
