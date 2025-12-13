@@ -6,6 +6,12 @@ import {
   DayTemperatures,
 } from "#app/components/day";
 import {
+  Hour,
+  HourIconPlaceholder,
+  HourTemperature,
+  HourTime,
+} from "#app/components/hour";
+import {
   Hourly,
   HourlyHeader,
   HourlyHeading,
@@ -248,11 +254,19 @@ export const Location = ({
             <Hourly>
               <HourlyHeader>
                 <HourlyHeading />
-                <HourlySelect placeholder="–" />
+                <HourlySelect className="pulse" placeholder="–" />
               </HourlyHeader>
               <HourlyList>
                 {Array.from({ length: hourlyLength }).map((_, i) => {
-                  return <li key={i}>my hour fallback</li>;
+                  return (
+                    <Hour key={i} className="pulse">
+                      <HourTime aria-hidden="true">{nbsp}</HourTime>
+                      <HourIconPlaceholder />
+                      <HourTemperature aria-hidden="true">
+                        {nbsp}
+                      </HourTemperature>
+                    </Hour>
+                  );
                 })}
               </HourlyList>
             </Hourly>

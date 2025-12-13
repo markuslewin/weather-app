@@ -1,3 +1,9 @@
+import {
+  Hour,
+  HourIconPlaceholder,
+  HourTemperature,
+  HourTime,
+} from "#app/components/hour";
 import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
 import { formatDay, formatHours } from "#app/utils/format";
@@ -31,9 +37,17 @@ type HourlySelectProps = Omit<
   "children"
 > & { children?: ReactNode };
 
-export const HourlySelect = ({ children, ...props }: HourlySelectProps) => {
+export const HourlySelect = ({
+  className,
+  children,
+  ...props
+}: HourlySelectProps) => {
   return (
-    <Select className="date-select" aria-label="Select date" {...props}>
+    <Select
+      className={["date-select", className].join(" ")}
+      aria-label="Select date"
+      {...props}
+    >
       <Button>
         <SelectValue />
         <Icon name="IconDropdown" />
@@ -102,25 +116,20 @@ export const ResolvedHourly = ({
           .map((hour) => {
             const interpretation = getInterpretation(hour.weather_code);
             return (
-              <li
-                className="[ hours__item ] [ box ] [ layer-2 radius-8 ]"
-                key={hour.time}
-              >
-                <h4 className="text-preset-5--medium">
-                  {formatHours(new Date(hour.time))}
-                </h4>
+              <Hour key={hour.time}>
+                <HourTime>{formatHours(new Date(hour.time))}</HourTime>
                 {interpretation ? (
                   <WeatherIcon
                     className="size-40"
                     interpretation={interpretation}
                   />
                 ) : (
-                  <div className="size-40" />
+                  <HourIconPlaceholder />
                 )}
-                <p className="text-preset-7" data-testid="hour-temperature">
+                <HourTemperature data-testid="hour-temperature">
                   {temperature(hour.temperature_2m)}
-                </p>
-              </li>
+                </HourTemperature>
+              </Hour>
             );
           })}
       </HourlyList>
