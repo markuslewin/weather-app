@@ -6,6 +6,7 @@ import {
   HourlySelect,
   ResolvedHourly,
 } from "#app/components/hourly";
+import { useSettings } from "#app/components/settings";
 import { WeatherIcon } from "#app/components/weather-icon";
 import {
   convertPrecipitation,
@@ -22,7 +23,6 @@ import {
   temperatureFormatter,
 } from "#app/utils/format";
 import type { getLocation } from "#app/utils/maps";
-import type { Settings } from "#app/utils/settings";
 import {
   dailyLength,
   getInterpretation,
@@ -33,14 +33,14 @@ import { Suspense } from "react";
 import { Await } from "react-router";
 
 export const Location = ({
-  settings,
   location,
   weather,
 }: {
-  settings: Settings;
   location: ReturnType<typeof getLocation>;
   weather: Promise<Weather>;
 }) => {
+  const settings = useSettings();
+
   const temperature = (value: number) => {
     return temperatureFormatter.format(
       convertTemperature(settings.temperatureUnit, value),
