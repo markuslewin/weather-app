@@ -5,6 +5,7 @@ import {
   CardTemperature,
   CardTime,
   CardWeather,
+  CardWeatherHeading,
 } from "#app/components/card";
 import {
   Day,
@@ -89,7 +90,11 @@ export const Location = ({
               fallback={
                 <Card data-placeholder>
                   <div>
-                    <CardLocation aria-hidden="true">{nbsp}</CardLocation>
+                    <CardLocation>
+                      <span className="sr-only">Location: Loading</span>
+                      <span aria-hidden="true">{nbsp}</span>
+                    </CardLocation>
+                    <CardWeatherHeading />
                     <CardTime aria-hidden="true">{nbsp}</CardTime>
                   </div>
                   <CardWeather>
@@ -149,7 +154,7 @@ export const Location = ({
                             </Suspense>
                           </span>
                         </CardLocation>
-                        <h3 className="sr-only">Current weather</h3>
+                        <CardWeatherHeading />
                         <CardTime data-testid="time">
                           {formatDate(new Date(weather.current.time))}
                         </CardTime>
@@ -206,7 +211,13 @@ export const Location = ({
                   <div key={key} className="[ box ] [ layer-1 radius-12 ]">
                     <h4>{key}</h4>
                     <p className="mt-300 text-preset-3" data-testid={testid}>
-                      <Suspense fallback={<span className="pulse">–</span>}>
+                      <Suspense
+                        fallback={
+                          <span className="pulse">
+                            <span className="sr-only">Loading</span>–
+                          </span>
+                        }
+                      >
                         <Await resolve={weather}>
                           {(weather) => {
                             return getValue(weather);

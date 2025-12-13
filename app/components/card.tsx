@@ -12,6 +12,16 @@ export const CardLocation = (props: CardLocationProps) => {
   return <h2 className="text-preset-4" {...props} />;
 };
 
+type CardWeatherHeadingProps = ComponentPropsWithRef<"h3">;
+
+export const CardWeatherHeading = (props: CardWeatherHeadingProps) => {
+  return (
+    <h3 className="sr-only" {...props}>
+      Current weather
+    </h3>
+  );
+};
+
 type CardTimeProps = ComponentPropsWithRef<"p">;
 
 export const CardTime = (props: CardTimeProps) => {
