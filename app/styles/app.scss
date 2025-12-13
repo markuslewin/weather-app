@@ -586,7 +586,6 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding-block-start: utils.rem(4);
   display: grid;
   justify-items: center;
   gap: utils.rem(14);
@@ -594,9 +593,14 @@ body {
   color: tokens.$color-neutral-200;
 
   &__dots {
+    padding-block-start: utils.rem(4);
     display: inline-grid;
     grid-template-columns: repeat(3, auto);
     gap: tokens.spacing(125);
+
+    @include utils.forced-colors {
+      background: Canvas;
+    }
   }
 
   &__dot {
@@ -604,6 +608,10 @@ body {
     height: utils.rem(12);
     border-radius: tokens.radius(full);
     background: tokens.$color-neutral-0;
+
+    @include utils.forced-colors {
+      background: CanvasText;
+    }
   }
 
   @for $i from 1 through 3 {
