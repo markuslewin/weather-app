@@ -293,6 +293,13 @@ body {
   background: url(/images/bg-today-small.svg) center/cover
     tokens.$color-blue-700;
 
+  &[data-placeholder] {
+    position: relative;
+    isolation: isolate;
+    background: url(/images/bg-today-placeholder.svg) center/cover
+      tokens.$color-neutral-800;
+  }
+
   &__location-fallback {
     border-radius: tokens.radius(12);
     background: tokens.$color-neutral-300;
@@ -311,6 +318,12 @@ body {
     width: utils.rem(120);
     min-width: utils.rem(0);
     height: auto;
+  }
+
+  &__weather-icon-placeholder {
+    width: utils.rem(120);
+    min-width: utils.rem(0);
+    aspect-ratio: 1;
   }
 
   @include tokens.breakpoint("tablet") {
@@ -568,6 +581,38 @@ body {
   }
 }
 
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding-block-start: utils.rem(4);
+  display: grid;
+  justify-items: center;
+  gap: utils.rem(14);
+  text-align: center;
+  color: tokens.$color-neutral-200;
+
+  &__dots {
+    display: inline-grid;
+    grid-template-columns: repeat(3, auto);
+    gap: tokens.spacing(125);
+  }
+
+  &__dot {
+    width: utils.rem(12);
+    height: utils.rem(12);
+    border-radius: tokens.radius(full);
+    background: tokens.$color-neutral-0;
+  }
+
+  @for $i from 1 through 3 {
+    &__dot:nth-child(#{$i}) {
+      animation: 1s #{150ms * ($i - 1)} infinite bounce;
+    }
+  }
+}
+
 @each $key, $value in tokens.$spacing {
   .mt-#{$key} {
     margin-top: $value;
@@ -677,6 +722,18 @@ body {
 @keyframes pulse {
   50% {
     opacity: 0.5;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(utils.rem(-4));
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
 }
 

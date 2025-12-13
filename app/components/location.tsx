@@ -1,4 +1,12 @@
 import {
+  Card,
+  CardIconPlaceholder,
+  CardLocation,
+  CardTemperature,
+  CardTime,
+  CardWeather,
+} from "#app/components/card";
+import {
   Day,
   DayHeading,
   DayIconPlaceholder,
@@ -40,7 +48,6 @@ import { nbsp } from "#app/utils/unicode";
 import {
   dailyLength,
   getInterpretation,
-  hourlyLength,
   type Weather,
 } from "#app/utils/weather";
 import { Suspense } from "react";
@@ -78,7 +85,28 @@ export const Location = ({
       <div className="[ dashboard ] [ mt-400 desktop:600 ]">
         <div>
           <div className="current">
-            <Suspense fallback={<div>my card fallback</div>}>
+            <Suspense
+              fallback={
+                <Card data-placeholder>
+                  <div>
+                    <CardLocation aria-hidden="true">{nbsp}</CardLocation>
+                    <CardTime aria-hidden="true">{nbsp}</CardTime>
+                  </div>
+                  <CardWeather>
+                    <CardIconPlaceholder />
+                    <CardTemperature aria-hidden="true">{nbsp}</CardTemperature>
+                  </CardWeather>
+                  <div className="loading">
+                    <div className="loading__dots">
+                      <div className="loading__dot" />
+                      <div className="loading__dot" />
+                      <div className="loading__dot" />
+                    </div>
+                    <p className="text-preset-6">Loading...</p>
+                  </div>
+                </Card>
+              }
+            >
               <Await resolve={weather}>
                 {(weather) => {
                   const currentWeatherInterpretation = getInterpretation(
@@ -86,9 +114,9 @@ export const Location = ({
                   );
 
                   return (
-                    <div className="card">
+                    <Card>
                       <div>
-                        <h2 className="text-preset-4">
+                        <CardLocation>
                           <span className="sr-only">Location: </span>
                           <span data-testid="location">
                             <Suspense
@@ -120,25 +148,27 @@ export const Location = ({
                               </Await>
                             </Suspense>
                           </span>
-                        </h2>
+                        </CardLocation>
                         <h3 className="sr-only">Current weather</h3>
-                        <p className="mt-150" data-testid="time">
+                        <CardTime data-testid="time">
                           {formatDate(new Date(weather.current.time))}
-                        </p>
+                        </CardTime>
                       </div>
-                      <div className="card__weather">
+                      <CardWeather>
                         {currentWeatherInterpretation ? (
                           <WeatherIcon
                             className="card__weather-icon"
                             interpretation={currentWeatherInterpretation}
                             data-testid="weather-code"
                           />
-                        ) : null}
-                        <p className="text-preset-1" data-testid="temperature">
+                        ) : (
+                          <CardIconPlaceholder />
+                        )}
+                        <CardTemperature data-testid="temperature">
                           {temperature(weather.current.temperature_2m)}
-                        </p>
-                      </div>
-                    </div>
+                        </CardTemperature>
+                      </CardWeather>
+                    </Card>
                   );
                 }}
               </Await>
@@ -257,7 +287,7 @@ export const Location = ({
                 <HourlySelect className="pulse" placeholder="–" />
               </HourlyHeader>
               <HourlyList>
-                {Array.from({ length: hourlyLength }).map((_, i) => {
+                {Array.from({ length: 24 }).map((_, i) => {
                   return (
                     <Hour key={i} className="pulse">
                       <HourTime aria-hidden="true">{nbsp}</HourTime>
