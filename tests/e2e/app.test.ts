@@ -23,8 +23,19 @@ test("initial view passes a11y check", async ({ page }) => {
   expect(results.violations).toEqual([]);
 });
 
-test("weather view passes a11y check", async ({ page }) => {
+test("weather view passes a11y check", async ({
+  page,
+  setAzureReverseGeocodingSettings,
+}) => {
+  const reverseGeocoding = createReverseGeocoding();
+
+  await setAzureReverseGeocodingSettings(reverseGeocoding, { status: 200 });
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+  await page
+    .getByRole("heading", {
+      name: reverseGeocoding.features?.[0]?.properties?.address?.locality,
+    })
+    .waitFor();
 
   const results = await new AxeBuilder({ page }).analyze();
 
@@ -37,6 +48,7 @@ test("error view passes a11y check", async ({
 }) => {
   await setMeteoForecastSettings(null, { status: 500 });
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+  await page.getByRole("heading", { name: "something went wrong" }).waitFor();
 
   const results = await new AxeBuilder({ page }).analyze();
 
