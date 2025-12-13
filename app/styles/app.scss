@@ -297,7 +297,7 @@ body {
     border-radius: tokens.radius(12);
     background: tokens.$color-neutral-300;
     color: hsl(0 0% 0% / 0%);
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    @include tokens.pulse;
   }
 
   &__weather {
@@ -616,6 +616,10 @@ body {
 
 .text-center {
   text-align: center;
+}
+
+.pulse {
+  @include tokens.pulse;
 }
 
 .sr-only {

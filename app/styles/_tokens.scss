@@ -153,6 +153,10 @@ $radius: (
   transition-duration: 150ms;
 }
 
+@mixin pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 $outline-width: 2;
 $outline-offset: 3;
 

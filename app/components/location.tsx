@@ -1,4 +1,11 @@
 import {
+  Day,
+  DayHeading,
+  DayIconPlaceholder,
+  DayTemperature,
+  DayTemperatures,
+} from "#app/components/day";
+import {
   Hourly,
   HourlyHeader,
   HourlyHeading,
@@ -23,6 +30,7 @@ import {
   temperatureFormatter,
 } from "#app/utils/format";
 import type { getLocation } from "#app/utils/maps";
+import { nbsp } from "#app/utils/unicode";
 import {
   dailyLength,
   getInterpretation,
@@ -159,23 +167,18 @@ export const Location = ({
                 },
               ].map(({ key, getValue, testid }) => {
                 return (
-                  <Suspense key={key} fallback={<div>my card fallback</div>}>
-                    <Await resolve={weather}>
-                      {(weather) => {
-                        return (
-                          <div className="[ box ] [ layer-1 radius-12 ]">
-                            <h4>{key}</h4>
-                            <p
-                              className="mt-300 text-preset-3"
-                              data-testid={testid}
-                            >
-                              {getValue(weather)}
-                            </p>
-                          </div>
-                        );
-                      }}
-                    </Await>
-                  </Suspense>
+                  <div key={key} className="[ box ] [ layer-1 radius-12 ]">
+                    <h4>{key}</h4>
+                    <p className="mt-300 text-preset-3" data-testid={testid}>
+                      <Suspense fallback={<span className="pulse">–</span>}>
+                        <Await resolve={weather}>
+                          {(weather) => {
+                            return getValue(weather);
+                          }}
+                        </Await>
+                      </Suspense>
+                    </p>
+                  </div>
                 );
               })}
             </div>
@@ -185,7 +188,17 @@ export const Location = ({
             <ol className="[ grid ] [ mt-250 ]" role="list">
               <Suspense
                 fallback={Array.from({ length: dailyLength }).map((_, i) => {
-                  return <li key={i}>my day fallback</li>;
+                  return (
+                    <Day key={i} className="pulse">
+                      <DayHeading aria-hidden="true">{nbsp}</DayHeading>
+                      <DayIconPlaceholder />
+                      <DayTemperatures>
+                        <DayTemperature aria-hidden="true">
+                          {nbsp}
+                        </DayTemperature>
+                      </DayTemperatures>
+                    </Day>
+                  );
                 })}
               >
                 <Await resolve={weather}>
@@ -195,36 +208,33 @@ export const Location = ({
                         day.weather_code,
                       );
                       return (
-                        <li
-                          className="[ daily__day ] [ box stack ] [ layer-1 radius-12 ]"
-                          key={day.time}
-                        >
-                          <h4 className="text-center" data-testid="day-name">
+                        <Day key={day.time}>
+                          <DayHeading data-testid="day-name">
                             {formatDay("short", new Date(day.time))}
-                          </h4>
+                          </DayHeading>
                           {interpretation ? (
                             <WeatherIcon
                               className="[ day__icon ] [ size-60 ]"
                               interpretation={interpretation}
                             />
                           ) : (
-                            <div className="size-60" />
+                            <DayIconPlaceholder />
                           )}
-                          <div className="day__temperature">
-                            <p className="text-preset-7">
+                          <DayTemperatures>
+                            <DayTemperature>
                               <span className="sr-only">Max temperature: </span>
                               <span data-testid="day-temperature-max">
                                 {temperature(day.temperature_2m_max)}
                               </span>
-                            </p>
-                            <p className="text-preset-7">
+                            </DayTemperature>
+                            <DayTemperature>
                               <span className="sr-only">Min temperature: </span>
                               <span data-testid="day-temperature-min">
                                 {temperature(day.temperature_2m_min)}
                               </span>
-                            </p>
-                          </div>
-                        </li>
+                            </DayTemperature>
+                          </DayTemperatures>
+                        </Day>
                       );
                     });
                   }}
@@ -238,7 +248,7 @@ export const Location = ({
             <Hourly>
               <HourlyHeader>
                 <HourlyHeading />
-                <HourlySelect placeholder="-" />
+                <HourlySelect placeholder="–" />
               </HourlyHeader>
               <HourlyList>
                 {Array.from({ length: hourlyLength }).map((_, i) => {
