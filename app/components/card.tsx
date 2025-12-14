@@ -34,10 +34,19 @@ export const CardWeather = (props: CardWeatherProps) => {
   return <div className="card__weather" {...props} />;
 };
 
-type CardIconPlaceholderProps = ComponentPropsWithRef<"div">;
+type CardIconPlaceholderProps = ComponentPropsWithRef<"img">;
 
 export const CardIconPlaceholder = (props: CardIconPlaceholderProps) => {
-  return <div className="card__weather-icon-placeholder" {...props} />;
+  return (
+    <img
+      className="card__weather-icon"
+      alt=""
+      width={1}
+      height={1}
+      data-placeholder
+      {...props}
+    />
+  );
 };
 
 type CardTemperatureProps = ComponentPropsWithRef<"p">;

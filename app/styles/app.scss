@@ -318,12 +318,10 @@ body {
     width: utils.rem(120);
     min-width: utils.rem(0);
     height: auto;
-  }
 
-  &__weather-icon-placeholder {
-    width: utils.rem(120);
-    min-width: utils.rem(0);
-    aspect-ratio: 1;
+    &[data-placeholder] {
+      visibility: hidden;
+    }
   }
 
   @include tokens.breakpoint("tablet") {
