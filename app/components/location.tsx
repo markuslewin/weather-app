@@ -46,11 +46,7 @@ import {
 } from "#app/utils/format";
 import type { getLocation } from "#app/utils/maps";
 import { nbsp } from "#app/utils/unicode";
-import {
-  dailyLength,
-  getInterpretation,
-  type Weather,
-} from "#app/utils/weather";
+import { getInterpretation, type Weather } from "#app/utils/weather";
 import { Suspense } from "react";
 import { Await } from "react-router";
 
@@ -234,7 +230,7 @@ export const Location = ({
             <h3 className="text-preset-5">Daily forecast</h3>
             <ol className="[ grid ] [ mt-250 ]" role="list">
               <Suspense
-                fallback={Array.from({ length: dailyLength }).map((_, i) => {
+                fallback={Array.from({ length: 7 }).map((_, i) => {
                   return (
                     <Day key={i} className="pulse">
                       <DayHeading aria-hidden="true">{nbsp}</DayHeading>

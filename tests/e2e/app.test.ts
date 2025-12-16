@@ -1,11 +1,6 @@
 import type { SearchResponse, SearchResponseItem } from "#app/utils/search";
 import { createHomeUrl } from "#app/utils/url";
-import {
-  dailyLength,
-  hourlyLength,
-  interpretationByCode,
-  type WeatherResponse,
-} from "#app/utils/weather";
+import { interpretationByCode, type WeatherResponse } from "#app/utils/weather";
 import { test, waitForHydration } from "#tests/playwright";
 import { AxeBuilder } from "@axe-core/playwright";
 import type {
@@ -14,6 +9,9 @@ import type {
 } from "@azure-rest/maps-search";
 import { faker } from "@faker-js/faker";
 import { expect } from "@playwright/test";
+
+const dailyLength = 7;
+const hourlyLength = 24 * dailyLength;
 
 test("initial view passes a11y check", async ({ page }) => {
   await page.goto(createHomeUrl());

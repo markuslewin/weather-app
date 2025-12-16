@@ -144,9 +144,6 @@ export const getInterpretation = (code: number) => {
 
 const WeatherCode = z.number().refine((val) => interpretationByCode.has(val));
 
-export const hourlyLength = 24 * 7;
-export const dailyLength = 7;
-
 const weatherResponseSchema = z.object({
   current: z.object({
     time: z.iso.datetime({ local: true }),
@@ -158,15 +155,15 @@ const weatherResponseSchema = z.object({
     relative_humidity_2m: z.number(),
   }),
   hourly: z.object({
-    time: z.array(z.iso.datetime({ local: true })).length(hourlyLength),
-    temperature_2m: z.array(z.number()).length(hourlyLength),
-    weather_code: z.array(WeatherCode).length(hourlyLength),
+    time: z.array(z.iso.datetime({ local: true })),
+    temperature_2m: z.array(z.number()),
+    weather_code: z.array(WeatherCode),
   }),
   daily: z.object({
-    time: z.array(z.iso.date()).length(dailyLength),
-    weather_code: z.array(WeatherCode).length(dailyLength),
-    temperature_2m_max: z.array(z.number()).length(dailyLength),
-    temperature_2m_min: z.array(z.number()).length(dailyLength),
+    time: z.array(z.iso.date()),
+    weather_code: z.array(WeatherCode),
+    temperature_2m_max: z.array(z.number()),
+    temperature_2m_min: z.array(z.number()),
   }),
 });
 export type WeatherResponse = z.infer<typeof weatherResponseSchema>;
@@ -193,19 +190,39 @@ export const getWeather = async ({
   );
   const weather = {
     ...data,
-    hourly: Array.from({ length: hourlyLength }, (_, i) => {
+    hourly: Array.from(hourly.time, (time, i) => {
+      const temperature_2m = hourly.temperature_2m[i];
+      if (temperature_2m === undefined) throw new Error("Expected number");
+      const weather_code = hourly.weather_code[i];
+      if (weather_code === undefined) throw new Error("Expected number");
+
+      // new TZDate(time * 1000, data.timezone)
+      // todo: Format to walltime `YYYY-MM-DDTHH:mm`
+
       return {
-        time: hourly.time[i]!,
-        temperature_2m: hourly.temperature_2m[i]!,
-        weather_code: hourly.weather_code[i]!,
+        time,
+        temperature_2m,
+        weather_code,
       };
     }),
-    daily: Array.from({ length: dailyLength }, (_, i) => {
+    daily: Array.from(daily.time, (time, i) => {
+      const weather_code = daily.weather_code[i];
+      if (weather_code === undefined) throw new Error("Expected number");
+      const temperature_2m_max = daily.temperature_2m_max[i];
+      if (temperature_2m_max === undefined) throw new Error("Expected number");
+      const temperature_2m_min = daily.temperature_2m_min[i];
+      if (temperature_2m_min === undefined) throw new Error("Expected number");
+
+      // Incorrect point in time, but correct walltime
+      // https://github.com/open-meteo/open-meteo/issues/488#issuecomment-1790807777
+      // new Date((time + data.utcOffsetSeconds) * 1000);
+      // todo: Format to walltime `YYYY-MM-DD`
+
       return {
-        time: daily.time[i]!,
-        weather_code: daily.weather_code[i]!,
-        temperature_2m_max: daily.temperature_2m_max[i]!,
-        temperature_2m_min: daily.temperature_2m_min[i]!,
+        time,
+        weather_code,
+        temperature_2m_max,
+        temperature_2m_min,
       };
     }),
   };
