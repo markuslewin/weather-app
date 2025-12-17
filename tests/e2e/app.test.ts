@@ -1,6 +1,6 @@
 import type { SearchResponse, SearchResponseItem } from "#app/utils/search";
 import { createHomeUrl } from "#app/utils/url";
-import { interpretationByCode, type WeatherResponse } from "#app/utils/weather";
+import { createWeather } from "#app/utils/weather";
 import { test, waitForHydration } from "#tests/playwright";
 import { AxeBuilder } from "@axe-core/playwright";
 import type {
@@ -9,9 +9,6 @@ import type {
 } from "@azure-rest/maps-search";
 import { faker } from "@faker-js/faker";
 import { expect } from "@playwright/test";
-
-const dailyLength = 7;
-const hourlyLength = 24 * dailyLength;
 
 test("initial view passes a11y check", async ({ page }) => {
   await page.goto(createHomeUrl());
@@ -244,18 +241,19 @@ test("displays current weather data", async ({
   const precipitation = 123.4;
   const relative_humidity_2m = 28;
   const temperature_2m = 22.3;
-  const time = "2025-11-27T00:55";
   const weather_code = 71;
   const wind_speed_10m = 55.5;
 
   await setMeteoForecastSettings(
     createWeather({
+      timezone: "Europe/Stockholm",
+      utc_offset_seconds: 3600,
       current: {
         apparent_temperature,
         precipitation,
         relative_humidity_2m,
         temperature_2m,
-        time,
+        time: new Date("2025-11-27T00:55+01:00").getTime() / 1000,
         weather_code,
         wind_speed_10m,
       },
@@ -427,6 +425,8 @@ test("can retry from error view", async ({
 });
 
 test("converts temperature", async ({ page, setMeteoForecastSettings }) => {
+  const dailyLength = 7;
+  const hourlyLength = 24 * dailyLength;
   const celsius = 10;
   const fahrenheit = 50;
 
@@ -512,87 +512,6 @@ test.skip("filters hourly temperature", async ({ page }) => {
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
   await page.getByRole("button", { name: "select date" }).click();
 });
-
-const createTemperature = () => {
-  return faker.number.float({ max: 50 });
-};
-
-const createWeatherCode = () => {
-  return faker.helpers.arrayElement([...interpretationByCode.keys()]);
-};
-
-// todo: Revisit after fixing app logic
-const getDate = (iso: string) => {
-  return iso.substring(0, iso.indexOf("T"));
-};
-const removeZ = (iso: string) => {
-  return iso.slice(0, iso.length - 1);
-};
-
-// Source - https://stackoverflow.com/a/51365037
-// Posted by Jeffrey Patterson, modified by community. See post 'Timeline' for change history
-// Retrieved 2025-11-27, License - CC BY-SA 4.0
-type RecursivePartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
-    ? RecursivePartial<U>[]
-    : T[P] extends object | undefined
-      ? RecursivePartial<T[P]>
-      : T[P];
-};
-
-const createWeather = (
-  overwrites?: RecursivePartial<WeatherResponse>,
-): WeatherResponse => {
-  const time = faker.date.anytime();
-  const start = new Date(
-    Date.UTC(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate()),
-  );
-  return {
-    current: {
-      apparent_temperature: createTemperature(),
-      precipitation: faker.number.float({ max: 1000 }),
-      relative_humidity_2m: faker.number.int({ max: 100 }),
-      temperature_2m: createTemperature(),
-      time: time.toISOString(),
-      weather_code: createWeatherCode(),
-      wind_speed_10m: faker.number.float({ max: 100 }),
-      ...overwrites?.current,
-    },
-    daily: {
-      temperature_2m_max: faker.helpers.multiple(createTemperature, {
-        count: dailyLength,
-      }),
-      temperature_2m_min: faker.helpers.multiple(createTemperature, {
-        count: dailyLength,
-      }),
-      time: faker.helpers.multiple(
-        (_, i) =>
-          getDate(
-            new Date(start.getTime() + i * 1000 * 60 * 60 * 24).toISOString(),
-          ),
-        { count: dailyLength },
-      ),
-      weather_code: faker.helpers.multiple(createWeatherCode, {
-        count: dailyLength,
-      }),
-      ...overwrites?.daily,
-    },
-    hourly: {
-      temperature_2m: faker.helpers.multiple(createTemperature, {
-        count: hourlyLength,
-      }),
-      time: faker.helpers.multiple(
-        (_, i) =>
-          removeZ(new Date(start.getTime() + i * 1000 * 60 * 60).toISOString()),
-        { count: hourlyLength },
-      ),
-      weather_code: faker.helpers.multiple(createWeatherCode, {
-        count: hourlyLength,
-      }),
-      ...overwrites?.hourly,
-    },
-  };
-};
 
 const createFeaturesItem = (
   overwrites?: Partial<FeaturesItemOutput>,

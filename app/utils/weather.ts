@@ -1,3 +1,5 @@
+import { TZDate } from "@date-fns/tz";
+import { faker } from "@faker-js/faker";
 import * as z from "zod";
 
 export type Interpretation = {
@@ -145,8 +147,10 @@ export const getInterpretation = (code: number) => {
 const WeatherCode = z.number().refine((val) => interpretationByCode.has(val));
 
 const weatherResponseSchema = z.object({
+  timezone: z.string(),
+  utc_offset_seconds: z.int(),
   current: z.object({
-    time: z.iso.datetime({ local: true }),
+    time: z.int().positive(),
     temperature_2m: z.number(),
     weather_code: z.number(),
     apparent_temperature: z.number(),
@@ -155,12 +159,12 @@ const weatherResponseSchema = z.object({
     relative_humidity_2m: z.number(),
   }),
   hourly: z.object({
-    time: z.array(z.iso.datetime({ local: true })),
+    time: z.array(z.int().positive()),
     temperature_2m: z.array(z.number()),
     weather_code: z.array(WeatherCode),
   }),
   daily: z.object({
-    time: z.array(z.iso.date()),
+    time: z.array(z.int().positive()),
     weather_code: z.array(WeatherCode),
     temperature_2m_max: z.array(z.number()),
     temperature_2m_min: z.array(z.number()),
@@ -179,6 +183,9 @@ export const getWeather = async ({
     `https://api.open-meteo.com/v1/forecast?${new URLSearchParams({
       latitude,
       longitude,
+      // Infer timezone from supplied coordinates
+      timezone: "auto",
+      timeformat: "unixtime",
       daily: "weather_code,temperature_2m_max,temperature_2m_min",
       hourly: "temperature_2m,weather_code",
       current:
@@ -197,10 +204,15 @@ export const getWeather = async ({
       if (weather_code === undefined) throw new Error("Expected number");
 
       // new TZDate(time * 1000, data.timezone)
-      // todo: Format to walltime `YYYY-MM-DDTHH:mm`
+      // todo: Format to walltime `yyyy-MM-dd'T'HH:mm`
 
       return {
-        time,
+        // need to supply `data.timezone`
+        // time: format(
+        //   new TZDate(time * 1000, data.timezone),
+        //   "yyyy-MM-dd'T'HH:mm",
+        // ),
+        time: new Date(time * 1000),
         temperature_2m,
         weather_code,
       };
@@ -213,13 +225,19 @@ export const getWeather = async ({
       const temperature_2m_min = daily.temperature_2m_min[i];
       if (temperature_2m_min === undefined) throw new Error("Expected number");
 
-      // Incorrect point in time, but correct walltime
       // https://github.com/open-meteo/open-meteo/issues/488#issuecomment-1790807777
-      // new Date((time + data.utcOffsetSeconds) * 1000);
-      // todo: Format to walltime `YYYY-MM-DD`
+      // This recreates the API bug and gives us the correct wall time, but with the incorrect offset (UTC)
+      const utcWallTime = new Date((time + data.utc_offset_seconds) * 1000);
+      // Set the correct offset
+      const localTime = new TZDate(
+        utcWallTime.getUTCFullYear(),
+        utcWallTime.getUTCMonth(),
+        utcWallTime.getUTCDate(),
+        data.timezone,
+      );
 
       return {
-        time,
+        time: localTime,
         weather_code,
         temperature_2m_max,
         temperature_2m_min,
@@ -229,3 +247,88 @@ export const getWeather = async ({
   return weather;
 };
 export type Weather = Awaited<ReturnType<typeof getWeather>>;
+
+const createTemperature = () => {
+  return faker.number.float({ max: 50 });
+};
+
+const createWeatherCode = () => {
+  return faker.helpers.arrayElement([...interpretationByCode.keys()]);
+};
+
+// Source - https://stackoverflow.com/a/51365037
+// Posted by Jeffrey Patterson, modified by community. See post 'Timeline' for change history
+// Retrieved 2025-11-27, License - CC BY-SA 4.0
+type RecursivePartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? RecursivePartial<U>[]
+    : T[P] extends object | undefined
+      ? RecursivePartial<T[P]>
+      : T[P];
+};
+
+export const createWeather = (
+  overwrites?: RecursivePartial<WeatherResponse>,
+): WeatherResponse => {
+  const dailyLength = 7;
+  const hourlyLength = 24 * dailyLength;
+
+  const time = new Date(
+    Math.round(faker.date.anytime().getTime() / 1000) * 1000,
+  );
+  const start = new Date(
+    Date.UTC(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate()),
+  );
+  return {
+    timezone: overwrites?.timezone ?? faker.location.timeZone(),
+    utc_offset_seconds:
+      overwrites?.utc_offset_seconds ??
+      faker.number.int({
+        min: -360,
+        max: 360,
+        // todo
+        multipleOf: 5,
+      }),
+    current: {
+      apparent_temperature: createTemperature(),
+      precipitation: faker.number.float({ max: 1000 }),
+      relative_humidity_2m: faker.number.int({ max: 100 }),
+      temperature_2m: createTemperature(),
+      time: time.getTime() / 1000,
+      weather_code: createWeatherCode(),
+      wind_speed_10m: faker.number.float({ max: 100 }),
+      ...overwrites?.current,
+    },
+    daily: {
+      temperature_2m_max: faker.helpers.multiple(createTemperature, {
+        count: dailyLength,
+      }),
+      temperature_2m_min: faker.helpers.multiple(createTemperature, {
+        count: dailyLength,
+      }),
+      time: faker.helpers.multiple(
+        (_, i) =>
+          new Date(start.getTime() + i * 1000 * 60 * 60 * 24).getTime() / 1000,
+        { count: dailyLength },
+      ),
+      weather_code: faker.helpers.multiple(createWeatherCode, {
+        count: dailyLength,
+      }),
+      ...overwrites?.daily,
+    },
+    hourly: {
+      temperature_2m: faker.helpers.multiple(createTemperature, {
+        count: hourlyLength,
+      }),
+      time: faker.helpers.multiple(
+        (_, i) =>
+          new Date(start.getTime() + i * 1000 * 60 * 60).getTime() / 1000,
+        { count: hourlyLength },
+      ),
+      weather_code: faker.helpers.multiple(createWeatherCode, {
+        count: hourlyLength,
+      }),
+      ...overwrites?.hourly,
+    },
+  };
+};

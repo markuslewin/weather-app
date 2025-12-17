@@ -6,8 +6,11 @@ import {
 } from "#app/components/hour";
 import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
+import { hasValues } from "#app/utils/array";
 import { formatDay, formatHours } from "#app/utils/format";
 import { type Weather, getInterpretation } from "#app/utils/weather";
+import { TZDate } from "@date-fns/tz";
+import { isSameDay } from "date-fns";
 import { useState, type ComponentPropsWithRef, type ReactNode } from "react";
 import {
   Button,
@@ -70,14 +73,11 @@ export const ResolvedHourly = ({
   weather: Weather;
   temperature: (value: number) => string;
 }) => {
-  const dates = [
-    ...new Set(
-      weather.hourly.map((hour) => {
-        return hour.time.split("T")[0]!;
-      }),
-    ),
-  ];
-  const [date, setDate] = useState(dates[0]!);
+  const dates = weather.daily.map((day) => day.time.getTime());
+  if (!hasValues(dates)) {
+    throw new Error("No dates");
+  }
+  const [date, setDate] = useState(dates[0]);
 
   return (
     <Hourly>
@@ -87,9 +87,9 @@ export const ResolvedHourly = ({
           value={date}
           onChange={(value) => {
             setDate(
-              typeof value === "string" && dates.includes(value)
+              typeof value === "number" && dates.includes(value)
                 ? value
-                : dates[0]!,
+                : dates[0],
             );
           }}
         >
@@ -99,11 +99,16 @@ export const ResolvedHourly = ({
             placement="bottom end"
           >
             <ListBox items={dates.map((id) => ({ id }))}>
-              {(hour) => (
-                <ListBoxItem>
-                  {formatDay("long", new Date(hour.id))}
-                </ListBoxItem>
-              )}
+              {(date) => {
+                return (
+                  <ListBoxItem>
+                    {formatDay(
+                      { weekday: "long", timeZone: weather.timezone },
+                      new Date(date.id),
+                    )}
+                  </ListBoxItem>
+                );
+              }}
             </ListBox>
           </Popover>
         </HourlySelect>
@@ -111,13 +116,16 @@ export const ResolvedHourly = ({
       <HourlyList>
         {weather.hourly
           .filter((hour) => {
-            return hour.time.split("T")[0] === date;
+            const selectedDate = new TZDate(date, weather.timezone);
+            return isSameDay(selectedDate, hour.time);
           })
           .map((hour) => {
             const interpretation = getInterpretation(hour.weather_code);
             return (
-              <Hour key={hour.time}>
-                <HourTime>{formatHours(new Date(hour.time))}</HourTime>
+              <Hour key={hour.time.getTime()}>
+                <HourTime>
+                  {formatHours({ timeZone: weather.timezone }, hour.time)}
+                </HourTime>
                 {interpretation ? (
                   <WeatherIcon
                     className="size-40"

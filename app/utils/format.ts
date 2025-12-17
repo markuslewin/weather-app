@@ -2,19 +2,34 @@ import type { PrecipitationUnit, WindSpeedUnit } from "#app/utils/settings";
 
 const locales: Intl.LocalesArgument = "en-US";
 
-export const formatDate = (date: Date) => {
+type FormatDateOptions = {
+  timeZone: string;
+};
+
+export const formatDate = (options: FormatDateOptions, date: Date) => {
   return Intl.DateTimeFormat(locales, {
     dateStyle: "full",
+    ...options,
   }).format(date);
 };
 
-export const formatDay = (weekday: "short" | "long", date: Date) => {
-  return Intl.DateTimeFormat(locales, { weekday }).format(date);
+type FormatDayOptions = {
+  weekday: "short" | "long";
+  timeZone: string;
 };
 
-export const formatHours = (date: Date) => {
+export const formatDay = (options: FormatDayOptions, date: Date) => {
+  return Intl.DateTimeFormat(locales, options).format(date);
+};
+
+type FormatHoursOptions = {
+  timeZone: string;
+};
+
+export const formatHours = (options: FormatHoursOptions, date: Date) => {
   return Intl.DateTimeFormat(locales, {
     hour: "numeric",
+    ...options,
   }).format(date);
 };
 

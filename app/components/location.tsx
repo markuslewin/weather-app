@@ -152,7 +152,10 @@ export const Location = ({
                         </CardLocation>
                         <CardWeatherHeading />
                         <CardTime data-testid="time">
-                          {formatDate(new Date(weather.current.time))}
+                          {formatDate(
+                            { timeZone: weather.timezone },
+                            new Date(weather.current.time * 1000),
+                          )}
                         </CardTime>
                       </div>
                       <CardWeather>
@@ -251,9 +254,12 @@ export const Location = ({
                         day.weather_code,
                       );
                       return (
-                        <Day key={day.time}>
+                        <Day key={day.time.getTime()}>
                           <DayHeading data-testid="day-name">
-                            {formatDay("short", new Date(day.time))}
+                            {formatDay(
+                              { weekday: "short", timeZone: weather.timezone },
+                              new Date(day.time),
+                            )}
                           </DayHeading>
                           {interpretation ? (
                             <WeatherIcon
