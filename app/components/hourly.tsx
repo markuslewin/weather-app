@@ -123,7 +123,7 @@ export const ResolvedHourly = ({
             const interpretation = getInterpretation(hour.weather_code);
             return (
               <Hour key={hour.time.getTime()}>
-                <HourTime>
+                <HourTime data-testid="hour-time">
                   {formatHours({ timeZone: weather.timezone }, hour.time)}
                 </HourTime>
                 {interpretation ? (

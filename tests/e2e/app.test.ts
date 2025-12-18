@@ -508,9 +508,70 @@ test("converts precipitation", async ({ page, setMeteoForecastSettings }) => {
   await expect(page.getByTestId("precipitation")).toHaveText("4 in");
 });
 
-test.skip("filters hourly temperature", async ({ page }) => {
+test("displays correct wall time when entering dst", async ({
+  page,
+  setMeteoForecastSettings,
+}) => {
+  await setMeteoForecastSettings(
+    createWeather({
+      timezone: "America/Toronto",
+      utc_offset_seconds: -5 * 60 * 60,
+      daily: {
+        time: [new Date("2024-03-10T00:00-05:00").getTime() / 1000],
+      },
+      hourly: {
+        time: [
+          new Date("2024-03-10T00:00-05:00").getTime() / 1000,
+          new Date("2024-03-10T01:00-05:00").getTime() / 1000,
+          // Incorrect wall time and offset, but still correct point in time
+          new Date("2024-03-10T02:00-05:00").getTime() / 1000,
+          new Date("2024-03-10T03:00-05:00").getTime() / 1000,
+        ],
+      },
+    }),
+    { status: 200 },
+  );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
-  await page.getByRole("button", { name: "select date" }).click();
+
+  await expect(page.getByTestId("hour-time")).toHaveText([
+    "12 AM",
+    "1 AM",
+    "3 AM", // 2024-03-10T02:00-05:00
+    "4 AM",
+  ]);
+});
+
+test("displays correct wall time when exiting dst", async ({
+  page,
+  setMeteoForecastSettings,
+}) => {
+  await setMeteoForecastSettings(
+    createWeather({
+      timezone: "America/Toronto",
+      utc_offset_seconds: -5 * 60 * 60,
+      daily: {
+        time: [new Date("2025-11-02T00:00-05:00").getTime() / 1000],
+      },
+      hourly: {
+        time: [
+          new Date("2025-11-02T00:00-04:00").getTime() / 1000,
+          new Date("2025-11-02T01:00-04:00").getTime() / 1000,
+          // Incorrect wall time and offset, but still correct point in time
+          new Date("2025-11-02T02:00-04:00").getTime() / 1000,
+          new Date("2025-11-02T03:00-04:00").getTime() / 1000,
+        ],
+      },
+    }),
+    { status: 200 },
+  );
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+
+  await expect(page.getByTestId("hour-time")).toHaveText([
+    "12 AM",
+    "1 AM",
+    "1 AM", // 2025-11-02T02:00-04:00
+    "2 AM",
+  ]);
 });
 
 const createFeaturesItem = (
