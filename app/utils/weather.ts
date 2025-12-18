@@ -1,5 +1,6 @@
 import { TZDate } from "@date-fns/tz";
 import { faker } from "@faker-js/faker";
+import { addDays, endOfDay, isAfter, startOfDay } from "date-fns";
 import * as z from "zod";
 
 export type Interpretation = {
@@ -186,6 +187,10 @@ export const getWeather = async ({
       // Infer timezone from supplied coordinates
       timezone: "auto",
       timeformat: "unixtime",
+      // When entering/exiting DST, the API sends the incorrect amount of values
+      // Fetch 1 additional day and filter correct values here
+      // https://github.com/open-meteo/open-meteo/issues/488#issuecomment-1785674368
+      forecast_days: "8",
       daily: "weather_code,temperature_2m_max,temperature_2m_min",
       hourly: "temperature_2m,weather_code",
       current:
@@ -195,54 +200,65 @@ export const getWeather = async ({
   const { hourly, daily, ...data } = weatherResponseSchema.parse(
     await response.json(),
   );
+
+  const end = endOfDay(
+    addDays(startOfDay(new TZDate(data.current.time * 1000, data.timezone)), 6),
+  );
+  const dailyEnd = daily.time.findIndex((time) => {
+    return isAfter(time * 1000, end);
+  });
+  const hourlyEnd = hourly.time.findIndex((time) => {
+    return isAfter(time * 1000, end);
+  });
+
   const weather = {
     ...data,
-    hourly: Array.from(hourly.time, (time, i) => {
-      const temperature_2m = hourly.temperature_2m[i];
-      if (temperature_2m === undefined) throw new Error("Expected number");
-      const weather_code = hourly.weather_code[i];
-      if (weather_code === undefined) throw new Error("Expected number");
+    hourly: Array.from(
+      hourly.time.slice(0, hourlyEnd === -1 ? undefined : hourlyEnd),
+      (time, i) => {
+        const temperature_2m = hourly.temperature_2m[i];
+        if (temperature_2m === undefined) throw new Error("Expected number");
+        const weather_code = hourly.weather_code[i];
+        if (weather_code === undefined) throw new Error("Expected number");
 
-      // new TZDate(time * 1000, data.timezone)
-      // todo: Format to walltime `yyyy-MM-dd'T'HH:mm`
+        return {
+          time: new Date(time * 1000),
+          temperature_2m,
+          weather_code,
+        };
+      },
+    ),
+    daily: Array.from(
+      daily.time.slice(0, dailyEnd === -1 ? undefined : dailyEnd),
+      (time, i) => {
+        const weather_code = daily.weather_code[i];
+        if (weather_code === undefined) throw new Error("Expected number");
+        const temperature_2m_max = daily.temperature_2m_max[i];
+        if (temperature_2m_max === undefined)
+          throw new Error("Expected number");
+        const temperature_2m_min = daily.temperature_2m_min[i];
+        if (temperature_2m_min === undefined)
+          throw new Error("Expected number");
 
-      return {
-        // need to supply `data.timezone`
-        // time: format(
-        //   new TZDate(time * 1000, data.timezone),
-        //   "yyyy-MM-dd'T'HH:mm",
-        // ),
-        time: new Date(time * 1000),
-        temperature_2m,
-        weather_code,
-      };
-    }),
-    daily: Array.from(daily.time, (time, i) => {
-      const weather_code = daily.weather_code[i];
-      if (weather_code === undefined) throw new Error("Expected number");
-      const temperature_2m_max = daily.temperature_2m_max[i];
-      if (temperature_2m_max === undefined) throw new Error("Expected number");
-      const temperature_2m_min = daily.temperature_2m_min[i];
-      if (temperature_2m_min === undefined) throw new Error("Expected number");
+        // https://github.com/open-meteo/open-meteo/issues/488#issuecomment-1790807777
+        // This recreates the API bug and gives us the correct wall time, but with the incorrect offset (UTC)
+        const utcWallTime = new Date((time + data.utc_offset_seconds) * 1000);
+        // Set the correct offset
+        const localTime = new TZDate(
+          utcWallTime.getUTCFullYear(),
+          utcWallTime.getUTCMonth(),
+          utcWallTime.getUTCDate(),
+          data.timezone,
+        );
 
-      // https://github.com/open-meteo/open-meteo/issues/488#issuecomment-1790807777
-      // This recreates the API bug and gives us the correct wall time, but with the incorrect offset (UTC)
-      const utcWallTime = new Date((time + data.utc_offset_seconds) * 1000);
-      // Set the correct offset
-      const localTime = new TZDate(
-        utcWallTime.getUTCFullYear(),
-        utcWallTime.getUTCMonth(),
-        utcWallTime.getUTCDate(),
-        data.timezone,
-      );
-
-      return {
-        time: localTime,
-        weather_code,
-        temperature_2m_max,
-        temperature_2m_min,
-      };
-    }),
+        return {
+          time: localTime,
+          weather_code,
+          temperature_2m_max,
+          temperature_2m_min,
+        };
+      },
+    ),
   };
   return weather;
 };
