@@ -1,5 +1,6 @@
 // import forecastData from "#tests/fixtures/meteo/forecast/real.json";
-import forecastData from "#tests/fixtures/meteo/forecast/beijing.json";
+// import forecastData from "#tests/fixtures/meteo/forecast/beijing.json";
+import forecastData from "#tests/fixtures/meteo/forecast/figma.json";
 import searchData from "#tests/fixtures/meteo/search/real.json";
 import { http, HttpResponse, type JsonBodyType } from "msw";
 // import searchData from "#tests/fixtures/meteo/search/empty.json";
