@@ -6,9 +6,8 @@ import {
 } from "#app/components/hour";
 import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
-import { hasValues } from "#app/utils/array";
 import { formatDay, formatHours } from "#app/utils/format";
-import { type Weather, getInterpretation } from "#app/utils/weather";
+import { getInterpretation, type Weather } from "#app/utils/weather";
 import { TZDate } from "@date-fns/tz";
 import { isSameDay } from "date-fns";
 import { useState, type ComponentPropsWithRef, type ReactNode } from "react";
@@ -74,9 +73,6 @@ export const ResolvedHourly = ({
   temperature: (value: number) => string;
 }) => {
   const dates = weather.daily.map((day) => day.time.getTime());
-  if (!hasValues(dates)) {
-    throw new Error("No dates");
-  }
   const [date, setDate] = useState(dates[0]);
 
   return (
@@ -114,32 +110,35 @@ export const ResolvedHourly = ({
         </HourlySelect>
       </HourlyHeader>
       <HourlyList>
-        {weather.hourly
-          .filter((hour) => {
-            const selectedDate = new TZDate(date, weather.timezone);
-            return isSameDay(selectedDate, hour.time);
-          })
-          .map((hour) => {
-            const interpretation = getInterpretation(hour.weather_code);
-            return (
-              <Hour key={hour.time.getTime()}>
-                <HourTime data-testid="hour-time">
-                  {formatHours({ timeZone: weather.timezone }, hour.time)}
-                </HourTime>
-                {interpretation ? (
-                  <WeatherIcon
-                    className="size-40"
-                    interpretation={interpretation}
-                  />
-                ) : (
-                  <HourIconPlaceholder />
-                )}
-                <HourTemperature data-testid="hour-temperature">
-                  {temperature(hour.temperature_2m)}
-                </HourTemperature>
-              </Hour>
-            );
-          })}
+        {/* todo: Undefined `date` */}
+        {date === undefined
+          ? null
+          : weather.hourly
+              .filter((hour) => {
+                const selectedDate = new TZDate(date, weather.timezone);
+                return isSameDay(selectedDate, hour.time);
+              })
+              .map((hour) => {
+                const interpretation = getInterpretation(hour.weather_code);
+                return (
+                  <Hour key={hour.time.getTime()}>
+                    <HourTime data-testid="hour-time">
+                      {formatHours({ timeZone: weather.timezone }, hour.time)}
+                    </HourTime>
+                    {interpretation ? (
+                      <WeatherIcon
+                        className="size-40"
+                        interpretation={interpretation}
+                      />
+                    ) : (
+                      <HourIconPlaceholder />
+                    )}
+                    <HourTemperature data-testid="hour-temperature">
+                      {temperature(hour.temperature_2m)}
+                    </HourTemperature>
+                  </Hour>
+                );
+              })}
       </HourlyList>
     </Hourly>
   );

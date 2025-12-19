@@ -1,14 +1,21 @@
 import type { SearchResponse, SearchResponseItem } from "#app/utils/search";
 import { createHomeUrl } from "#app/utils/url";
-import { createWeather } from "#app/utils/weather";
+import {
+  createCurrentTime,
+  createDaily,
+  createHourly,
+  createWeather,
+} from "#app/utils/weather";
 import { test, waitForHydration } from "#tests/playwright";
 import { AxeBuilder } from "@axe-core/playwright";
 import type {
   FeaturesItemOutput,
   GeocodingResponseOutput,
 } from "@azure-rest/maps-search";
+import { TZDate } from "@date-fns/tz";
 import { faker } from "@faker-js/faker";
 import { expect } from "@playwright/test";
+import { addDays, addHours, getUnixTime } from "date-fns";
 
 test("initial view passes a11y check", async ({ page }) => {
   await page.goto(createHomeUrl());
@@ -425,24 +432,35 @@ test("can retry from error view", async ({
 });
 
 test("converts temperature", async ({ page, setMeteoForecastSettings }) => {
+  const time = new TZDate(2025, 11, 19, "Europe/Stockholm");
+  const currentTime = createCurrentTime(time);
   const dailyLength = 7;
-  const hourlyLength = 24 * dailyLength;
+  const hourlyLength = 24;
   const celsius = 10;
   const fahrenheit = 50;
 
   await setMeteoForecastSettings(
     createWeather({
+      timezone: currentTime.timezone,
+      utc_offset_seconds: currentTime.utc_offset_seconds,
       current: {
+        time: currentTime.current.time,
         apparent_temperature: celsius,
         temperature_2m: celsius,
       },
-      daily: {
+      daily: createDaily({
+        time: Array.from({ length: dailyLength }, (_, i) => {
+          return getUnixTime(addDays(time, i));
+        }),
         temperature_2m_max: Array.from({ length: dailyLength }, () => celsius),
         temperature_2m_min: Array.from({ length: dailyLength }, () => celsius),
-      },
-      hourly: {
+      }),
+      hourly: createHourly({
+        time: Array.from({ length: hourlyLength }, (_, i) => {
+          return getUnixTime(addHours(time, i));
+        }),
         temperature_2m: Array.from({ length: hourlyLength }, () => celsius),
-      },
+      }),
     }),
     { status: 200 },
   );
@@ -462,10 +480,9 @@ test("converts temperature", async ({ page, setMeteoForecastSettings }) => {
   await expect(page.getByTestId("day-temperature-min")).toHaveText(
     Array.from({ length: dailyLength }, () => `${fahrenheit}°`),
   );
-  // todo: Fix after "now" has been implemented
-  // await expect(page.getByTestId("day-temperature-min")).toHaveText(
-  //   Array.from({ length: hourlyLength }, () => `${fahrenheit}°`)
-  // );
+  await expect(page.getByTestId("hour-temperature")).toHaveText(
+    Array.from({ length: hourlyLength }, () => `${fahrenheit}°`),
+  );
 });
 
 test("converts wind speed", async ({ page, setMeteoForecastSettings }) => {
@@ -512,14 +529,21 @@ test("displays correct wall time when entering dst", async ({
   page,
   setMeteoForecastSettings,
 }) => {
+  const currentTime = createCurrentTime(
+    new TZDate(2024, 2, 10, "America/Toronto"),
+  );
+
   await setMeteoForecastSettings(
     createWeather({
-      timezone: "America/Toronto",
-      utc_offset_seconds: -5 * 60 * 60,
-      daily: {
-        time: [new Date("2024-03-10T00:00-05:00").getTime() / 1000],
+      timezone: currentTime.timezone,
+      utc_offset_seconds: currentTime.utc_offset_seconds,
+      current: {
+        time: currentTime.current.time,
       },
-      hourly: {
+      daily: createDaily({
+        time: [new Date("2024-03-10T00:00-05:00").getTime() / 1000],
+      }),
+      hourly: createHourly({
         time: [
           new Date("2024-03-10T00:00-05:00").getTime() / 1000,
           new Date("2024-03-10T01:00-05:00").getTime() / 1000,
@@ -527,7 +551,7 @@ test("displays correct wall time when entering dst", async ({
           new Date("2024-03-10T02:00-05:00").getTime() / 1000,
           new Date("2024-03-10T03:00-05:00").getTime() / 1000,
         ],
-      },
+      }),
     }),
     { status: 200 },
   );
@@ -545,14 +569,21 @@ test("displays correct wall time when exiting dst", async ({
   page,
   setMeteoForecastSettings,
 }) => {
+  const currentTime = createCurrentTime(
+    new TZDate(2025, 10, 2, "America/Toronto"),
+  );
+
   await setMeteoForecastSettings(
     createWeather({
-      timezone: "America/Toronto",
-      utc_offset_seconds: -5 * 60 * 60,
-      daily: {
-        time: [new Date("2025-11-02T00:00-05:00").getTime() / 1000],
+      timezone: currentTime.timezone,
+      utc_offset_seconds: currentTime.utc_offset_seconds,
+      current: {
+        time: currentTime.current.time,
       },
-      hourly: {
+      daily: createDaily({
+        time: [new Date("2025-11-02T00:00-04:00").getTime() / 1000],
+      }),
+      hourly: createHourly({
         time: [
           new Date("2025-11-02T00:00-04:00").getTime() / 1000,
           new Date("2025-11-02T01:00-04:00").getTime() / 1000,
@@ -560,7 +591,7 @@ test("displays correct wall time when exiting dst", async ({
           new Date("2025-11-02T02:00-04:00").getTime() / 1000,
           new Date("2025-11-02T03:00-04:00").getTime() / 1000,
         ],
-      },
+      }),
     }),
     { status: 200 },
   );

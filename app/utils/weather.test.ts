@@ -1,33 +1,45 @@
 import {
+  createDaily,
+  createHourly,
   createWeather,
+  dailySchema,
+  createCurrentTime,
   getWeather,
+  hourlySchema,
+  type Daily,
+  type Hourly,
   type WeatherResponse,
 } from "#app/utils/weather";
 import { server } from "#tests/mocks/node";
+import { TZDate } from "@date-fns/tz";
+import { secondsToMilliseconds } from "date-fns";
 import { http, HttpResponse } from "msw";
 import { expect, test } from "vitest";
 
 test("returns days", async () => {
+  const currentTime = createCurrentTime(
+    new TZDate(2025, 11, 17, "Asia/Shanghai"),
+  );
+  const time = [
+    new Date("2025-12-17T00:00+08:00").getTime() / 1000,
+    new Date("2025-12-18T00:00+08:00").getTime() / 1000,
+    new Date("2025-12-19T00:00+08:00").getTime() / 1000,
+    new Date("2025-12-20T00:00+08:00").getTime() / 1000,
+    new Date("2025-12-21T00:00+08:00").getTime() / 1000,
+    new Date("2025-12-22T00:00+08:00").getTime() / 1000,
+    new Date("2025-12-23T00:00+08:00").getTime() / 1000,
+  ];
+
   server.use(
     http.get("https://api.open-meteo.com/v1/forecast", () => {
       return HttpResponse.json(
         createWeather({
-          timezone: "Asia/Shanghai",
-          utc_offset_seconds: 8 * 60 * 60,
+          timezone: currentTime.timezone,
+          utc_offset_seconds: currentTime.utc_offset_seconds,
           current: {
-            time: new Date("2025-12-17T00:00+08:00").getTime() / 1000,
+            time: currentTime.current.time,
           },
-          daily: {
-            time: [
-              new Date("2025-12-17T00:00+08:00").getTime() / 1000,
-              new Date("2025-12-18T00:00+08:00").getTime() / 1000,
-              new Date("2025-12-19T00:00+08:00").getTime() / 1000,
-              new Date("2025-12-20T00:00+08:00").getTime() / 1000,
-              new Date("2025-12-21T00:00+08:00").getTime() / 1000,
-              new Date("2025-12-22T00:00+08:00").getTime() / 1000,
-              new Date("2025-12-23T00:00+08:00").getTime() / 1000,
-            ],
-          },
+          daily: createDaily({ time }),
         }) satisfies WeatherResponse,
       );
     }),
@@ -49,27 +61,30 @@ test("returns days", async () => {
 });
 
 test("handles entering dst for daily", async () => {
+  const currentTime = createCurrentTime(
+    new TZDate(2025, 2, 28, 12, "Europe/Stockholm"),
+  );
+  const time = [
+    new Date("2025-03-28T00:00+01:00").getTime() / 1000,
+    new Date("2025-03-29T00:00+01:00").getTime() / 1000,
+    new Date("2025-03-30T00:00+01:00").getTime() / 1000,
+    // Entering DST, but offsets incorrectly stay the same
+    new Date("2025-03-31T00:00+01:00").getTime() / 1000,
+    new Date("2025-04-01T00:00+01:00").getTime() / 1000,
+    new Date("2025-04-02T00:00+01:00").getTime() / 1000,
+    new Date("2025-04-03T00:00+01:00").getTime() / 1000,
+  ];
+
   server.use(
     http.get("https://api.open-meteo.com/v1/forecast", () => {
       return HttpResponse.json(
         createWeather({
-          timezone: "Europe/Stockholm",
+          timezone: currentTime.timezone,
           current: {
-            time: new Date("2025-03-28T12:00+01:00").getTime() / 1000,
+            time: currentTime.current.time,
           },
-          utc_offset_seconds: 1 * 60 * 60,
-          daily: {
-            time: [
-              new Date("2025-03-28T00:00+01:00").getTime() / 1000,
-              new Date("2025-03-29T00:00+01:00").getTime() / 1000,
-              new Date("2025-03-30T00:00+01:00").getTime() / 1000,
-              // Entering DST, but offsets incorrectly stay the same
-              new Date("2025-03-31T00:00+01:00").getTime() / 1000,
-              new Date("2025-04-01T00:00+01:00").getTime() / 1000,
-              new Date("2025-04-02T00:00+01:00").getTime() / 1000,
-              new Date("2025-04-03T00:00+01:00").getTime() / 1000,
-            ],
-          },
+          utc_offset_seconds: currentTime.utc_offset_seconds,
+          daily: createDaily({ time }),
         }) satisfies WeatherResponse,
       );
     }),
@@ -106,23 +121,26 @@ test("handles entering dst for daily", async () => {
 
 // https://github.com/open-meteo/open-meteo/issues/488#issue-1965824597
 test("handles exiting dst for daily", async () => {
+  const currentTime = createCurrentTime(
+    new TZDate(secondsToMilliseconds(1698354000), "Europe/Tallinn"),
+  );
+  const time = [
+    1698354000, 1698440400, 1698526800,
+    // Exiting DST
+    // The following timestamps reference the wrong point in time
+    1698613200, 1698699600, 1698786000, 1698872400,
+  ];
+
   server.use(
     http.get("https://api.open-meteo.com/v1/forecast", () => {
       return HttpResponse.json(
         createWeather({
-          timezone: "Europe/Tallinn",
-          utc_offset_seconds: 3 * 60 * 60,
+          timezone: currentTime.timezone,
+          utc_offset_seconds: currentTime.utc_offset_seconds,
           current: {
-            time: 1698354000,
+            time: currentTime.current.time,
           },
-          daily: {
-            time: [
-              1698354000, 1698440400, 1698526800,
-              // Exiting DST
-              // The following timestamps reference the wrong point in time
-              1698613200, 1698699600, 1698786000, 1698872400,
-            ],
-          },
+          daily: createDaily({ time }),
         }) satisfies WeatherResponse,
       );
     }),
@@ -158,29 +176,32 @@ test("handles exiting dst for daily", async () => {
 });
 
 test("returns hours", async () => {
+  const currentTime = createCurrentTime(
+    new TZDate(2025, 11, 18, 13, "Africa/Johannesburg"),
+  );
+  const time = [
+    new Date("2025-12-18T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-18T01:00+02:00").getTime() / 1000,
+    new Date("2025-12-19T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-19T23:00+02:00").getTime() / 1000,
+    new Date("2025-12-20T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-21T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-22T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-23T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-24T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-24T23:00+02:00").getTime() / 1000,
+  ];
+
   server.use(
     http.get("https://api.open-meteo.com/v1/forecast", () => {
       return HttpResponse.json(
         createWeather({
-          timezone: "Africa/Johannesburg",
-          utc_offset_seconds: 2 * 60 * 60,
+          timezone: currentTime.timezone,
+          utc_offset_seconds: currentTime.utc_offset_seconds,
           current: {
-            time: new Date("2025-12-18T13:00+02:00").getTime() / 1000,
+            time: currentTime.current.time,
           },
-          hourly: {
-            time: [
-              new Date("2025-12-18T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-18T01:00+02:00").getTime() / 1000,
-              new Date("2025-12-19T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-19T23:00+02:00").getTime() / 1000,
-              new Date("2025-12-20T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-21T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-22T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-23T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-24T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-24T23:00+02:00").getTime() / 1000,
-            ],
-          },
+          hourly: createHourly({ time }),
         }) satisfies WeatherResponse,
       );
     }),
@@ -205,40 +226,42 @@ test("returns hours", async () => {
 });
 
 test("limits forecast to 1 week", async () => {
+  const currentTime = createCurrentTime(
+    new TZDate(2025, 11, 18, 13, "Africa/Johannesburg"),
+  );
+  const dailyTime = [
+    new Date("2025-12-18T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-19T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-20T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-21T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-22T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-23T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-24T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-25T00:00+02:00").getTime() / 1000,
+  ];
+  const hourlyTime = [
+    new Date("2025-12-18T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-19T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-20T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-21T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-22T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-23T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-24T00:00+02:00").getTime() / 1000,
+    new Date("2025-12-24T23:00+02:00").getTime() / 1000,
+    new Date("2025-12-25T00:00+02:00").getTime() / 1000,
+  ];
+
   server.use(
     http.get("https://api.open-meteo.com/v1/forecast", () => {
       return HttpResponse.json(
         createWeather({
-          timezone: "Africa/Johannesburg",
-          utc_offset_seconds: 2 * 60 * 60,
+          timezone: currentTime.timezone,
+          utc_offset_seconds: currentTime.utc_offset_seconds,
           current: {
-            time: new Date("2025-12-18T13:00+02:00").getTime() / 1000,
+            time: currentTime.current.time,
           },
-          daily: {
-            time: [
-              new Date("2025-12-18T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-19T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-20T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-21T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-22T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-23T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-24T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-25T00:00+02:00").getTime() / 1000,
-            ],
-          },
-          hourly: {
-            time: [
-              new Date("2025-12-18T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-19T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-20T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-21T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-22T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-23T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-24T00:00+02:00").getTime() / 1000,
-              new Date("2025-12-24T23:00+02:00").getTime() / 1000,
-              new Date("2025-12-25T00:00+02:00").getTime() / 1000,
-            ],
-          },
+          daily: createDaily({ time: dailyTime }),
+          hourly: createHourly({ time: hourlyTime }),
         }) satisfies WeatherResponse,
       );
     }),
@@ -269,4 +292,91 @@ test("limits forecast to 1 week", async () => {
       // { time: new Date("2025-12-25T00:00+02:00") },
     ],
   });
+});
+
+test.each<[Daily, boolean]>([
+  [
+    {
+      temperature_2m_max: [],
+      temperature_2m_min: [],
+      time: [],
+      weather_code: [],
+    },
+    true,
+  ],
+  [
+    {
+      temperature_2m_max: [1],
+      temperature_2m_min: [],
+      time: [],
+      weather_code: [],
+    },
+    false,
+  ],
+  [
+    {
+      temperature_2m_max: [],
+      temperature_2m_min: [1],
+      time: [],
+      weather_code: [],
+    },
+    false,
+  ],
+  [
+    {
+      temperature_2m_max: [],
+      temperature_2m_min: [],
+      time: [1],
+      weather_code: [],
+    },
+    false,
+  ],
+  [
+    {
+      temperature_2m_max: [],
+      temperature_2m_min: [],
+      time: [],
+      weather_code: [1],
+    },
+    false,
+  ],
+])("dailySchema parse: %o => %s", (daily, success) => {
+  expect(dailySchema.safeParse(daily)).toMatchObject({ success });
+});
+
+test.each<[Hourly, boolean]>([
+  [
+    {
+      temperature_2m: [],
+      time: [],
+      weather_code: [],
+    },
+    true,
+  ],
+  [
+    {
+      temperature_2m: [1],
+      time: [],
+      weather_code: [],
+    },
+    false,
+  ],
+  [
+    {
+      temperature_2m: [],
+      time: [1],
+      weather_code: [],
+    },
+    false,
+  ],
+  [
+    {
+      temperature_2m: [],
+      time: [],
+      weather_code: [1],
+    },
+    false,
+  ],
+])("hourlySchema parse: %o => %s", (daily, success) => {
+  expect(hourlySchema.safeParse(daily)).toMatchObject({ success });
 });
