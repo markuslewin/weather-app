@@ -1,16 +1,16 @@
 import {
+  createCurrentTime,
   createDaily,
   createHourly,
   createWeather,
   dailySchema,
-  createCurrentTime,
   getWeather,
   hourlySchema,
   type Daily,
   type Hourly,
   type WeatherResponse,
 } from "#app/utils/weather";
-import { server } from "#tests/mocks/node";
+import { server } from "#tests/mocks/vitest-server";
 import { TZDate } from "@date-fns/tz";
 import { secondsToMilliseconds } from "date-fns";
 import { http, HttpResponse } from "msw";

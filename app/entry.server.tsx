@@ -1,7 +1,7 @@
 import { PassThrough } from "node:stream";
 
 import { env } from "#app/utils/env";
-import { server } from "#tests/mocks/node";
+import { server } from "#tests/mocks/server";
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
@@ -20,7 +20,7 @@ export default function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
-  loadContext: AppLoadContext
+  loadContext: AppLoadContext,
   // If you have middleware enabled:
   // loadContext: RouterContextProvider
 ) {
@@ -39,7 +39,7 @@ export default function handleRequest(
     // flush down the rejected boundaries
     let timeoutId: ReturnType<typeof setTimeout> | undefined = setTimeout(
       () => abort(),
-      streamTimeout + 1000
+      streamTimeout + 1000,
     );
 
     const { pipe, abort } = renderToPipeableStream(
@@ -65,7 +65,7 @@ export default function handleRequest(
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
-            })
+            }),
           );
         },
         onShellError(error: unknown) {
@@ -80,7 +80,7 @@ export default function handleRequest(
             console.error(error);
           }
         },
-      }
+      },
     );
   });
 }

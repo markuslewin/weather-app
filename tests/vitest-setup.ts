@@ -1,5 +1,5 @@
+import { server } from "#tests/mocks/vitest-server";
 import { afterAll, afterEach, beforeAll } from "vitest";
-import { server } from "./mocks/node.js";
 
 beforeAll(() => {
   server.listen();
