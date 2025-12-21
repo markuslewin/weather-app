@@ -263,6 +263,7 @@ body {
   gap: tokens.spacing(400);
 
   @include tokens.breakpoint("desktop") {
+    position: relative;
     grid-template-columns: 800fr 384fr;
   }
 }
@@ -357,12 +358,57 @@ body {
   --box-space: #{tokens.spacing(300)};
   --cluster-justify: space-between;
   --stack-space: #{tokens.spacing(200)};
+
+  @include tokens.breakpoint("desktop") {
+    grid-column: 2;
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
 }
 
 .hours {
   --box-y-space: #{tokens.spacing(125)};
   --box-right-space: #{tokens.spacing(200)};
   --box-left-space: #{tokens.spacing(150)};
+
+  @include tokens.breakpoint("desktop") {
+    $padding-inline: tokens.spacing(300);
+
+    --hours-scrollbar-width: #{utils.rem(4)};
+
+    overflow-y: auto;
+    margin-inline: -#{$padding-inline};
+
+    &::-webkit-scrollbar {
+      width: var(--hours-scrollbar-width);
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border: utils.rem(1) solid tokens.$color-neutral-600;
+      border-radius: tokens.radius(full);
+      background: tokens.$color-neutral-700;
+    }
+
+    // E.g. Firefox
+    @supports not selector(::-webkit-scrollbar) {
+      // Assume Firefox `thin` scrollbar is `8px`
+      --hours-scrollbar-width: #{utils.rem(8)};
+
+      scrollbar-color: tokens.$color-neutral-700 transparent;
+      scrollbar-width: thin;
+    }
+
+    &[role="list"] {
+      padding-inline: $padding-inline
+        calc($padding-inline - var(--hours-scrollbar-width));
+    }
+  }
 
   &__item {
     display: grid;
