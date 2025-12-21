@@ -2,8 +2,6 @@ import { TZDate } from "@date-fns/tz";
 import { faker } from "@faker-js/faker";
 import {
   addDays,
-  eachDayOfInterval,
-  eachHourOfInterval,
   endOfDay,
   fromUnixTime,
   getUnixTime,

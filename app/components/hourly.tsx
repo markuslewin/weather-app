@@ -6,6 +6,7 @@ import {
 } from "#app/components/hour";
 import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
+import { hasValues } from "#app/utils/array";
 import { formatDay, formatHours } from "#app/utils/format";
 import { getInterpretation, type Weather } from "#app/utils/weather";
 import { TZDate } from "@date-fns/tz";
@@ -73,45 +74,46 @@ export const ResolvedHourly = ({
   temperature: (value: number) => string;
 }) => {
   const dates = weather.daily.map((day) => day.time.getTime());
-  const [date, setDate] = useState(dates[0]);
+  const [date, setDate] = useState(dates[0] ?? null);
 
   return (
     <Hourly>
       <HourlyHeader>
         <HourlyHeading />
-        <HourlySelect
-          value={date}
-          onChange={(value) => {
-            setDate(
-              typeof value === "number" && dates.includes(value)
-                ? value
-                : dates[0],
-            );
-          }}
-        >
-          <Popover
-            className="date-select__popover"
-            offset={10}
-            placement="bottom end"
+        {hasValues(dates) ? (
+          <HourlySelect
+            value={date}
+            onChange={(value) => {
+              setDate(
+                typeof value === "number" && dates.includes(value)
+                  ? value
+                  : dates[0],
+              );
+            }}
           >
-            <ListBox items={dates.map((id) => ({ id }))}>
-              {(date) => {
-                return (
-                  <ListBoxItem>
-                    {formatDay(
-                      { weekday: "long", timeZone: weather.timezone },
-                      new Date(date.id),
-                    )}
-                  </ListBoxItem>
-                );
-              }}
-            </ListBox>
-          </Popover>
-        </HourlySelect>
+            <Popover
+              className="date-select__popover"
+              offset={10}
+              placement="bottom end"
+            >
+              <ListBox items={dates.map((id) => ({ id }))}>
+                {(date) => {
+                  return (
+                    <ListBoxItem>
+                      {formatDay(
+                        { weekday: "long", timeZone: weather.timezone },
+                        new Date(date.id),
+                      )}
+                    </ListBoxItem>
+                  );
+                }}
+              </ListBox>
+            </Popover>
+          </HourlySelect>
+        ) : null}
       </HourlyHeader>
       <HourlyList>
-        {/* todo: Undefined `date` */}
-        {date === undefined
+        {date === null
           ? null
           : weather.hourly
               .filter((hour) => {
