@@ -324,9 +324,7 @@ export const createCurrentTime = (time: TZDate) => {
   return {
     timezone: time.timeZone,
     utc_offset_seconds: -minutesToSeconds(time.getTimezoneOffset()),
-    current: {
-      time: getUnixTime(time),
-    },
+    time: getUnixTime(time),
   };
 };
 

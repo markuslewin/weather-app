@@ -444,7 +444,7 @@ test("converts temperature", async ({ page, setMeteoForecastSettings }) => {
       timezone: currentTime.timezone,
       utc_offset_seconds: currentTime.utc_offset_seconds,
       current: {
-        time: currentTime.current.time,
+        time: currentTime.time,
         apparent_temperature: celsius,
         temperature_2m: celsius,
       },
@@ -538,7 +538,7 @@ test("displays correct wall time when entering dst", async ({
       timezone: currentTime.timezone,
       utc_offset_seconds: currentTime.utc_offset_seconds,
       current: {
-        time: currentTime.current.time,
+        time: currentTime.time,
       },
       daily: createDaily({
         time: [new Date("2024-03-10T00:00-05:00").getTime() / 1000],
@@ -578,7 +578,7 @@ test("displays correct wall time when exiting dst", async ({
       timezone: currentTime.timezone,
       utc_offset_seconds: currentTime.utc_offset_seconds,
       current: {
-        time: currentTime.current.time,
+        time: currentTime.time,
       },
       daily: createDaily({
         time: [new Date("2025-11-02T00:00-04:00").getTime() / 1000],

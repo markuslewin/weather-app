@@ -37,7 +37,7 @@ test("returns days", async () => {
           timezone: currentTime.timezone,
           utc_offset_seconds: currentTime.utc_offset_seconds,
           current: {
-            time: currentTime.current.time,
+            time: currentTime.time,
           },
           daily: createDaily({ time }),
         }) satisfies WeatherResponse,
@@ -81,7 +81,7 @@ test("handles entering dst for daily", async () => {
         createWeather({
           timezone: currentTime.timezone,
           current: {
-            time: currentTime.current.time,
+            time: currentTime.time,
           },
           utc_offset_seconds: currentTime.utc_offset_seconds,
           daily: createDaily({ time }),
@@ -138,7 +138,7 @@ test("handles exiting dst for daily", async () => {
           timezone: currentTime.timezone,
           utc_offset_seconds: currentTime.utc_offset_seconds,
           current: {
-            time: currentTime.current.time,
+            time: currentTime.time,
           },
           daily: createDaily({ time }),
         }) satisfies WeatherResponse,
@@ -199,7 +199,7 @@ test("returns hours", async () => {
           timezone: currentTime.timezone,
           utc_offset_seconds: currentTime.utc_offset_seconds,
           current: {
-            time: currentTime.current.time,
+            time: currentTime.time,
           },
           hourly: createHourly({ time }),
         }) satisfies WeatherResponse,
@@ -258,7 +258,7 @@ test("limits forecast to 1 week", async () => {
           timezone: currentTime.timezone,
           utc_offset_seconds: currentTime.utc_offset_seconds,
           current: {
-            time: currentTime.current.time,
+            time: currentTime.time,
           },
           daily: createDaily({ time: dailyTime }),
           hourly: createHourly({ time: hourlyTime }),

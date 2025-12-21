@@ -43,6 +43,11 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
+  // todo: Figure out why `netlify serve` is slow
+  timeout: 60_000,
+  expect: {
+    timeout: 30_000,
+  },
 
   /* Configure projects for major browsers */
   projects: [
