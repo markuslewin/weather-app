@@ -6,9 +6,11 @@ import {
   fromUnixTime,
   getUnixTime,
   hoursToMinutes,
-  isAfter,
+  interval,
+  isWithinInterval,
   minutesToSeconds,
   startOfDay,
+  startOfHour,
 } from "date-fns";
 import { secondsInMinute } from "date-fns/constants";
 import * as z from "zod";
@@ -238,21 +240,22 @@ export const getWeather = async ({
     await response.json(),
   );
 
-  const end = endOfDay(
-    addDays(startOfDay(new TZDate(data.current.time * 1000, data.timezone)), 6),
-  );
-  const dailyEnd = daily.time.findIndex((time) => {
-    return isAfter(time * 1000, end);
-  });
-  const hourlyEnd = hourly.time.findIndex((time) => {
-    return isAfter(time * 1000, end);
-  });
+  const time = new TZDate(fromUnixTime(data.current.time), data.timezone);
+  const end = endOfDay(addDays(startOfDay(time), 6));
+  const hourlyInterval = interval(startOfHour(time), end);
+  const dailyInterval = interval(startOfDay(time), end);
 
   const weather = {
     ...data,
     hourly: Array.from(
-      hourly.time.slice(0, hourlyEnd === -1 ? undefined : hourlyEnd),
-      (time, i) => {
+      hourly.time
+        .map((time, i) => {
+          return { time, i };
+        })
+        .filter(({ time }) => {
+          return isWithinInterval(fromUnixTime(time), hourlyInterval);
+        }),
+      ({ time, i }) => {
         const temperature_2m = hourly.temperature_2m[i]!;
         const weather_code = hourly.weather_code[i]!;
 
@@ -264,8 +267,14 @@ export const getWeather = async ({
       },
     ),
     daily: Array.from(
-      daily.time.slice(0, dailyEnd === -1 ? undefined : dailyEnd),
-      (time, i) => {
+      daily.time
+        .map((time, i) => {
+          return { time, i };
+        })
+        .filter(({ time }) => {
+          return isWithinInterval(fromUnixTime(time), dailyInterval);
+        }),
+      ({ time, i }) => {
         const weather_code = daily.weather_code[i]!;
         const temperature_2m_max = daily.temperature_2m_max[i]!;
         const temperature_2m_min = daily.temperature_2m_min[i]!;
