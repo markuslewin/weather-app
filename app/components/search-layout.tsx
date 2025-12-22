@@ -11,7 +11,7 @@ import {
   Popover,
 } from "react-aria-components";
 import { Form, useNavigate } from "react-router";
-import { useAsyncList, type AsyncListOptions } from "react-stately";
+import { type AsyncListOptions, useAsyncList } from "react-stately";
 
 const load: AsyncListOptions<SearchResultItem, string>["load"] = debounce(
   async ({ signal, filterText = "" }) => {

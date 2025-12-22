@@ -373,13 +373,15 @@ body {
   --box-right-space: #{tokens.spacing(200)};
   --box-left-space: #{tokens.spacing(150)};
 
-  @include tokens.breakpoint("desktop") {
+  &[data-scrollable="true"] {
     $padding-inline: tokens.spacing(300);
 
     --hours-scrollbar-width: #{utils.rem(4)};
 
     overflow-y: auto;
     margin-inline: -#{$padding-inline};
+    padding-inline: $padding-inline
+      calc($padding-inline - var(--hours-scrollbar-width));
 
     &::-webkit-scrollbar {
       width: var(--hours-scrollbar-width);
@@ -402,11 +404,6 @@ body {
 
       scrollbar-color: tokens.$color-neutral-700 transparent;
       scrollbar-width: thin;
-    }
-
-    &[role="list"] {
-      padding-inline: $padding-inline
-        calc($padding-inline - var(--hours-scrollbar-width));
     }
   }
 

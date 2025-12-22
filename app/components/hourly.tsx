@@ -8,6 +8,7 @@ import { Icon } from "#app/components/icon";
 import { WeatherIcon } from "#app/components/weather-icon";
 import { hasValues } from "#app/utils/array";
 import { formatDay, formatHours } from "#app/utils/format";
+import { useIsDesktop } from "#app/utils/use-media-query";
 import { getInterpretation, type Weather } from "#app/utils/weather";
 import { TZDate } from "@date-fns/tz";
 import { isSameDay } from "date-fns";
@@ -61,8 +62,16 @@ export const HourlySelect = ({
 };
 
 export const HourlyList = (props: ComponentPropsWithRef<"ol">) => {
+  const isDesktop = useIsDesktop() ?? true;
+
   return (
-    <ol className="[ hours ] [ stack ] [ mt-200 ]" role="list" {...props} />
+    <ol
+      className="[ hours ] [ stack ] [ mt-200 ]"
+      role="list"
+      tabIndex={isDesktop ? 0 : undefined}
+      data-scrollable={isDesktop}
+      {...props}
+    />
   );
 };
 
