@@ -1,11 +1,10 @@
-import { NetlifyAPI } from "@netlify/api";
 import * as core from "@actions/core";
 import { Client } from "@microsoft/microsoft-graph-client";
+import { NetlifyAPI } from "@netlify/api";
 // Yes, really...
-import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/authentication/azureTokenCredentials/TokenCredentialAuthenticationProvider.js";
 import { AzureCliCredential } from "@azure/identity";
+import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/authentication/azureTokenCredentials/TokenCredentialAuthenticationProvider.js";
 import z from "zod";
-import type { Env } from "#app/utils/env";
 
 const env = z
   .object({
@@ -105,7 +104,7 @@ const postVars = async ({
 }: {
   accountId: string;
   siteId: string;
-  vars: Env;
+  vars: Record<Key, string>;
 }) => {
   await netlifyClient.createEnvVars({
     accountId,
@@ -120,7 +119,7 @@ const postVars = async ({
         scopes: ["builds", "functions", "runtime"],
         values: [
           {
-            value: String(value),
+            value,
           },
         ],
       } satisfies EnvVar;
@@ -139,6 +138,8 @@ type EnvVar = Parameters<
 const accountId = env.NETLIFY_ACCOUNT_ID;
 const siteId = env.NETLIFY_SITE_ID;
 const keys = [
+  "NODE_ENV",
+  "MOCKS",
   "AZURE_TENANT_ID",
   "AZURE_WEB_CLIENT_ID",
   "AZURE_WEB_CLIENT_SECRET",
@@ -155,7 +156,7 @@ await postVars({
   siteId,
   vars: {
     NODE_ENV: "production",
-    MOCKS: false,
+    MOCKS: "false",
     AZURE_TENANT_ID: env.AZURE_TENANT_ID,
     AZURE_WEB_CLIENT_ID: env.AZURE_WEB_CLIENT_ID,
     AZURE_WEB_CLIENT_SECRET: secretText,
