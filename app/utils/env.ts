@@ -8,5 +8,6 @@ const schema = z.object({
   AZURE_WEB_CLIENT_SECRET: z.string(),
   AZURE_MAPS_CLIENT_ID: z.string(),
 });
+export type Env = z.infer<typeof schema>;
 
 export const env = schema.parse(process.env);

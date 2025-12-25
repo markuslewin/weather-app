@@ -5,6 +5,7 @@ import { Client } from "@microsoft/microsoft-graph-client";
 import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/authentication/azureTokenCredentials/TokenCredentialAuthenticationProvider.js";
 import { AzureCliCredential } from "@azure/identity";
 import z from "zod";
+import type { Env } from "#app/utils/env";
 
 const env = z
   .object({
@@ -104,7 +105,7 @@ const postVars = async ({
 }: {
   accountId: string;
   siteId: string;
-  vars: Record<Key, string>;
+  vars: Env;
 }) => {
   await netlifyClient.createEnvVars({
     accountId,
@@ -119,7 +120,7 @@ const postVars = async ({
         scopes: ["builds", "functions", "runtime"],
         values: [
           {
-            value,
+            value: String(value),
           },
         ],
       } satisfies EnvVar;
@@ -153,6 +154,8 @@ await postVars({
   accountId,
   siteId,
   vars: {
+    NODE_ENV: "production",
+    MOCKS: false,
     AZURE_TENANT_ID: env.AZURE_TENANT_ID,
     AZURE_WEB_CLIENT_ID: env.AZURE_WEB_CLIENT_ID,
     AZURE_WEB_CLIENT_SECRET: secretText,
