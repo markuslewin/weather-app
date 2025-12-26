@@ -139,7 +139,6 @@ const accountId = env.NETLIFY_ACCOUNT_ID;
 const siteId = env.NETLIFY_SITE_ID;
 const keys = [
   "NODE_ENV",
-  "MOCKS",
   "AZURE_TENANT_ID",
   "AZURE_WEB_CLIENT_ID",
   "AZURE_WEB_CLIENT_SECRET",
@@ -156,7 +155,6 @@ await postVars({
   siteId,
   vars: {
     NODE_ENV: "production",
-    MOCKS: "false",
     AZURE_TENANT_ID: env.AZURE_TENANT_ID,
     AZURE_WEB_CLIENT_ID: env.AZURE_WEB_CLIENT_ID,
     AZURE_WEB_CLIENT_SECRET: secretText,

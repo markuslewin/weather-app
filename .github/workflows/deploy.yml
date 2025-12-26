@@ -45,7 +45,6 @@ jobs:
       - run: npm run test:e2e:install
       - run: npm run test:e2e
         env:
-          MOCKS: true
           FIXTURES_DIR: ./tests/fixtures
           AZURE_TENANT_ID: 00000000-0000-0000-0000-000000000000
           AZURE_WEB_CLIENT_ID: 00000000-0000-0000-0000-000000000000

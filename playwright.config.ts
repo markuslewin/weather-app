@@ -94,5 +94,8 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
+    env: {
+      VITE_MOCKS: "true",
+    },
   },
 });
