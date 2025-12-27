@@ -12,7 +12,7 @@ import type { Route } from "./+types/home";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const searchParamsResult = homeSearchParamsSchema.safeParse(
-    Object.fromEntries(new URL(request.url).searchParams),
+    Object.fromEntries(new URL(request.url).searchParams)
   );
   if (!searchParamsResult.success) {
     return { type: "initial" } as const;
@@ -30,17 +30,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
       createHomeUrl({
         lat: match.latitude.toString(),
         lon: match.longitude.toString(),
-      }),
+      })
     );
   }
 
   const location = getLocation({
     latitude: searchParams.lat,
     longitude: searchParams.lon,
+  }).catch((err) => {
+    console.error("[Streamed error]", err);
+    throw err;
   });
   const weather = getWeather({
     latitude: searchParams.lat,
     longitude: searchParams.lon,
+  }).catch((err) => {
+    console.error("[Streamed error]", err);
+    throw err;
   });
   return { type: "location", data: { location, weather } } as const;
 }
