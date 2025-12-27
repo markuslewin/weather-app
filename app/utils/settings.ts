@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 
 export const temperatureUnitSchema = z.literal(["celsius", "fahrenheit"]);
 export const windSpeedUnitSchema = z.literal(["kmh", "mph"]);

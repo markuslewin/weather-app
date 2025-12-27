@@ -4,6 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import netlifyPlugin from "@netlify/vite-plugin-react-router";
 import { iconsSpritesheet } from "vite-plugin-icons-spritesheet";
 import devToolsJson from "vite-plugin-devtools-json";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   plugins: [
@@ -16,6 +17,13 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
     netlifyPlugin(),
+    visualizer({
+      template: "treemap",
+      gzipSize: true,
+      // Emit one file for each bundle
+      // `/build/server/stats.html` and `/build/client/stats.html`
+      emitFile: true,
+    }),
   ],
   test: {
     include: ["./app/**/*.test.{ts,tsx}"],

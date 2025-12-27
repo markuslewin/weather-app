@@ -172,7 +172,7 @@ export const hourlySchema = z
         val.time.length === val.weather_code.length
       );
     },
-    { error: "Hourly data has different lengths" },
+    { error: "Hourly data has different lengths" }
   );
 export type Hourly = z.infer<typeof hourlySchema>;
 
@@ -191,7 +191,7 @@ export const dailySchema = z
         val.time.length === val.temperature_2m_min.length
       );
     },
-    { error: "Daily data has different lengths" },
+    { error: "Daily data has different lengths" }
   );
 export type Daily = z.infer<typeof dailySchema>;
 
@@ -234,10 +234,10 @@ export const getWeather = async ({
       hourly: "temperature_2m,weather_code",
       current:
         "temperature_2m,weather_code,apparent_temperature,wind_speed_10m,precipitation,relative_humidity_2m",
-    })}`,
+    })}`
   );
   const { hourly, daily, ...data } = weatherResponseSchema.parse(
-    await response.json(),
+    await response.json()
   );
 
   const time = new TZDate(fromUnixTime(data.current.time), data.timezone);
@@ -264,7 +264,7 @@ export const getWeather = async ({
           temperature_2m,
           weather_code,
         };
-      },
+      }
     ),
     daily: Array.from(
       daily.time
@@ -287,7 +287,7 @@ export const getWeather = async ({
           utcWallTime.getUTCFullYear(),
           utcWallTime.getUTCMonth(),
           utcWallTime.getUTCDate(),
-          data.timezone,
+          data.timezone
         );
 
         return {
@@ -296,7 +296,7 @@ export const getWeather = async ({
           temperature_2m_max,
           temperature_2m_min,
         };
-      },
+      }
     ),
   };
   return weather;
@@ -338,7 +338,7 @@ export const createCurrentTime = (time: TZDate) => {
 };
 
 export const createDaily = (
-  daily?: Partial<WeatherResponse["daily"]>,
+  daily?: Partial<WeatherResponse["daily"]>
 ): WeatherResponse["daily"] => {
   const length =
     daily?.time?.length ??
@@ -372,7 +372,7 @@ export const createDaily = (
 };
 
 export const createHourly = (
-  hourly?: Partial<WeatherResponse["hourly"]>,
+  hourly?: Partial<WeatherResponse["hourly"]>
 ): WeatherResponse["hourly"] => {
   const length =
     hourly?.time?.length ??
@@ -401,7 +401,7 @@ export const createHourly = (
 };
 
 export const createWeather = (
-  overwrites?: RecursivePartial<WeatherResponse>,
+  overwrites?: RecursivePartial<WeatherResponse>
 ): WeatherResponse => {
   return {
     timezone: overwrites?.timezone ?? faker.location.timeZone(),

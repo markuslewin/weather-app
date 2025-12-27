@@ -1,6 +1,6 @@
 import { search, type SearchResult } from "#app/utils/search";
 import type { LoaderFunctionArgs } from "react-router";
-import z from "zod";
+import * as z from "zod";
 
 export const loader = async ({
   request,

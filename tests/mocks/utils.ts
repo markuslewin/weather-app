@@ -1,6 +1,6 @@
 import { readFile, rm, writeFile } from "fs/promises";
 import path from "path";
-import z from "zod";
+import * as z from "zod";
 
 const env = z
   .object({
@@ -11,12 +11,12 @@ const env = z
 export const azureReverseGeocodingDir = path.join(
   env.FIXTURES_DIR,
   "azure",
-  "reverse-geocoding",
+  "reverse-geocoding"
 );
 export const meteoForecastDir = path.join(
   env.FIXTURES_DIR,
   "meteo",
-  "forecast",
+  "forecast"
 );
 export const meteoSearchDir = path.join(env.FIXTURES_DIR, "meteo", "search");
 

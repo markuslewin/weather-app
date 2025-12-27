@@ -4,7 +4,7 @@ import { NetlifyAPI } from "@netlify/api";
 // Yes, really...
 import { AzureCliCredential } from "@azure/identity";
 import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/authentication/azureTokenCredentials/TokenCredentialAuthenticationProvider.js";
-import z from "zod";
+import * as z from "zod";
 
 const env = z
   .object({

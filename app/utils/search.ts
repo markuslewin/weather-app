@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 
 export const searchResultSchema = z.object({
   items: z.array(
@@ -7,7 +7,7 @@ export const searchResultSchema = z.object({
       name: z.string(),
       latitude: z.number(),
       longitude: z.number(),
-    }),
+    })
   ),
 });
 export type SearchResult = z.infer<typeof searchResultSchema>;
@@ -31,7 +31,7 @@ export const search = async (name: string) => {
   }
 
   const response = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?${new URLSearchParams({ name })}`,
+    `https://geocoding-api.open-meteo.com/v1/search?${new URLSearchParams({ name })}`
   );
   const parsed = searchResponseSchema.parse(await response.json());
 
