@@ -9,7 +9,7 @@ resource webPrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
   appId: web.appId
 }
 
-module mapsAccount 'br/public:avm/res/maps/account:0.1.0' = {
+module mapsAccount 'maps-account.bicep' = {
   params: {
     name: 'maps-account'
     roleAssignments: [
@@ -24,4 +24,4 @@ module mapsAccount 'br/public:avm/res/maps/account:0.1.0' = {
 output tenantId string = tenant().tenantId
 output webId string = web.id
 output webClientId string = web.appId
-output mapsClientId string = mapsAccount.outputs.resourceId
+output mapsClientId string = mapsAccount.outputs.uniqueId
