@@ -9,6 +9,7 @@ import {
   interval,
   isWithinInterval,
   minutesToSeconds,
+  secondsToMilliseconds,
   startOfDay,
   startOfHour,
 } from "date-fns";
@@ -236,17 +237,21 @@ export const getWeather = async ({
         "temperature_2m,weather_code,apparent_temperature,wind_speed_10m,precipitation,relative_humidity_2m",
     })}`
   );
-  const { hourly, daily, ...data } = weatherResponseSchema.parse(
-    await response.json()
-  );
+  const {
+    current: { time: currentTime, ...current },
+    hourly,
+    daily,
+    ...data
+  } = weatherResponseSchema.parse(await response.json());
 
-  const time = new TZDate(fromUnixTime(data.current.time), data.timezone);
+  const time = new TZDate(fromUnixTime(currentTime), data.timezone);
   const end = endOfDay(addDays(startOfDay(time), 6));
   const hourlyInterval = interval(startOfHour(time), end);
   const dailyInterval = interval(startOfDay(time), end);
 
   const weather = {
     ...data,
+    current: { ...current, time: secondsToMilliseconds(currentTime) },
     hourly: Array.from(
       hourly.time
         .map((time, i) => {
@@ -260,7 +265,7 @@ export const getWeather = async ({
         const weather_code = hourly.weather_code[i]!;
 
         return {
-          time: new Date(time * 1000),
+          time: secondsToMilliseconds(time),
           temperature_2m,
           weather_code,
         };
@@ -291,7 +296,7 @@ export const getWeather = async ({
         );
 
         return {
-          time: localTime,
+          time: localTime.getTime(),
           weather_code,
           temperature_2m_max,
           temperature_2m_min,

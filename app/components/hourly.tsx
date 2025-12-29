@@ -82,7 +82,7 @@ export const ResolvedHourly = ({
   weather: Weather;
   temperature: (value: number) => string;
 }) => {
-  const dates = weather.daily.map((day) => day.time.getTime());
+  const dates = weather.daily.map((day) => day.time);
   const [date, setDate] = useState(dates[0] ?? null);
 
   return (
@@ -96,7 +96,7 @@ export const ResolvedHourly = ({
               setDate(
                 typeof value === "number" && dates.includes(value)
                   ? value
-                  : dates[0],
+                  : dates[0]
               );
             }}
           >
@@ -111,7 +111,7 @@ export const ResolvedHourly = ({
                     <ListBoxItem>
                       {formatDay(
                         { weekday: "long", timeZone: weather.timezone },
-                        new Date(date.id),
+                        new Date(date.id)
                       )}
                     </ListBoxItem>
                   );
@@ -132,9 +132,12 @@ export const ResolvedHourly = ({
               .map((hour) => {
                 const interpretation = getInterpretation(hour.weather_code);
                 return (
-                  <Hour key={hour.time.getTime()}>
+                  <Hour key={hour.time}>
                     <HourTime data-testid="hour-time">
-                      {formatHours({ timeZone: weather.timezone }, hour.time)}
+                      {formatHours(
+                        { timeZone: weather.timezone },
+                        new Date(hour.time)
+                      )}
                     </HourTime>
                     {interpretation ? (
                       <WeatherIcon

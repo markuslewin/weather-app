@@ -18,7 +18,7 @@ import { expect, test } from "vitest";
 
 test("returns days", async () => {
   const currentTime = createCurrentTime(
-    new TZDate(2025, 11, 17, "Asia/Shanghai"),
+    new TZDate(2025, 11, 17, "Asia/Shanghai")
   );
   const time = [
     new Date("2025-12-17T00:00+08:00").getTime() / 1000,
@@ -40,29 +40,29 @@ test("returns days", async () => {
             time: currentTime.time,
           },
           daily: createDaily({ time }),
-        }) satisfies WeatherResponse,
+        }) satisfies WeatherResponse
       );
-    }),
+    })
   );
 
   await expect(
-    getWeather({ latitude: "0", longitude: "0" }),
+    getWeather({ latitude: "0", longitude: "0" })
   ).resolves.toMatchObject({
     daily: [
-      { time: new Date("2025-12-17T00:00+08:00") },
-      { time: new Date("2025-12-18T00:00+08:00") },
-      { time: new Date("2025-12-19T00:00+08:00") },
-      { time: new Date("2025-12-20T00:00+08:00") },
-      { time: new Date("2025-12-21T00:00+08:00") },
-      { time: new Date("2025-12-22T00:00+08:00") },
-      { time: new Date("2025-12-23T00:00+08:00") },
+      { time: new Date("2025-12-17T00:00+08:00").getTime() },
+      { time: new Date("2025-12-18T00:00+08:00").getTime() },
+      { time: new Date("2025-12-19T00:00+08:00").getTime() },
+      { time: new Date("2025-12-20T00:00+08:00").getTime() },
+      { time: new Date("2025-12-21T00:00+08:00").getTime() },
+      { time: new Date("2025-12-22T00:00+08:00").getTime() },
+      { time: new Date("2025-12-23T00:00+08:00").getTime() },
     ],
   });
 });
 
 test("handles entering dst for daily", async () => {
   const currentTime = createCurrentTime(
-    new TZDate(2025, 2, 28, 12, "Europe/Stockholm"),
+    new TZDate(2025, 2, 28, 12, "Europe/Stockholm")
   );
   const time = [
     new Date("2025-03-28T00:00+01:00").getTime() / 1000,
@@ -85,35 +85,35 @@ test("handles entering dst for daily", async () => {
           },
           utc_offset_seconds: currentTime.utc_offset_seconds,
           daily: createDaily({ time }),
-        }) satisfies WeatherResponse,
+        }) satisfies WeatherResponse
       );
-    }),
+    })
   );
 
   await expect(
-    getWeather({ latitude: "0", longitude: "0" }),
+    getWeather({ latitude: "0", longitude: "0" })
   ).resolves.toMatchObject({
     daily: [
       {
-        time: new Date("2025-03-28T00:00+01:00"),
+        time: new Date("2025-03-28T00:00+01:00").getTime(),
       },
       {
-        time: new Date("2025-03-29T00:00+01:00"),
+        time: new Date("2025-03-29T00:00+01:00").getTime(),
       },
       {
-        time: new Date("2025-03-30T00:00+01:00"),
+        time: new Date("2025-03-30T00:00+01:00").getTime(),
       },
       {
-        time: new Date("2025-03-31T00:00+02:00"),
+        time: new Date("2025-03-31T00:00+02:00").getTime(),
       },
       {
-        time: new Date("2025-04-01T00:00+02:00"),
+        time: new Date("2025-04-01T00:00+02:00").getTime(),
       },
       {
-        time: new Date("2025-04-02T00:00+02:00"),
+        time: new Date("2025-04-02T00:00+02:00").getTime(),
       },
       {
-        time: new Date("2025-04-03T00:00+02:00"),
+        time: new Date("2025-04-03T00:00+02:00").getTime(),
       },
     ],
   });
@@ -122,7 +122,7 @@ test("handles entering dst for daily", async () => {
 // https://github.com/open-meteo/open-meteo/issues/488#issue-1965824597
 test("handles exiting dst for daily", async () => {
   const currentTime = createCurrentTime(
-    new TZDate(secondsToMilliseconds(1698354000), "Europe/Tallinn"),
+    new TZDate(secondsToMilliseconds(1698354000), "Europe/Tallinn")
   );
   const time = [
     1698354000, 1698440400, 1698526800,
@@ -141,35 +141,35 @@ test("handles exiting dst for daily", async () => {
             time: currentTime.time,
           },
           daily: createDaily({ time }),
-        }) satisfies WeatherResponse,
+        }) satisfies WeatherResponse
       );
-    }),
+    })
   );
 
   await expect(
-    getWeather({ latitude: "0", longitude: "0" }),
+    getWeather({ latitude: "0", longitude: "0" })
   ).resolves.toMatchObject({
     daily: [
       {
-        time: new Date("2023-10-27T00:00+03:00"),
+        time: new Date("2023-10-27T00:00+03:00").getTime(),
       },
       {
-        time: new Date("2023-10-28T00:00+03:00"),
+        time: new Date("2023-10-28T00:00+03:00").getTime(),
       },
       {
-        time: new Date("2023-10-29T00:00+03:00"),
+        time: new Date("2023-10-29T00:00+03:00").getTime(),
       },
       {
-        time: new Date("2023-10-30T00:00+02:00"),
+        time: new Date("2023-10-30T00:00+02:00").getTime(),
       },
       {
-        time: new Date("2023-10-31T00:00+02:00"),
+        time: new Date("2023-10-31T00:00+02:00").getTime(),
       },
       {
-        time: new Date("2023-11-01T00:00+02:00"),
+        time: new Date("2023-11-01T00:00+02:00").getTime(),
       },
       {
-        time: new Date("2023-11-02T00:00+02:00"),
+        time: new Date("2023-11-02T00:00+02:00").getTime(),
       },
     ],
   });
@@ -177,7 +177,7 @@ test("handles exiting dst for daily", async () => {
 
 test("returns hours", async () => {
   const currentTime = createCurrentTime(
-    new TZDate(2025, 11, 18, 13, "Africa/Johannesburg"),
+    new TZDate(2025, 11, 18, 13, "Africa/Johannesburg")
   );
   const time = [
     new Date("2025-12-18T00:00+02:00").getTime() / 1000,
@@ -202,30 +202,30 @@ test("returns hours", async () => {
             time: currentTime.time,
           },
           hourly: createHourly({ time }),
-        }) satisfies WeatherResponse,
+        }) satisfies WeatherResponse
       );
-    }),
+    })
   );
 
   await expect(
-    getWeather({ latitude: "0", longitude: "0" }),
+    getWeather({ latitude: "0", longitude: "0" })
   ).resolves.toMatchObject({
     hourly: [
-      { time: new Date("2025-12-19T00:00+02:00") },
-      { time: new Date("2025-12-19T23:00+02:00") },
-      { time: new Date("2025-12-20T00:00+02:00") },
-      { time: new Date("2025-12-21T00:00+02:00") },
-      { time: new Date("2025-12-22T00:00+02:00") },
-      { time: new Date("2025-12-23T00:00+02:00") },
-      { time: new Date("2025-12-24T00:00+02:00") },
-      { time: new Date("2025-12-24T23:00+02:00") },
+      { time: new Date("2025-12-19T00:00+02:00").getTime() },
+      { time: new Date("2025-12-19T23:00+02:00").getTime() },
+      { time: new Date("2025-12-20T00:00+02:00").getTime() },
+      { time: new Date("2025-12-21T00:00+02:00").getTime() },
+      { time: new Date("2025-12-22T00:00+02:00").getTime() },
+      { time: new Date("2025-12-23T00:00+02:00").getTime() },
+      { time: new Date("2025-12-24T00:00+02:00").getTime() },
+      { time: new Date("2025-12-24T23:00+02:00").getTime() },
     ],
   });
 });
 
 test("limits forecast to 1 week", async () => {
   const currentTime = createCurrentTime(
-    new TZDate(2025, 11, 18, 13, "Africa/Johannesburg"),
+    new TZDate(2025, 11, 18, 13, "Africa/Johannesburg")
   );
   const dailyTime = [
     new Date("2025-12-18T00:00+02:00").getTime() / 1000,
@@ -260,33 +260,33 @@ test("limits forecast to 1 week", async () => {
           },
           daily: createDaily({ time: dailyTime }),
           hourly: createHourly({ time: hourlyTime }),
-        }) satisfies WeatherResponse,
+        }) satisfies WeatherResponse
       );
-    }),
+    })
   );
 
   await expect(
-    getWeather({ latitude: "0", longitude: "0" }),
+    getWeather({ latitude: "0", longitude: "0" })
   ).resolves.toMatchObject({
     daily: [
-      { time: new Date("2025-12-18T00:00+02:00") },
-      { time: new Date("2025-12-19T00:00+02:00") },
-      { time: new Date("2025-12-20T00:00+02:00") },
-      { time: new Date("2025-12-21T00:00+02:00") },
-      { time: new Date("2025-12-22T00:00+02:00") },
-      { time: new Date("2025-12-23T00:00+02:00") },
-      { time: new Date("2025-12-24T00:00+02:00") },
+      { time: new Date("2025-12-18T00:00+02:00").getTime() },
+      { time: new Date("2025-12-19T00:00+02:00").getTime() },
+      { time: new Date("2025-12-20T00:00+02:00").getTime() },
+      { time: new Date("2025-12-21T00:00+02:00").getTime() },
+      { time: new Date("2025-12-22T00:00+02:00").getTime() },
+      { time: new Date("2025-12-23T00:00+02:00").getTime() },
+      { time: new Date("2025-12-24T00:00+02:00").getTime() },
       // { time: new Date("2025-12-25T00:00+02:00") },
     ],
     hourly: [
       // { time: new Date("2025-12-18T00:00+02:00") },
-      { time: new Date("2025-12-19T00:00+02:00") },
-      { time: new Date("2025-12-20T00:00+02:00") },
-      { time: new Date("2025-12-21T00:00+02:00") },
-      { time: new Date("2025-12-22T00:00+02:00") },
-      { time: new Date("2025-12-23T00:00+02:00") },
-      { time: new Date("2025-12-24T00:00+02:00") },
-      { time: new Date("2025-12-24T23:00+02:00") },
+      { time: new Date("2025-12-19T00:00+02:00").getTime() },
+      { time: new Date("2025-12-20T00:00+02:00").getTime() },
+      { time: new Date("2025-12-21T00:00+02:00").getTime() },
+      { time: new Date("2025-12-22T00:00+02:00").getTime() },
+      { time: new Date("2025-12-23T00:00+02:00").getTime() },
+      { time: new Date("2025-12-24T00:00+02:00").getTime() },
+      { time: new Date("2025-12-24T23:00+02:00").getTime() },
       // { time: new Date("2025-12-25T00:00+02:00") },
     ],
   });
@@ -294,7 +294,7 @@ test("limits forecast to 1 week", async () => {
 
 test("doesn't return hours before the hour of current time", async () => {
   const currentTime = createCurrentTime(
-    new TZDate(2025, 11, 18, 13, 30, "Africa/Johannesburg"),
+    new TZDate(2025, 11, 18, 13, 30, "Africa/Johannesburg")
   );
   const time = [
     new Date("2025-12-18T00:00+02:00").getTime() / 1000,
@@ -314,27 +314,27 @@ test("doesn't return hours before the hour of current time", async () => {
             time: currentTime.time,
           },
           hourly: createHourly({ time }),
-        }) satisfies WeatherResponse,
+        }) satisfies WeatherResponse
       );
-    }),
+    })
   );
 
   await expect(
-    getWeather({ latitude: "0", longitude: "0" }),
+    getWeather({ latitude: "0", longitude: "0" })
   ).resolves.toMatchObject({
     hourly: [
       // { time: new Date("2025-12-18T00:00+02:00") },
       // { time: new Date("2025-12-18T12:00+02:00") },
-      { time: new Date("2025-12-18T13:00+02:00") },
-      { time: new Date("2025-12-18T23:00+02:00") },
-      { time: new Date("2025-12-19T00:00+02:00") },
+      { time: new Date("2025-12-18T13:00+02:00").getTime() },
+      { time: new Date("2025-12-18T23:00+02:00").getTime() },
+      { time: new Date("2025-12-19T00:00+02:00").getTime() },
     ],
   });
 });
 
 test("returns correct values for hour", async () => {
   const currentTime = createCurrentTime(
-    new TZDate(2025, 11, 18, 13, 30, "Africa/Johannesburg"),
+    new TZDate(2025, 11, 18, 13, 30, "Africa/Johannesburg")
   );
 
   server.use(
@@ -356,22 +356,22 @@ test("returns correct values for hour", async () => {
             temperature_2m: [0, 1, 2, 3],
             weather_code: [0, 1, 2, 3],
           }),
-        }) satisfies WeatherResponse,
+        }) satisfies WeatherResponse
       );
-    }),
+    })
   );
 
   await expect(
-    getWeather({ latitude: "0", longitude: "0" }),
+    getWeather({ latitude: "0", longitude: "0" })
   ).resolves.toMatchObject({
     hourly: [
       {
-        time: new Date("2025-12-18T13:00+02:00"),
+        time: new Date("2025-12-18T13:00+02:00").getTime(),
         temperature_2m: 1,
         weather_code: 1,
       },
       {
-        time: new Date("2025-12-18T14:00+02:00"),
+        time: new Date("2025-12-18T14:00+02:00").getTime(),
         temperature_2m: 2,
         weather_code: 2,
       },
@@ -381,7 +381,7 @@ test("returns correct values for hour", async () => {
 
 test("returns correct values for day", async () => {
   const currentTime = createCurrentTime(
-    new TZDate(2025, 11, 11, 13, 30, "Africa/Johannesburg"),
+    new TZDate(2025, 11, 11, 13, 30, "Africa/Johannesburg")
   );
 
   server.use(
@@ -404,23 +404,23 @@ test("returns correct values for day", async () => {
             temperature_2m_min: [0, 1, 2, 3],
             weather_code: [0, 1, 2, 3],
           }),
-        }) satisfies WeatherResponse,
+        }) satisfies WeatherResponse
       );
-    }),
+    })
   );
 
   await expect(
-    getWeather({ latitude: "0", longitude: "0" }),
+    getWeather({ latitude: "0", longitude: "0" })
   ).resolves.toMatchObject({
     daily: [
       {
-        time: new Date("2025-12-11T00:00+02:00"),
+        time: new Date("2025-12-11T00:00+02:00").getTime(),
         temperature_2m_max: 1,
         temperature_2m_min: 1,
         weather_code: 1,
       },
       {
-        time: new Date("2025-12-17T00:00+02:00"),
+        time: new Date("2025-12-17T00:00+02:00").getTime(),
         temperature_2m_max: 2,
         temperature_2m_min: 2,
         weather_code: 2,
