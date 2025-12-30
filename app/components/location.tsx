@@ -207,7 +207,10 @@ export const Location = ({
                 },
               ].map(({ key, getValue, testid }) => {
                 return (
-                  <div key={key} className="[ box ] [ layer-1 radius-12 ]">
+                  <div
+                    key={key}
+                    className="[ current__prop ] [ layer-1 radius-12 ]"
+                  >
                     <h4>{key}</h4>
                     <p className="mt-300 text-preset-3" data-testid={testid}>
                       <Suspense

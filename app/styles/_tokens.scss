@@ -183,3 +183,7 @@ $outline-offset: 3;
     @include outline-base;
   }
 }
+
+@mixin shadow {
+  box-shadow: 0 utils.rem(8) utils.rem(16) hsl(241 96% 9% / 32%);
+}

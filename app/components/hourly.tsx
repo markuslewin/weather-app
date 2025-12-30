@@ -23,9 +23,7 @@ import {
 } from "react-aria-components";
 
 export const Hourly = (props: ComponentPropsWithRef<"article">) => {
-  return (
-    <article className="[ hourly ] [ box ] [ layer-1 radius-20 ]" {...props} />
-  );
+  return <article className="[ hourly ] [ layer-1 radius-20 ]" {...props} />;
 };
 
 export const HourlyHeader = (props: ComponentPropsWithRef<"header">) => {

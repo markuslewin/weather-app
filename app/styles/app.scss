@@ -2,6 +2,8 @@
 @use "tokens";
 @use "utils";
 
+$border-width: utils.rem(1);
+
 body {
   --center-size: #{utils.rem(1216)};
 
@@ -25,13 +27,6 @@ body {
 
 :focus-visible {
   @include tokens.outline-base;
-}
-
-.box {
-  padding: var(--box-top-space, var(--box-y-space, var(--box-space)))
-    var(--box-right-space, var(--box-x-space, var(--box-space)))
-    var(--box-bottom-space, var(--box-y-space, var(--box-space)))
-    var(--box-left-space, var(--box-x-space, var(--box-space)));
 }
 
 .center {
@@ -78,10 +73,11 @@ body {
   --outline-inner-color: #{tokens.$color-neutral-900};
   --outline-outer-color: #{tokens.$color-neutral-0};
 
-  border: none;
+  border: $border-width solid transparent;
   border-radius: tokens.radius(12);
   outline: none;
-  padding: tokens.spacing(150) tokens.spacing(200);
+  padding: (tokens.spacing(150) - $border-width)
+    (tokens.spacing(200) - $border-width);
   display: grid;
   grid-template-columns: auto auto auto;
   align-items: center;
@@ -127,8 +123,12 @@ body {
   scrollbar-width: thin;
   min-width: utils.rem(214);
   max-height: inherit;
+  border: $border-width solid tokens.$color-neutral-600;
   border-radius: tokens.radius(12);
-  padding: tokens.spacing(075) tokens.spacing(100);
+  padding: (tokens.spacing("075") - $border-width)
+    (tokens.spacing(100) - $border-width);
+
+  @include tokens.shadow;
 
   &__group {
     --stack-space: #{tokens.spacing(100)};
@@ -269,7 +269,6 @@ body {
 }
 
 .current {
-  --box-space: #{tokens.spacing(250)};
   --grid-size: #{utils.rem(155)};
   --grid-space: #{tokens.spacing(200)};
 
@@ -279,6 +278,11 @@ body {
 
   @include tokens.breakpoint("desktop") {
     --grid-space: #{tokens.spacing(300)};
+  }
+
+  &__prop {
+    border: $border-width solid tokens.$color-neutral-600;
+    padding: tokens.spacing(250) - $border-width;
   }
 }
 
@@ -335,14 +339,16 @@ body {
 }
 
 .daily {
-  --box-x-space: #{tokens.spacing(125)};
-  --box-y-space: #{tokens.spacing(200)};
   --grid-size: #{utils.rem(80)};
   --grid-space: #{tokens.spacing(200)};
   --stack-space: #{tokens.spacing(200)};
 }
 
 .day {
+  border: $border-width solid tokens.$color-neutral-600;
+  padding-block: tokens.spacing(200) - $border-width;
+  padding-inline: tokens.spacing(125) - $border-width;
+
   &__icon {
     justify-self: center;
   }
@@ -355,9 +361,11 @@ body {
 }
 
 .hourly {
-  --box-space: #{tokens.spacing(300)};
   --cluster-justify: space-between;
   --stack-space: #{tokens.spacing(200)};
+
+  border: $border-width solid transparent;
+  padding: tokens.spacing(300) - $border-width;
 
   @include tokens.breakpoint("desktop") {
     grid-column: 2;
@@ -369,10 +377,6 @@ body {
 }
 
 .hours {
-  --box-y-space: #{tokens.spacing(125)};
-  --box-right-space: #{tokens.spacing(200)};
-  --box-left-space: #{tokens.spacing(150)};
-
   &[data-scrollable="true"] {
     $padding-inline: tokens.spacing(300);
 
@@ -408,6 +412,12 @@ body {
   }
 
   &__item {
+    border: $border-width solid tokens.$color-neutral-600;
+    padding: (tokens.spacing(125) - $border-width)
+      (tokens.spacing(200) - $border-width)
+      (tokens.spacing(125) - $border-width)
+      (tokens.spacing(150) - $border-width);
+
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
@@ -423,9 +433,10 @@ body {
   --outline-inner-color: #{tokens.$color-neutral-900};
   --outline-outer-color: #{tokens.$color-blue-500};
 
-  border: none;
+  border: $border-width solid transparent;
   border-radius: tokens.radius(12);
-  padding: tokens.spacing(200) tokens.spacing(300);
+  padding: (tokens.spacing(200) - $border-width)
+    (tokens.spacing(300) - $border-width);
   @include tokens.text-preset-5--medium();
   background: tokens.$color-blue-500;
   color: tokens.$color-neutral-0;
@@ -449,8 +460,9 @@ body {
       scrollbar-width: thin;
       width: var(--trigger-width);
       max-height: inherit;
+      border: $border-width solid tokens.$color-neutral-700;
       border-radius: tokens.radius(12);
-      padding: tokens.spacing(100);
+      padding: tokens.spacing(100) - $border-width;
       background: tokens.$color-neutral-800;
       color: tokens.$color-neutral-0;
     }
@@ -460,6 +472,9 @@ body {
       padding: tokens.spacing(125) tokens.spacing(100);
 
       &[data-focused] {
+        border: $border-width solid tokens.$color-neutral-600;
+        padding: calc(tokens.spacing(125) - $border-width)
+          calc(tokens.spacing(100) - $border-width);
         background: tokens.$color-neutral-700;
         color: tokens.$color-neutral-0;
       }
@@ -488,10 +503,11 @@ body {
     --outline-outer-color: #{tokens.$color-neutral-0};
 
     width: 100%;
-    border: none;
+    border: $border-width solid transparent;
     border-radius: tokens.radius(12);
-    padding: tokens.spacing(200) tokens.spacing(300) tokens.spacing(200)
-      utils.rem(60);
+    padding: (tokens.spacing(200) - $border-width)
+      (tokens.spacing(300) - $border-width)
+      (tokens.spacing(200) - $border-width) (utils.rem(60) - $border-width);
     @include tokens.text-preset-5--medium();
     background: tokens.$color-neutral-800;
     color: tokens.$color-neutral-200;
@@ -523,9 +539,10 @@ body {
 
 .date-select {
   .react-aria-Button {
-    border: none;
+    border: $border-width solid transparent;
     border-radius: tokens.radius(8);
-    padding: tokens.spacing(100) tokens.spacing(200);
+    padding: (tokens.spacing(100) - $border-width)
+      (tokens.spacing(200) - $border-width);
     display: inline-grid;
     grid-template-columns: auto auto;
     align-items: center;
@@ -565,13 +582,16 @@ body {
       scrollbar-width: thin;
       min-width: utils.rem(214);
       max-height: inherit;
+      border: $border-width solid tokens.$color-neutral-600;
       border-radius: tokens.radius(12);
-      padding: tokens.spacing(100);
+      padding: tokens.spacing(100) - $border-width;
       display: grid;
       gap: tokens.spacing("050");
       @include tokens.text-preset-7;
       background: tokens.$color-neutral-800;
       color: tokens.$color-neutral-0;
+
+      @include tokens.shadow;
     }
 
     .react-aria-ListBoxItem {

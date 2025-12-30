@@ -5,7 +5,9 @@ type DayProps = ComponentPropsWithRef<"li">;
 export const Day = ({ className, ...props }: DayProps) => {
   return (
     <li
-      className={["[ box stack ] [ layer-1 radius-12 ]", className].join(" ")}
+      className={["[ day ] [ stack ] [ layer-1 radius-12 ]", className].join(
+        " "
+      )}
       {...props}
     />
   );

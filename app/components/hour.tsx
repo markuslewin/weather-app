@@ -5,10 +5,7 @@ type HourProps = ComponentPropsWithRef<"li">;
 export const Hour = ({ className, ...props }: HourProps) => {
   return (
     <li
-      className={[
-        "[ hours__item ] [ box ] [ layer-2 radius-8 ]",
-        className,
-      ].join(" ")}
+      className={["[ hours__item ] [ layer-2 radius-8 ]", className].join(" ")}
       {...props}
     ></li>
   );
