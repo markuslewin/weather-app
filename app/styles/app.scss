@@ -116,6 +116,10 @@ body {
   }
 }
 
+.units-popover {
+  @include tokens.open;
+}
+
 .units-dialog {
   --stack-space: #{tokens.spacing("050")};
 
@@ -453,6 +457,7 @@ body {
 
 .search-combobox {
   &__popover {
+    @include tokens.open;
     @include tokens.text-preset-7;
 
     .react-aria-ListBox {
@@ -577,6 +582,8 @@ body {
   }
 
   &__popover {
+    @include tokens.open;
+
     .react-aria-ListBox {
       overflow: auto;
       scrollbar-width: thin;

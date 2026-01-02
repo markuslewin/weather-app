@@ -68,7 +68,11 @@ export default function Layout() {
               Units
               <Icon name="IconDropdown" />
             </Button>
-            <Popover placement="bottom end" offset={10}>
+            <Popover
+              className="units-popover"
+              placement="bottom end"
+              offset={10}
+            >
               <Dialog
                 className="[ units-dialog ] [ stack ] [ layer-1 ]"
                 aria-label="Unit settings"

@@ -187,3 +187,25 @@ $outline-offset: 3;
 @mixin shadow {
   box-shadow: 0 utils.rem(8) utils.rem(16) hsl(241 96% 9% / 32%);
 }
+
+@mixin open {
+  transform-origin: var(--open-origin);
+  transition:
+    transform 200ms,
+    opacity 200ms;
+
+  &[data-entering] {
+    transform: perspective(2000px) rotateX(var(--open-rotate)) scale(0.95);
+    opacity: 0;
+  }
+
+  &[data-placement="top"] {
+    --open-origin: bottom center;
+    --open-rotate: 45deg;
+  }
+
+  &[data-placement="bottom"] {
+    --open-origin: top center;
+    --open-rotate: -45deg;
+  }
+}
