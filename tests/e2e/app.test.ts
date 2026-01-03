@@ -4,6 +4,7 @@ import {
   createCurrentTime,
   createDaily,
   createHourly,
+  createTime,
   createWeather,
 } from "#app/utils/weather";
 import { test, waitForHydration } from "#tests/playwright";
@@ -66,7 +67,7 @@ test("logo takes user to initial view", async ({
   await page.getByRole("link", { name: "weather now" }).click();
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-    /the sky looking today/i,
+    /the sky looking today/i
   );
 });
 
@@ -81,17 +82,17 @@ test("defaults to metric", async ({ page }) => {
   await expect(
     page
       .getByRole("radiogroup", { name: "temperature" })
-      .getByRole("radio", { name: "celsius" }),
+      .getByRole("radio", { name: "celsius" })
   ).toBeChecked();
   await expect(
     page
       .getByRole("radiogroup", { name: "wind speed" })
-      .getByRole("radio", { name: "km/h" }),
+      .getByRole("radio", { name: "km/h" })
   ).toBeChecked();
   await expect(
     page
       .getByRole("radiogroup", { name: "precipitation" })
-      .getByRole("radio", { name: "millimeters" }),
+      .getByRole("radio", { name: "millimeters" })
   ).toBeChecked();
 });
 
@@ -107,17 +108,17 @@ test("toggles measurement system", async ({ page }) => {
   await expect(
     page
       .getByRole("radiogroup", { name: "temperature" })
-      .getByRole("radio", { name: "fahrenheit" }),
+      .getByRole("radio", { name: "fahrenheit" })
   ).toBeChecked();
   await expect(
     page
       .getByRole("radiogroup", { name: "wind speed" })
-      .getByRole("radio", { name: "mph" }),
+      .getByRole("radio", { name: "mph" })
   ).toBeChecked();
   await expect(
     page
       .getByRole("radiogroup", { name: "precipitation" })
-      .getByRole("radio", { name: "inches" }),
+      .getByRole("radio", { name: "inches" })
   ).toBeChecked();
 
   await page.getByRole("button", { name: "switch to metric" }).click();
@@ -125,17 +126,17 @@ test("toggles measurement system", async ({ page }) => {
   await expect(
     page
       .getByRole("radiogroup", { name: "temperature" })
-      .getByRole("radio", { name: "celsius" }),
+      .getByRole("radio", { name: "celsius" })
   ).toBeChecked();
   await expect(
     page
       .getByRole("radiogroup", { name: "wind speed" })
-      .getByRole("radio", { name: "km/h" }),
+      .getByRole("radio", { name: "km/h" })
   ).toBeChecked();
   await expect(
     page
       .getByRole("radiogroup", { name: "precipitation" })
-      .getByRole("radio", { name: "millimeters" }),
+      .getByRole("radio", { name: "millimeters" })
   ).toBeChecked();
 });
 
@@ -148,7 +149,7 @@ test("switches toggle button text", async ({ page }) => {
     .click();
 
   await expect(
-    page.getByRole("button", { name: "switch to imperial" }),
+    page.getByRole("button", { name: "switch to imperial" })
   ).toBeVisible();
 
   await page
@@ -157,7 +158,7 @@ test("switches toggle button text", async ({ page }) => {
     .check({ force: true });
 
   await expect(
-    page.getByRole("button", { name: "switch to imperial" }),
+    page.getByRole("button", { name: "switch to imperial" })
   ).toBeVisible();
 
   await page
@@ -166,7 +167,7 @@ test("switches toggle button text", async ({ page }) => {
     .check({ force: true });
 
   await expect(
-    page.getByRole("button", { name: "switch to metric" }),
+    page.getByRole("button", { name: "switch to metric" })
   ).toBeVisible();
 
   await page
@@ -183,7 +184,7 @@ test("switches toggle button text", async ({ page }) => {
     .check({ force: true });
 
   await expect(
-    page.getByRole("button", { name: "switch to imperial" }),
+    page.getByRole("button", { name: "switch to imperial" })
   ).toBeVisible();
 });
 
@@ -191,7 +192,7 @@ test("shows initial view", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-    /the sky looking today/i,
+    /the sky looking today/i
   );
 });
 
@@ -203,7 +204,7 @@ test("shows error view when forecast fails", async ({
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-    /something went wrong/i,
+    /something went wrong/i
   );
 });
 
@@ -223,7 +224,7 @@ test("shows location", async ({ page, setAzureReverseGeocodingSettings }) => {
     }),
     {
       status: 200,
-    },
+    }
   );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
@@ -265,7 +266,7 @@ test("displays current weather data", async ({
         wind_speed_10m,
       },
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
@@ -274,7 +275,7 @@ test("displays current weather data", async ({
   await expect(page.getByTestId("humidity")).toHaveText("28%");
   await expect(page.getByTestId("temperature")).toHaveText("22°");
   await expect(page.getByTestId("time")).toHaveText(
-    "Thursday, November 27, 2025",
+    "Thursday, November 27, 2025"
   );
   await expect(page.getByTestId("weather-code")).toHaveAccessibleName(/snow/i);
   await expect(page.getByTestId("wind")).toHaveText("56 km/h");
@@ -296,7 +297,7 @@ test("displays suggestions when searching", async ({
     createSearchResponse({
       results,
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl());
   await waitForHydration(page);
@@ -305,7 +306,7 @@ test("displays suggestions when searching", async ({
     .fill(faker.location.city());
 
   await expect(
-    page.getByRole("listbox", { name: "suggestions" }).getByRole("option"),
+    page.getByRole("listbox", { name: "suggestions" }).getByRole("option")
   ).toHaveText(results.map((r) => r.name));
 });
 
@@ -317,7 +318,7 @@ test("displays message when no suggestions where found", async ({
     createSearchResponse({
       results: [],
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl());
   await waitForHydration(page);
@@ -326,7 +327,7 @@ test("displays message when no suggestions where found", async ({
     .fill(faker.location.city());
 
   await expect(
-    page.getByRole("listbox", { name: "suggestions" }).getByRole("option"),
+    page.getByRole("listbox", { name: "suggestions" }).getByRole("option")
   ).toHaveText(["No suggestions"]);
 });
 
@@ -340,7 +341,7 @@ test("navigates to coordinates when selecting a suggestion", async ({
     createSearchResponse({
       results: [item],
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl());
   await waitForHydration(page);
@@ -356,7 +357,7 @@ test("navigates to coordinates when selecting a suggestion", async ({
     `/?${new URLSearchParams({
       lat: `${item.latitude}`,
       lon: `${item.longitude}`,
-    })}`,
+    })}`
   );
 });
 
@@ -371,7 +372,7 @@ test("can search without selecting a suggestion", async ({
     createSearchResponse({
       results: [first, second],
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl());
   await waitForHydration(page);
@@ -386,7 +387,7 @@ test("can search without selecting a suggestion", async ({
     `/?${new URLSearchParams({
       lat: `${first.latitude}`,
       lon: `${first.longitude}`,
-    })}`,
+    })}`
   );
 });
 
@@ -398,7 +399,7 @@ test("can search by button", async ({ page, setMeteoSearchSettings }) => {
     createSearchResponse({
       results: [first, second],
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl());
   await waitForHydration(page);
@@ -413,7 +414,7 @@ test("can search by button", async ({ page, setMeteoSearchSettings }) => {
     `/?${new URLSearchParams({
       lat: `${first.latitude}`,
       lon: `${first.longitude}`,
-    })}`,
+    })}`
   );
 });
 
@@ -427,7 +428,7 @@ test("can retry from error view", async ({
   await page.getByRole("button", { name: "retry" }).click();
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-    /the sky looking today/i,
+    /the sky looking today/i
   );
 });
 
@@ -462,7 +463,7 @@ test("converts temperature", async ({ page, setMeteoForecastSettings }) => {
         temperature_2m: Array.from({ length: hourlyLength }, () => celsius),
       }),
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
   await page.getByRole("button", { name: "units" }).click();
@@ -475,13 +476,13 @@ test("converts temperature", async ({ page, setMeteoForecastSettings }) => {
   await expect(page.getByTestId("temperature")).toHaveText(`${fahrenheit}°`);
   await expect(page.getByTestId("feels-like")).toHaveText(`${fahrenheit}°`);
   await expect(page.getByTestId("day-temperature-max")).toHaveText(
-    Array.from({ length: dailyLength }, () => `${fahrenheit}°`),
+    Array.from({ length: dailyLength }, () => `${fahrenheit}°`)
   );
   await expect(page.getByTestId("day-temperature-min")).toHaveText(
-    Array.from({ length: dailyLength }, () => `${fahrenheit}°`),
+    Array.from({ length: dailyLength }, () => `${fahrenheit}°`)
   );
   await expect(page.getByTestId("hour-temperature")).toHaveText(
-    Array.from({ length: hourlyLength }, () => `${fahrenheit}°`),
+    Array.from({ length: hourlyLength }, () => `${fahrenheit}°`)
   );
 });
 
@@ -492,7 +493,7 @@ test("converts wind speed", async ({ page, setMeteoForecastSettings }) => {
         wind_speed_10m: 10,
       },
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
   await page.getByRole("button", { name: "units" }).click();
@@ -512,7 +513,7 @@ test("converts precipitation", async ({ page, setMeteoForecastSettings }) => {
         precipitation: 100,
       },
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
   await page.getByRole("button", { name: "units" }).click();
@@ -530,7 +531,7 @@ test("displays correct wall time when entering dst", async ({
   setMeteoForecastSettings,
 }) => {
   const currentTime = createCurrentTime(
-    new TZDate(2024, 2, 10, "America/Toronto"),
+    new TZDate(2024, 2, 10, "America/Toronto")
   );
 
   await setMeteoForecastSettings(
@@ -553,7 +554,7 @@ test("displays correct wall time when entering dst", async ({
         ],
       }),
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
@@ -570,7 +571,7 @@ test("displays correct wall time when exiting dst", async ({
   setMeteoForecastSettings,
 }) => {
   const currentTime = createCurrentTime(
-    new TZDate(2025, 10, 2, "America/Toronto"),
+    new TZDate(2025, 10, 2, "America/Toronto")
   );
 
   await setMeteoForecastSettings(
@@ -593,7 +594,7 @@ test("displays correct wall time when exiting dst", async ({
         ],
       }),
     }),
-    { status: 200 },
+    { status: 200 }
   );
   await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
@@ -605,8 +606,78 @@ test("displays correct wall time when exiting dst", async ({
   ]);
 });
 
+test("resets date select when changing location", async ({
+  page,
+  setMeteoForecastSettings,
+  setMeteoSearchSettings,
+}) => {
+  const city = faker.location.city();
+  const currentTime = createCurrentTime(
+    new TZDate(2026, 0, 2, "Europe/Stockholm")
+  );
+  await setMeteoForecastSettings(
+    createWeather({
+      timezone: currentTime.timezone,
+      utc_offset_seconds: currentTime.utc_offset_seconds,
+      current: {
+        time: currentTime.time,
+      },
+      daily: createDaily({
+        time: [
+          createTime(new TZDate(2026, 0, 2, currentTime.timezone)),
+          createTime(new TZDate(2026, 0, 3, currentTime.timezone)),
+          createTime(new TZDate(2026, 0, 4, currentTime.timezone)),
+        ],
+      }),
+    }),
+    { status: 200 }
+  );
+  await setMeteoSearchSettings(
+    createSearchResponse({
+      results: [createSearchResponseItem({ name: city })],
+    }),
+    {
+      status: 200,
+    }
+  );
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+
+  const otherCurrentTime = createCurrentTime(
+    new TZDate(2026, 0, 2, "Asia/Shanghai")
+  );
+  await setMeteoForecastSettings(
+    createWeather({
+      timezone: otherCurrentTime.timezone,
+      utc_offset_seconds: otherCurrentTime.utc_offset_seconds,
+      current: {
+        time: otherCurrentTime.time,
+      },
+      daily: createDaily({
+        time: [
+          createTime(new TZDate(2026, 0, 2, otherCurrentTime.timezone)),
+          createTime(new TZDate(2026, 0, 3, otherCurrentTime.timezone)),
+          createTime(new TZDate(2026, 0, 4, otherCurrentTime.timezone)),
+        ],
+      }),
+    }),
+    { status: 200 }
+  );
+
+  await page.getByRole("button", { name: "friday" }).click();
+  await page.getByRole("option", { name: "sunday" }).click();
+  await page
+    .getByRole("combobox", { name: "search" })
+    .fill(faker.location.city());
+  await page
+    .getByRole("listbox", { name: "suggestions" })
+    .getByRole("option", { name: city })
+    .click();
+
+  await expect(page.getByRole("button", { name: "friday" })).toBeAttached();
+});
+
 const createFeaturesItem = (
-  overwrites?: Partial<FeaturesItemOutput>,
+  overwrites?: Partial<FeaturesItemOutput>
 ): FeaturesItemOutput => {
   return {
     type: "Feature",
@@ -629,7 +700,7 @@ const createFeaturesItem = (
 };
 
 const createReverseGeocoding = (
-  overwrites?: Partial<GeocodingResponseOutput>,
+  overwrites?: Partial<GeocodingResponseOutput>
 ): GeocodingResponseOutput => {
   return {
     type: "FeatureCollection",
@@ -639,7 +710,7 @@ const createReverseGeocoding = (
 };
 
 const createSearchResponseItem = (
-  overwrites?: Partial<SearchResponseItem>,
+  overwrites?: Partial<SearchResponseItem>
 ): SearchResponseItem => {
   return {
     id: faker.number.int(),
@@ -651,7 +722,7 @@ const createSearchResponseItem = (
 };
 
 const createSearchResponse = (
-  overwrites?: Partial<SearchResponse>,
+  overwrites?: Partial<SearchResponse>
 ): SearchResponse => {
   return {
     results: faker.helpers.multiple(() => createSearchResponseItem(), {

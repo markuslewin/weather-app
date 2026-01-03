@@ -197,6 +197,8 @@ export const dailySchema = z
 export type Daily = z.infer<typeof dailySchema>;
 
 export const weatherResponseSchema = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
   timezone: z.string(),
   utc_offset_seconds: z.int(),
   current: z.object({
@@ -316,8 +318,8 @@ const createWeatherCode = () => {
   return faker.helpers.arrayElement([...interpretationByCode.keys()]);
 };
 
-const createTime = () => {
-  return getUnixTime(faker.date.anytime());
+export const createTime = (date?: Date) => {
+  return getUnixTime(date ?? faker.date.anytime());
 };
 
 // Source - https://stackoverflow.com/a/51365037
@@ -409,6 +411,8 @@ export const createWeather = (
   overwrites?: RecursivePartial<WeatherResponse>
 ): WeatherResponse => {
   return {
+    latitude: faker.location.latitude(),
+    longitude: faker.location.longitude(),
     timezone: overwrites?.timezone ?? faker.location.timeZone(),
     utc_offset_seconds:
       overwrites?.utc_offset_seconds ??

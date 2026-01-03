@@ -38,9 +38,9 @@ const handlers = [
           ext_expires_in: 3599,
           access_token: "mock_access_token",
         },
-        { status: 200 },
+        { status: 200 }
       );
-    },
+    }
   ),
 ];
 

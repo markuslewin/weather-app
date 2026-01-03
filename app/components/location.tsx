@@ -321,7 +321,11 @@ export const Location = ({
           <Await resolve={weather}>
             {(weather) => {
               return (
-                <ResolvedHourly weather={weather} temperature={temperature} />
+                <ResolvedHourly
+                  key={`(${weather.latitude},${weather.longitude})`}
+                  weather={weather}
+                  temperature={temperature}
+                />
               );
             }}
           </Await>
