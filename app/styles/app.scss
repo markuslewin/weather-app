@@ -366,7 +366,6 @@ body {
 
 .hourly {
   --cluster-justify: space-between;
-  --stack-space: #{tokens.spacing(200)};
 
   border: $border-width solid transparent;
   padding: tokens.spacing(300) - $border-width;
@@ -381,6 +380,10 @@ body {
 }
 
 .hours {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.spacing(200);
+
   &[data-scrollable="true"] {
     $padding-inline: tokens.spacing(300);
 

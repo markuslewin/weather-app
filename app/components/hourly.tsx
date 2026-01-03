@@ -64,7 +64,7 @@ export const HourlyList = (props: ComponentPropsWithRef<"ol">) => {
 
   return (
     <ol
-      className="[ hours ] [ stack ] [ mt-200 ]"
+      className="[ hours ] [ mt-200 ]"
       role="list"
       tabIndex={isDesktop ? 0 : undefined}
       data-scrollable={isDesktop}
