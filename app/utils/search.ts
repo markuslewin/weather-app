@@ -7,6 +7,7 @@ export const searchResultSchema = z.object({
       name: z.string(),
       latitude: z.number(),
       longitude: z.number(),
+      admin1: z.string().optional(),
     })
   ),
 });
@@ -18,6 +19,7 @@ const searchResponseItemSchema = z.object({
   name: z.string(),
   latitude: z.number(),
   longitude: z.number(),
+  admin1: z.string().optional(),
 });
 const searchResponseSchema = z.object({
   results: z.array(searchResponseItemSchema).optional(),

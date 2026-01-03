@@ -1,5 +1,6 @@
 import { Icon } from "#app/components/icon";
 import { debounce } from "#app/utils/debounce";
+import { formatList } from "#app/utils/format";
 import { type SearchResultItem, searchResultSchema } from "#app/utils/search";
 import { createHomeUrl } from "#app/utils/url";
 import { type ReactNode, useId } from "react";
@@ -96,7 +97,9 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
                 )}
               >
                 {(item: SearchResultItem) => (
-                  <ListBoxItem>{item.name}</ListBoxItem>
+                  <ListBoxItem>
+                    {formatList([item.name, item.admin1])}
+                  </ListBoxItem>
                 )}
               </ListBox>
             </Popover>
