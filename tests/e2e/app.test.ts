@@ -663,7 +663,8 @@ test("resets date select when changing location", async ({
     { status: 200 }
   );
 
-  await page.getByRole("button", { name: "friday" }).click();
+  await waitForHydration(page);
+  await page.getByRole("button", { name: "date" }).click();
   await page.getByRole("option", { name: "sunday" }).click();
   await page
     .getByRole("combobox", { name: "search" })
