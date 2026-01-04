@@ -606,75 +606,87 @@ test("displays correct wall time when exiting dst", async ({
   ]);
 });
 
-test("resets date select when changing location", async ({
-  page,
-  setMeteoForecastSettings,
-  setMeteoSearchSettings,
-}) => {
-  const city = faker.location.city();
-  const currentTime = createCurrentTime(
-    new TZDate(2026, 0, 2, "Europe/Stockholm")
-  );
-  await setMeteoForecastSettings(
-    createWeather({
-      timezone: currentTime.timezone,
-      utc_offset_seconds: currentTime.utc_offset_seconds,
-      current: {
-        time: currentTime.time,
-      },
-      daily: createDaily({
-        time: [
-          createTime(new TZDate(2026, 0, 2, currentTime.timezone)),
-          createTime(new TZDate(2026, 0, 3, currentTime.timezone)),
-          createTime(new TZDate(2026, 0, 4, currentTime.timezone)),
-        ],
+// Playwright tries to scroll interactive elements into view, but React Aria's
+// ComboBox closes whenever the page scrolls.
+// Render the page in a viewport larger than the page so that page scrolling is impossible.
+test.describe("no scroll", () => {
+  test.use({
+    viewport: {
+      width: 1280,
+      height: 1500,
+    },
+  });
+
+  test("resets date select when changing location", async ({
+    page,
+    setMeteoForecastSettings,
+    setMeteoSearchSettings,
+  }) => {
+    const city = faker.location.city();
+    const currentTime = createCurrentTime(
+      new TZDate(2026, 0, 2, "Europe/Stockholm")
+    );
+    await setMeteoForecastSettings(
+      createWeather({
+        timezone: currentTime.timezone,
+        utc_offset_seconds: currentTime.utc_offset_seconds,
+        current: {
+          time: currentTime.time,
+        },
+        daily: createDaily({
+          time: [
+            createTime(new TZDate(2026, 0, 2, currentTime.timezone)),
+            createTime(new TZDate(2026, 0, 3, currentTime.timezone)),
+            createTime(new TZDate(2026, 0, 4, currentTime.timezone)),
+          ],
+        }),
       }),
-    }),
-    { status: 200 }
-  );
-  await setMeteoSearchSettings(
-    createSearchResponse({
-      results: [createSearchResponseItem({ name: city })],
-    }),
-    {
-      status: 200,
-    }
-  );
-  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
-
-  const otherCurrentTime = createCurrentTime(
-    new TZDate(2026, 0, 2, "Asia/Shanghai")
-  );
-  await setMeteoForecastSettings(
-    createWeather({
-      timezone: otherCurrentTime.timezone,
-      utc_offset_seconds: otherCurrentTime.utc_offset_seconds,
-      current: {
-        time: otherCurrentTime.time,
-      },
-      daily: createDaily({
-        time: [
-          createTime(new TZDate(2026, 0, 2, otherCurrentTime.timezone)),
-          createTime(new TZDate(2026, 0, 3, otherCurrentTime.timezone)),
-          createTime(new TZDate(2026, 0, 4, otherCurrentTime.timezone)),
-        ],
+      { status: 200 }
+    );
+    await setMeteoSearchSettings(
+      createSearchResponse({
+        results: [createSearchResponseItem({ name: city })],
       }),
-    }),
-    { status: 200 }
-  );
+      {
+        status: 200,
+      }
+    );
+    await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
 
-  await waitForHydration(page);
-  await page.getByRole("button", { name: "date" }).click();
-  await page.getByRole("option", { name: "sunday" }).click();
-  await page
-    .getByRole("combobox", { name: "search" })
-    .fill(faker.location.city());
-  await page
-    .getByRole("listbox", { name: "suggestions" })
-    .getByRole("option", { name: city })
-    .click();
+    const otherCurrentTime = createCurrentTime(
+      new TZDate(2026, 0, 2, "Asia/Shanghai")
+    );
+    await setMeteoForecastSettings(
+      createWeather({
+        timezone: otherCurrentTime.timezone,
+        utc_offset_seconds: otherCurrentTime.utc_offset_seconds,
+        current: {
+          time: otherCurrentTime.time,
+        },
+        daily: createDaily({
+          time: [
+            createTime(new TZDate(2026, 0, 2, otherCurrentTime.timezone)),
+            createTime(new TZDate(2026, 0, 3, otherCurrentTime.timezone)),
+            createTime(new TZDate(2026, 0, 4, otherCurrentTime.timezone)),
+          ],
+        }),
+      }),
+      { status: 200 }
+    );
 
-  await expect(page.getByRole("button", { name: "friday" })).toBeAttached();
+    await waitForHydration(page);
+    await page.getByRole("button", { name: "date" }).click();
+    await page.getByRole("option", { name: "sunday" }).click();
+    await page
+      .getByRole("combobox", { name: "search" })
+      .fill(faker.location.city());
+    await page
+      .getByRole("listbox", { name: "suggestions" })
+      .getByRole("option", { name: city })
+      .click();
+
+    await expect(page.getByRole("button", { name: "friday" })).toBeAttached();
+  });
 });
 
 const createFeaturesItem = (
