@@ -2,7 +2,10 @@ import { Icon } from "#app/components/icon";
 import { SettingsProvider } from "#app/components/settings";
 import {
   countSystems,
+  getSettings,
   precipitationUnitSchema,
+  serializeSettings,
+  settingsCookieName,
   temperatureUnitSchema,
   windSpeedUnitSchema,
   type PrecipitationUnit,
@@ -10,6 +13,7 @@ import {
   type TemperatureUnit,
   type WindSpeedUnit,
 } from "#app/utils/settings";
+import type { Route } from ".react-router/types/app/components/+types/layout";
 import { useState } from "react";
 import {
   Button,
@@ -22,15 +26,26 @@ import {
   SelectionIndicator,
   type ButtonProps,
 } from "react-aria-components";
-import { Link, Outlet, useNavigation } from "react-router";
+import {
+  Link,
+  Outlet,
+  useNavigation,
+  type LoaderFunctionArgs,
+} from "react-router";
 
-export default function Layout() {
+export function loader({ request }: LoaderFunctionArgs) {
+  const settings = getSettings(request);
+  return { settings };
+}
+
+export default function Layout({ loaderData }: Route.ComponentProps) {
   const navigation = useNavigation();
-  const [settings, setSettings] = useState<Settings>({
-    temperatureUnit: "celsius",
-    windSpeedUnit: "kmh",
-    precipitationUnit: "mm",
-  });
+  const [settings, _setSettings] = useState<Settings>(loaderData.settings);
+  const setSettings = (settings: Settings) => {
+    document.cookie = `${settingsCookieName}=${serializeSettings(settings)}`;
+    _setSettings(settings);
+  };
+
   const settingsCount = countSystems(settings);
   const switchButtonProps: ButtonProps =
     settingsCount.metric < settingsCount.imperial

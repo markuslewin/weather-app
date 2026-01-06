@@ -1,4 +1,5 @@
 import type { SearchResponse, SearchResponseItem } from "#app/utils/search";
+import { serializeSettings, settingsCookieName } from "#app/utils/settings";
 import { createHomeUrl } from "#app/utils/url";
 import {
   createCurrentTime,
@@ -604,6 +605,74 @@ test("displays correct wall time when exiting dst", async ({
     "1 AM", // 2025-11-02T02:00-04:00
     "2 AM",
   ]);
+});
+
+test("settings persist across visits", async ({ page }) => {
+  await page.goto(createHomeUrl());
+  await page.getByRole("button", { name: "units" }).click();
+  await page
+    .getByRole("radiogroup", { name: "temperature" })
+    .getByRole("radio", { name: "fahrenheit" })
+    .check({ force: true });
+  await page
+    .getByRole("radiogroup", { name: "wind speed" })
+    .getByRole("radio", { name: "km/h" })
+    .check({ force: true });
+  await page
+    .getByRole("radiogroup", { name: "precipitation" })
+    .getByRole("radio", { name: "inches" })
+    .check({ force: true });
+  await page.reload();
+  await page.getByRole("button", { name: "units" }).click();
+
+  await expect(
+    page
+      .getByRole("radiogroup", { name: "temperature" })
+      .getByRole("radio", { name: "fahrenheit" })
+  ).toBeChecked();
+  await expect(
+    page
+      .getByRole("radiogroup", { name: "wind speed" })
+      .getByRole("radio", { name: "km/h" })
+  ).toBeChecked();
+  await expect(
+    page
+      .getByRole("radiogroup", { name: "precipitation" })
+      .getByRole("radio", { name: "inches" })
+  ).toBeChecked();
+});
+
+test("view uses persisted settings", async ({
+  page,
+  setMeteoForecastSettings,
+}) => {
+  await page.context().addCookies([
+    {
+      name: settingsCookieName,
+      value: serializeSettings({
+        precipitationUnit: "mm",
+        temperatureUnit: "fahrenheit",
+        windSpeedUnit: "mph",
+      }),
+      domain: "localhost",
+      path: "/",
+    },
+  ]);
+  await setMeteoForecastSettings(
+    createWeather({
+      current: {
+        precipitation: 10,
+        temperature_2m: 10,
+        wind_speed_10m: 10,
+      },
+    }),
+    { status: 200 }
+  );
+  await page.goto(createHomeUrl({ lat: "0", lon: "0" }));
+
+  await expect(page.getByTestId("precipitation")).toHaveText("10 mm");
+  await expect(page.getByTestId("temperature")).toHaveText("50°");
+  await expect(page.getByTestId("wind")).toHaveText("6 mph");
 });
 
 // Playwright tries to scroll interactive elements into view, but React Aria's
