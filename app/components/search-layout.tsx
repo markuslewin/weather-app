@@ -79,7 +79,10 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
                 }),
                 { preventScrollReset: true },
               );
-              weatherRegionRef.current?.focus();
+              // Let React Aria set the `inputValue` before closing the popover
+              setTimeout(() => {
+                weatherRegionRef.current?.focus();
+              });
             }}
             items={list.items}
           >
@@ -106,7 +109,7 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
                 )}
               >
                 {(item: SearchResultItem) => (
-                  <ListBoxItem>
+                  <ListBoxItem textValue={item.name}>
                     {formatList([item.name, item.admin1])}
                   </ListBoxItem>
                 )}
