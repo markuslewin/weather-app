@@ -40,11 +40,12 @@ import {
   createWindSpeedFormatter,
   formatDate,
   formatDay,
-  formatList,
+  listFormatter,
   percentageFormatter,
   temperatureFormatter,
 } from "#app/utils/format";
 import type { getLocation } from "#app/utils/maps";
+import { isNonEmptyString } from "#app/utils/string";
 import { nbsp } from "#app/utils/unicode";
 import { getInterpretation, type Weather } from "#app/utils/weather";
 import { Suspense } from "react";
@@ -61,19 +62,19 @@ export const Location = ({
 
   const temperature = (value: number) => {
     return temperatureFormatter.format(
-      convertTemperature(settings.temperatureUnit, value)
+      convertTemperature(settings.temperatureUnit, value),
     );
   };
 
   const windSpeed = (value: number) => {
     return createWindSpeedFormatter(settings.windSpeedUnit).format(
-      convertWindSpeed(settings.windSpeedUnit, value)
+      convertWindSpeed(settings.windSpeedUnit, value),
     );
   };
 
   const precipitation = (value: number) => {
     return createPrecipitationFormatter(settings.precipitationUnit).format(
-      convertPrecipitation(settings.precipitationUnit, value)
+      convertPrecipitation(settings.precipitationUnit, value),
     );
   };
 
@@ -111,7 +112,7 @@ export const Location = ({
               <Await resolve={weather}>
                 {(weather) => {
                   const currentWeatherInterpretation = getInterpretation(
-                    weather.current.weather_code
+                    weather.current.weather_code,
                   );
 
                   return (
@@ -139,12 +140,13 @@ export const Location = ({
                                 errorElement={"Unknown"}
                               >
                                 {(location) => {
-                                  return location === null
-                                    ? "Unknown"
-                                    : formatList([
-                                        location.locality,
-                                        location.country,
-                                      ]);
+                                  const props = [
+                                    location?.locality,
+                                    location?.country,
+                                  ].filter(isNonEmptyString);
+                                  if (props.length >= 0) return "Unknown";
+
+                                  return listFormatter.format(props);
                                 }}
                               </Await>
                             </Suspense>
@@ -154,7 +156,7 @@ export const Location = ({
                         <CardTime data-testid="time">
                           {formatDate(
                             { timeZone: weather.timezone },
-                            new Date(weather.current.time)
+                            new Date(weather.current.time),
                           )}
                         </CardTime>
                       </div>
@@ -189,7 +191,7 @@ export const Location = ({
                   key: "Humidity",
                   getValue: (weather: Weather) =>
                     percentageFormatter.format(
-                      weather.current.relative_humidity_2m
+                      weather.current.relative_humidity_2m,
                     ),
                   testid: "humidity",
                 },
@@ -254,14 +256,14 @@ export const Location = ({
                   {(weather) => {
                     return weather.daily.map((day) => {
                       const interpretation = getInterpretation(
-                        day.weather_code
+                        day.weather_code,
                       );
                       return (
                         <Day key={day.time}>
                           <DayHeading data-testid="day-name">
                             {formatDay(
                               { weekday: "short", timeZone: weather.timezone },
-                              new Date(day.time)
+                              new Date(day.time),
                             )}
                           </DayHeading>
                           {interpretation ? (

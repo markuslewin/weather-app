@@ -1,4 +1,5 @@
 import type { PrecipitationUnit, WindSpeedUnit } from "#app/utils/settings";
+import { isNonEmptyString } from "#app/utils/string";
 
 const locales: Intl.LocalesArgument = "en-US";
 
@@ -33,10 +34,10 @@ export const formatHours = (options: FormatHoursOptions, date: Date) => {
   }).format(date);
 };
 
-const listFormatter = new Intl.ListFormat(locales, { type: "unit" });
+export const listFormatter = new Intl.ListFormat(locales, { type: "unit" });
 
 export const formatList = (values: unknown[]) => {
-  return listFormatter.format(values.filter((val) => typeof val === "string"));
+  return listFormatter.format(values.filter(isNonEmptyString));
 };
 
 export const temperatureFormatter = new Intl.NumberFormat(locales, {
