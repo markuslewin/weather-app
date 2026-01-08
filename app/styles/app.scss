@@ -210,6 +210,10 @@ body {
   }
 }
 
+.weather {
+  outline: none;
+}
+
 .error {
   padding-block-start: tokens.spacing(500);
   text-align: center;

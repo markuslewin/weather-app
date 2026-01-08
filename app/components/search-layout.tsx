@@ -3,7 +3,7 @@ import { debounce } from "#app/utils/debounce";
 import { formatList } from "#app/utils/format";
 import { type SearchResultItem, searchResultSchema } from "#app/utils/search";
 import { createHomeUrl } from "#app/utils/url";
-import { type ReactNode, useId } from "react";
+import { type ReactNode, useId, useRef } from "react";
 import {
   ComboBox,
   Input,
@@ -18,7 +18,7 @@ const load: AsyncListOptions<SearchResultItem, string>["load"] = debounce(
   async ({ signal, filterText = "" }) => {
     const response = await fetch(
       `/api/search?${new URLSearchParams({ name: filterText })}`,
-      { signal }
+      { signal },
     );
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const json = await response.json();
@@ -27,12 +27,13 @@ const load: AsyncListOptions<SearchResultItem, string>["load"] = debounce(
     }
     return searchResultSchema.parse(json);
   },
-  400
+  400,
 );
 
 export const SearchLayout = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const searchHeadingId = useId();
+  const weatherRegionRef = useRef<HTMLElement>(null);
   const list = useAsyncList<SearchResultItem>({
     load,
   });
@@ -49,7 +50,13 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
         <h2 className="sr-only" id={searchHeadingId}>
           Search
         </h2>
-        <Form className="search__form">
+        <Form
+          className="search__form"
+          preventScrollReset
+          onSubmit={() => {
+            weatherRegionRef.current?.focus();
+          }}
+        >
           <ComboBox
             className="search-combobox"
             aria-label="Search for a place"
@@ -69,8 +76,10 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
                 createHomeUrl({
                   lat: item.latitude.toString(),
                   lon: item.longitude.toString(),
-                })
+                }),
+                { preventScrollReset: true },
               );
+              weatherRegionRef.current?.focus();
             }}
             items={list.items}
           >
@@ -107,7 +116,14 @@ export const SearchLayout = ({ children }: { children: ReactNode }) => {
           <button className="primary-button">Search</button>
         </Form>
       </section>
-      {children}
+      <section
+        className="weather"
+        ref={weatherRegionRef}
+        tabIndex={-1}
+        aria-label="Weather"
+      >
+        {children}
+      </section>
     </>
   );
 };
