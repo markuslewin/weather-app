@@ -7,6 +7,8 @@ test.each<[number, string]>([
   [3.5, "4°"],
   [-1, "-1°"],
   [-1.7, "-2°"],
+  [0, "0°"],
+  [-0, "0°"],
 ])("format(%i) -> %s", (value, expected) => {
   expect(temperatureFormatter.format(value)).toBe(expected);
 });

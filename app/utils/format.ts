@@ -43,6 +43,7 @@ export const temperatureFormatter = new Intl.NumberFormat(locales, {
   style: "unit",
   unit: "degree",
   unitDisplay: "narrow",
+  signDisplay: "negative",
   maximumFractionDigits: 0,
 });
 
