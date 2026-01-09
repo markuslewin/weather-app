@@ -144,7 +144,7 @@ export const Location = ({
                                     location?.locality,
                                     location?.country,
                                   ].filter(isNonEmptyString);
-                                  if (props.length >= 0) return "Unknown";
+                                  if (props.length <= 0) return "Unknown";
 
                                   return listFormatter.format(props);
                                 }}
