@@ -54,7 +54,7 @@
     "msw": "^2.12.7",
     "netlify-cli": "^23.13.3",
     "rollup-plugin-visualizer": "^6.0.5",
-    "sass-embedded": "^1.93.2",
+    "sass-embedded": "^1.97.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.52.0",
