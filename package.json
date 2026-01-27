@@ -9,6 +9,7 @@
     "typegen": "react-router typegen",
     "lint": "npm run typegen && eslint .",
     "typecheck": "npm run typegen && tsc",
+    "check": "npm run typegen && eslint . && tsc",
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install --with-deps chromium",
