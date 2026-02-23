@@ -55,7 +55,7 @@
     "globals": "^17.3.0",
     "msw": "^2.12.10",
     "netlify-cli": "^23.15.1",
-    "rollup-plugin-visualizer": "^6.0.8",
+    "rollup-plugin-visualizer": "^7.0.0",
     "sass-embedded": "^1.97.3",
     "tsx": "^4.21.0",
     "typescript": "^5.9.2",
