@@ -52,7 +52,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "globals": "^17.3.0",
+    "globals": "^17.4.0",
     "msw": "^2.12.10",
     "netlify-cli": "^24.0.1",
     "rollup-plugin-visualizer": "^7.0.0",
