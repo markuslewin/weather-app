@@ -50,7 +50,7 @@ jobs:
           AZURE_WEB_CLIENT_ID: 00000000-0000-0000-0000-000000000000
           AZURE_WEB_CLIENT_SECRET: my-client-secret
           AZURE_MAPS_CLIENT_ID: 00000000-0000-0000-0000-000000000000
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
