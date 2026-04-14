@@ -13,7 +13,6 @@ import {
   type TemperatureUnit,
   type WindSpeedUnit,
 } from "#app/utils/settings";
-import type { Route } from ".react-router/types/app/components/+types/layout";
 import { useState } from "react";
 import {
   Button,
@@ -32,6 +31,7 @@ import {
   useNavigation,
   type LoaderFunctionArgs,
 } from "react-router";
+import type { Route } from "./+types/layout";
 
 export function loader({ request }: LoaderFunctionArgs) {
   const settings = getSettings(request);

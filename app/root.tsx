@@ -1,3 +1,5 @@
+import "#app/styles/app.scss";
+import { isSSRAttrName } from "#app/utils/ssr";
 import {
   isRouteErrorResponse,
   Links,
@@ -5,17 +7,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 // Supports weights 100-900
-import "@fontsource-variable/dm-sans";
+import "@fontsource-variable/dm-sans/index.css";
 // Supports weights 100-900
 import "@fontsource-variable/dm-sans/wght-italic.css";
 // Supports weights 200-800
-import "@fontsource-variable/bricolage-grotesque";
-import "#app/styles/app.scss";
+import "@fontsource-variable/bricolage-grotesque/index.css";
 import { useIsSSR } from "react-aria";
-import { isSSRAttrName } from "#app/utils/ssr";
 
 export const links: Route.LinksFunction = () => [
   {
