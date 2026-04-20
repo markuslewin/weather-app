@@ -51,7 +51,7 @@
     "@types/react-dom": "^19.2.3",
     "cross-env": "^10.1.0",
     "eslint": "^10.2.0",
-    "eslint-plugin-react-hooks": "^7.1.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.5.0",
     "msw": "^2.13.4",
     "netlify-cli": "^25.0.0",
