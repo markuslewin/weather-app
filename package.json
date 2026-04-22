@@ -64,6 +64,6 @@
     "vite-plugin-devtools-json": "^1.0.0",
     "vite-plugin-icons-spritesheet": "^3.0.1",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.5"
   }
 }
