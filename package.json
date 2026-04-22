@@ -45,7 +45,7 @@
     "@netlify/api": "^14.0.18",
     "@netlify/vite-plugin-react-router": "^3.1.1",
     "@playwright/test": "^1.59.1",
-    "@react-router/dev": "^7.14.1",
+    "@react-router/dev": "^7.14.2",
     "@types/node": "^22",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
