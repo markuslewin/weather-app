@@ -54,7 +54,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.5.0",
     "msw": "^2.13.5",
-    "netlify-cli": "^25.3.0",
+    "netlify-cli": "^25.5.0",
     "rollup-plugin-visualizer": "^7.0.1",
     "sass-embedded": "^1.99.0",
     "tsx": "^4.21.0",
