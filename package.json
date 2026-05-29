@@ -22,7 +22,7 @@
     "@date-fns/tz": "^1.5.0",
     "@fontsource-variable/bricolage-grotesque": "^5.2.10",
     "@fontsource-variable/dm-sans": "^5.2.8",
-    "@react-router/node": "^7.15.1",
+    "@react-router/node": "^7.16.0",
     "@react-router/serve": "^7.15.1",
     "cookie": "^1.1.1",
     "date-fns": "^4.3.0",
