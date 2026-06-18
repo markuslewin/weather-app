@@ -43,7 +43,7 @@
     "@faker-js/faker": "^10.5.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "@netlify/api": "^15.0.0",
-    "@netlify/vite-plugin-react-router": "^3.1.1",
+    "@netlify/vite-plugin-react-router": "^4.0.0",
     "@playwright/test": "^1.61.0",
     "@react-router/dev": "^8.0.0",
     "@types/node": "^24.13.2",
