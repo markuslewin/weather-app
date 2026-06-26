@@ -35,7 +35,7 @@ export const countSystems = (settings: Settings) => {
           return { ...count, imperial: count.imperial + 1 };
       }
     },
-    { metric: 0, imperial: 0 }
+    { metric: 0, imperial: 0 },
   );
 };
 
@@ -45,7 +45,7 @@ export const getSettings = (request: Request) => {
   const str = request.headers.get("cookie");
   if (str === null) return initialSettings;
 
-  const settings = cookie.parse(str)[settingsCookieName];
+  const settings = cookie.parseCookie(str)[settingsCookieName];
   if (settings === undefined) return initialSettings;
 
   try {
