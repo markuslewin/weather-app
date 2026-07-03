@@ -57,7 +57,7 @@
     "netlify-cli": "^26.1.0",
     "rollup-plugin-visualizer": "^7.0.1",
     "sass-embedded": "^1.100.0",
-    "tsx": "^4.22.4",
+    "tsx": "^4.22.5",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.1",
     "vite": "^7.3.2",
