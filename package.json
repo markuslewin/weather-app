@@ -23,7 +23,7 @@
     "@fontsource-variable/bricolage-grotesque": "^5.2.10",
     "@fontsource-variable/dm-sans": "^5.2.8",
     "@react-router/node": "^8.1.0",
-    "@react-router/serve": "^8.1.0",
+    "@react-router/serve": "^8.2.0",
     "cookie": "^2.0.1",
     "date-fns": "^4.4.0",
     "isbot": "^5.2.0",
