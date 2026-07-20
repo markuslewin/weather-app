@@ -42,7 +42,7 @@
     "@eslint/js": "^10.0.1",
     "@faker-js/faker": "^10.5.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
-    "@netlify/api": "^15.0.1",
+    "@netlify/api": "^15.1.0",
     "@netlify/vite-plugin-react-router": "^4.0.0",
     "@playwright/test": "^1.61.1",
     "@react-router/dev": "^8.2.0",
