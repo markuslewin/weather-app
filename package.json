@@ -27,7 +27,7 @@
     "cookie": "^2.0.1",
     "date-fns": "^4.4.0",
     "isbot": "^5.2.1",
-    "react": "^19.2.7",
+    "react": "^19.2.8",
     "react-aria": "^3.50.0",
     "react-aria-components": "^1.19.0",
     "react-dom": "^19.2.7",
