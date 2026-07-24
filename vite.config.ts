@@ -1,13 +1,15 @@
 /// <reference types="vitest/config" />
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 import netlifyPlugin from "@netlify/vite-plugin-react-router";
 import { iconsSpritesheet } from "vite-plugin-icons-spritesheet";
 import devToolsJson from "vite-plugin-devtools-json";
 import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
+  resolve: {
+    tsconfigPaths: true,
+  },
   plugins: [
     devToolsJson(),
     iconsSpritesheet({
@@ -16,7 +18,6 @@ export default defineConfig({
       withTypes: true,
     }),
     reactRouter(),
-    tsconfigPaths(),
     netlifyPlugin(),
     visualizer({
       template: "treemap",
