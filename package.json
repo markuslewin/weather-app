@@ -40,7 +40,7 @@
     "@actions/core": "^3.0.1",
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
-    "@faker-js/faker": "^10.5.0",
+    "@faker-js/faker": "^10.6.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "@netlify/api": "^15.1.0",
     "@netlify/vite-plugin-react-router": "^4.0.0",
